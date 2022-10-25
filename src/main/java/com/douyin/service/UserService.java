@@ -1,6 +1,7 @@
-package com.douyin.service.impl;
+package com.douyin.service;
+
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.douyin.pojo.User;
 
-public interface userServiceImpl extends IService<User> {
+public interface UserService extends IService<User> {
 }

@@ -1,7 +1,8 @@
-package com.douyin.service.impl;
+package com.douyin.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.douyin.pojo.Video;
 
-public interface videoServiceImpl extends IService<Video> {
+
+public interface VideoService extends IService<Video> {
 }

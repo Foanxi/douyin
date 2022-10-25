@@ -5,11 +5,6 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
-/**
- * @author: zhuanghaoxin
- * @Description:点赞实体类
- * @create: 2022-10-23 14:59
- **/
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
