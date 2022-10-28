@@ -11,8 +11,8 @@ import java.util.Date;
  * @Time 2022/10/11-11:22
  */
 public class JwtHelper {
-    private static long tokenExpiration = 20 * 60 * 60 * 1000;
-    private static String tokenSignKey = "123456";
+    private static final long TOKEN_EXPIRATION = 20 * 60 * 60 * 1000;
+    private static final String TOKEN_SIGN_KEY = "123456";
 
     /**
      * 生成token字符串
@@ -21,14 +21,13 @@ public class JwtHelper {
      * @Return: String
      */
     public static String createToken(Long userId) {
-        String token = Jwts.builder()
+        return Jwts.builder()
                 .setSubject("YYGH-USER")
-                .setExpiration(new Date(System.currentTimeMillis() + tokenExpiration))
+                .setExpiration(new Date(System.currentTimeMillis() + TOKEN_EXPIRATION))
                 .claim("userId", userId)
-                .signWith(SignatureAlgorithm.HS512, tokenSignKey)
+                .signWith(SignatureAlgorithm.HS512, TOKEN_SIGN_KEY)
                 .compressWith(CompressionCodecs.GZIP)
                 .compact();
-        return token;
     }
 
     /**
@@ -41,7 +40,7 @@ public class JwtHelper {
         if (token.isEmpty()) {
             return null;
         }
-        Jws<Claims> claimsJws = Jwts.parser().setSigningKey(tokenSignKey).parseClaimsJws(token);
+        Jws<Claims> claimsJws = Jwts.parser().setSigningKey(TOKEN_SIGN_KEY).parseClaimsJws(token);
         Claims body = claimsJws.getBody();
         Integer userId = (Integer) body.get("userId");
         return userId.longValue();
@@ -58,7 +57,7 @@ public class JwtHelper {
             return "";
         }
         Jws<Claims> claimsJws
-                = Jwts.parser().setSigningKey(tokenSignKey).parseClaimsJws(token);
+                = Jwts.parser().setSigningKey(TOKEN_SIGN_KEY).parseClaimsJws(token);
         Claims claims = claimsJws.getBody();
         return (String) claims.get("userName");
     }
@@ -71,13 +70,12 @@ public class JwtHelper {
      */
     public static boolean isExpiration(String token) {
         try {
-            boolean isExpiration = Jwts.parser()
-                    .setSigningKey(tokenSignKey)
+            return Jwts.parser()
+                    .setSigningKey(TOKEN_SIGN_KEY)
                     .parseClaimsJws(token)
                     .getBody()
                     .getExpiration()
                     .before(new Date());
-            return isExpiration;
         } catch (Exception e) {
 //            过期出现异常，返回true
             return true;
@@ -94,7 +92,7 @@ public class JwtHelper {
         String refreshedToken;
         try {
             final Claims claims = Jwts.parser()
-                    .setSigningKey(tokenSignKey)
+                    .setSigningKey(TOKEN_SIGN_KEY)
                     .parseClaimsJws(token)
                     .getBody();
             refreshedToken = JwtHelper.createToken(getUserId(token));

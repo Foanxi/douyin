@@ -4,6 +4,8 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
+import java.sql.Date;
+
 
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -16,5 +18,5 @@ public class Video {
     private String coverUrl;
     private Integer favouriteCount;
     private Integer commentCount;
-    private Data createTime;
+    private Date createTime;
 }
