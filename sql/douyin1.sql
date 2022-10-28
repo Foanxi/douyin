@@ -32,9 +32,9 @@ create index relation_favourite_id_index
 
 create table douyin1.video
 (
-    id              varchar(8)   not null
-        primary key,
+    id              varchar(8)   not null,
     author_id       varchar(8)   null,
+    title           varchar(255) null,
     play_url        varchar(255) null,
     cover_url       varchar(255) null,
     favourite_count bigint       null,
@@ -48,6 +48,8 @@ create table douyin1.video
 )
     comment '视频信息表';
 
+alter table douyin1.video
+    add primary key (id);
 
 create table douyin1.comment
 (
