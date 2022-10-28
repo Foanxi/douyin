@@ -5,6 +5,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 
 @RestController
-@RequestMapping("/comment")
+@RequestMapping("/douyin/comment")
 public class CommentController {
 }

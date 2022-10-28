@@ -7,6 +7,10 @@ import com.douyin.pojo.Comment;
 import com.douyin.pojo.Favourite;
 import com.douyin.service.CommentService;
 import com.douyin.service.FavouriteService;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+@Service("CommentServiceImpl")
+@Transactional
 public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> implements CommentService {
 }
