@@ -13,6 +13,8 @@
 
  Date: 28/10/2022 21:28:22
 */
+create database if not exists douyin;
+use douyin;
 
 SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
