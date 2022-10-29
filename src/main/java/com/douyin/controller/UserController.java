@@ -46,6 +46,7 @@ public class UserController {
         }*/
         //查询数据
         User byId = userService.getUserById(userId);
+        log.info(String.valueOf(byId));
         jsonObject.put("status_code", 0);
         jsonObject.put("status_msg", "查询成功");
         jsonObject.put("user", byId);
