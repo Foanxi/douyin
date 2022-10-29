@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.douyin.pojo.User;
 import com.douyin.pojo.Video;
+import com.douyin.pojo.Videouser;
 import com.douyin.service.UserService;
 import com.douyin.service.VideoService;
 import com.douyin.util.JwtHelper;
@@ -19,7 +20,9 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 @RestController
@@ -44,23 +47,34 @@ public class PublishController {
                             @RequestParam("user_id") String userId) {
         JSONObject jsonObject = new JSONObject();
         boolean expiration = JwtHelper.isExpiration(token);
-        if (expiration) {
+    /*    if (expiration) {
             jsonObject.put("status_code", 404);
             jsonObject.put("status_msg", "token失效");
             jsonObject.put("user", null);
             return jsonObject;
-        }
-        User user = userService.getById(userId);
+        }*/
+        User user = userService.getUserById(userId);
         List<Video> videoList = videoService.getVideo(userId);
-        JSONObject jsonObjectVideo;
-        jsonObjectVideo = (JSONObject) videoList;
-        jsonObjectVideo.put("author",user);
-
-        jsonObject.put("status_code", 200);
+        List<Videouser> list = new ArrayList<>();
+        for (int i = 0; i < videoList.size(); i++) {
+            Videouser videouser = new Videouser(
+                    videoList.get(i).getId(),
+                    user,
+                    videoList.get(i).getPlayUrl(),
+                    videoList.get(i).getCoverUrl(),
+                    videoList.get(i).getFavouriteCount(),
+                    videoList.get(i).getCommentCount(),
+                    videoList.get(i).getCreateTime(),
+                    videoList.get(i).getTitle()
+            );
+            list.add(videouser);
+        }
+        System.out.println(list);
+        jsonObject.put("http_status",200);
+        jsonObject.put("status_code", 0);
         jsonObject.put("status_msg", "视频列表展示成功");
-        jsonObject.put("video_list",jsonObjectVideo);
-        System.out.println(1);
-        System.out.println(jsonObject);
+        jsonObject.put("video_list",list);
+        log.info("返回的数据体为:{}",jsonObject);
         return jsonObject;
     }
     @PostMapping("/action")
