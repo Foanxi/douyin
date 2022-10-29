@@ -56,16 +56,16 @@ public class PublishController {
         User user = userService.getUserById(userId);
         List<Video> videoList = videoService.getVideo(userId);
         List<Videouser> list = new ArrayList<>();
-        for (int i = 0; i < videoList.size(); i++) {
+        for (Video video : videoList) {
             Videouser videouser = new Videouser(
-                    videoList.get(i).getId(),
+                    video.getId(),
                     user,
-                    videoList.get(i).getPlayUrl(),
-                    videoList.get(i).getCoverUrl(),
-                    videoList.get(i).getFavouriteCount(),
-                    videoList.get(i).getCommentCount(),
-                    videoList.get(i).getCreateTime(),
-                    videoList.get(i).getTitle()
+                    video.getPlayUrl(),
+                    video.getCoverUrl(),
+                    video.getFavouriteCount(),
+                    video.getCommentCount(),
+                    video.getCreateTime(),
+                    video.getTitle()
             );
             list.add(videouser);
         }
