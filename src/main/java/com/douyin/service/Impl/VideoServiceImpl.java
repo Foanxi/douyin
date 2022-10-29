@@ -10,7 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-@Service("VideoServiceImpl")
+@Service
 @Transactional
 public class VideoServiceImpl extends ServiceImpl<VideoMapper, Video> implements VideoService {
     @Override

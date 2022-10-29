@@ -2,17 +2,23 @@ package com.douyin.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.douyin.pojo.User;
 import com.douyin.service.UserService;
 import com.douyin.util.JwtHelper;
 import com.douyin.util.Md5;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.ibatis.annotations.Mapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.DigestUtils;
 import org.springframework.web.bind.annotation.*;
+
+import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
 
 
 @RestController
 @RequestMapping("/douyin/user")
+@Slf4j
 public class UserController {
     @Autowired
     private UserService userService;
@@ -44,28 +50,57 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public JSON login(@RequestBody User user) {
+    public JSON login(@RequestParam("username") String username,@RequestParam("password") String password) {
         JSONObject jsonObject = new JSONObject();
-        String password = user.getPassword();
         String md5Password = Md5.encrypt(password);
-        LambdaQueryWrapper<User> lqw = new LambdaQueryWrapper<>();
-        lqw.eq(User::getName, user.getName());
-        User u = userService.getOne(lqw);
-
+        User u = userService.getUserByUsername(username);
+        log.info("用户为：{}",u);
         if (u == null) {
-            jsonObject.put("status_code", 200);
+            jsonObject.put("status_code", 400);
             jsonObject.put("status_msg", "用户不存在");
             return jsonObject;
         } else if (!u.getPassword().equals(md5Password)) {
-            jsonObject.put("status_code", 200);
+            jsonObject.put("status_code", 400);
             jsonObject.put("status_msg", "用户密码错误");
             return jsonObject;
-        }else {
+        } else {
             jsonObject.put("status_code", 200);
             jsonObject.put("status_msg", "登陆成功");
-            jsonObject.put("user_id",u.getId());
-            jsonObject.put("token",JwtHelper.createToken(u.getId()));
+            jsonObject.put("user_id", u.getId().intValue());
+            jsonObject.put("token", JwtHelper.createToken(u.getId()));
+            log.info("jsonObject:{}",jsonObject);
             return jsonObject;
         }
+    }
+
+    @PostMapping("/register")
+    public JSON register(@RequestParam("username") String username, @RequestParam("password") String password) {
+        JSONObject jsonObject = new JSONObject();
+        User user = null;
+//        首先先判断数据库中是否有该用户。
+        if (userService.getUserByUsername(username) != null) {
+            log.info("已经有用户注册过了");
+            user = userService.getUserByUsername(username);
+//            返回错误信息
+            jsonObject.put("status_code", 500);
+            jsonObject.put("status_msg", "用户已存在");
+            jsonObject.put("user_id", user.getId());
+            jsonObject.put("token", JwtHelper.createToken(user.getId()));
+            return jsonObject;
+        }
+//        没有该用户，可以进行注册
+//        先对用户的密码进行加密，后将账号密码发送到数据库存储
+        String md5password = DigestUtils.md5DigestAsHex(password.getBytes());
+        log.info("用户加密后的密码为：{}", md5password);
+//        由于用户初始注册，并没有关注数和被关注数，因此都设置为0
+        user = new User(username, md5password, 0, 0);
+        boolean save = userService.save(user);
+        log.info("是否添加成功：{}",save);
+        jsonObject.put("status_code", 200);
+        jsonObject.put("status_msg", "添加成功");
+        jsonObject.put("user_id", user.getId());
+        jsonObject.put("token", JwtHelper.createToken(user.getId()));
+        log.info("返回的数据体为：{}",jsonObject);
+        return jsonObject;
     }
 }

@@ -7,17 +7,16 @@ import com.douyin.pojo.Video;
 import com.douyin.service.CommentService;
 import com.douyin.service.FavouriteService;
 import com.douyin.service.VideoService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Objects;
 
 @RestController
+@Slf4j
 @RequestMapping("/douyin/feed")
 public class FeedController {
 
@@ -34,6 +33,7 @@ public class FeedController {
     public JSON videoFeed(@RequestParam("latest_time") String latestTime,
                           @RequestParam("token") String token) {
         JSONObject jsonObject = new JSONObject();
+        log.info("latestTime :{}",latestTime);
 //        if (token != null && JwtHelper.isExpiration(token)){
 //            Long userId = JwtHelper.getUserId(token);
 //            Favourite byId = favouriteService.getById(userId);

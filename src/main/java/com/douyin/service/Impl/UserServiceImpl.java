@@ -12,10 +12,16 @@ import org.springframework.transaction.annotation.Transactional;
 @Service("UserServiceImpl")
 @Transactional
 public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements UserService {
-    @Override
-    public User getUser(String userId) {
+    /**
+     * 根据账号返回用户信息
+     * param: username
+     * return:用户信息
+     */
+    public User getUserByUsername(String username){
         QueryWrapper<User> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("id",userId);
+        queryWrapper.eq("name",username);
+        //查询该账号下的用户是否为空
         return baseMapper.selectOne(queryWrapper);
     }
+
 }
