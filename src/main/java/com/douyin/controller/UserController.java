@@ -33,19 +33,23 @@ public class UserController {
     public JSON getUserInformation(@RequestParam("user_id") String userId,
                                    @RequestParam("token") String token) {
         JSONObject jsonObject = new JSONObject();
+        log.info("用户id"+userId);
+        log.info("用户token"+token);
         //校验token
         boolean expiration = JwtHelper.isExpiration(token);
-        if (expiration) {
+/*        if (expiration) {
             jsonObject.put("status_code", 404);
             jsonObject.put("status_msg", "token失效");
             jsonObject.put("user", null);
+            log.info("返回：{}",jsonObject);
             return jsonObject;
-        }
+        }*/
         //查询数据
-        User byId = userService.getById(userId);
-        jsonObject.put("status_code", 200);
+        User byId = userService.getUserById(userId);
+        jsonObject.put("status_code", 0);
         jsonObject.put("status_msg", "查询成功");
         jsonObject.put("user", byId);
+        log.info("返回的数据体为：{}",jsonObject);
         return jsonObject;
     }
 

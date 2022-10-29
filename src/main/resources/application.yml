@@ -8,3 +8,7 @@ spring:
     password: Abin21428!!
 server:
   port: 8080
+
+douyin:
+  path: E:\curriculum design\douyin\src\main\resources
+
