@@ -33,8 +33,8 @@ public class UserController {
     public JSON getUserInformation(@RequestParam("user_id") String userId,
                                    @RequestParam("token") String token) {
         JSONObject jsonObject = new JSONObject();
-        log.info("用户id"+userId);
-        log.info("用户token"+token);
+        log.info("用户id" + userId);
+        log.info("用户token" + token);
         //校验token
         boolean expiration = JwtHelper.isExpiration(token);
 /*        if (expiration) {
@@ -46,37 +46,37 @@ public class UserController {
         }*/
         //查询数据
         User byId = userService.getUserById(userId);
-        jsonObject.put("http_status",200);
+        jsonObject.put("http_status", 200);
         jsonObject.put("status_code", 0);
         jsonObject.put("status_msg", "查询成功");
         jsonObject.put("user", byId);
-        log.info("返回的数据体为：{}",jsonObject);
+        log.info("返回的数据体为：{}", jsonObject);
         return jsonObject;
     }
 
     @PostMapping("/login")
-    public JSON login(@RequestParam("username") String username,@RequestParam("password") String password) {
+    public JSON login(@RequestParam("username") String username, @RequestParam("password") String password) {
         JSONObject jsonObject = new JSONObject();
         String md5Password = Md5.encrypt(password);
         User u = userService.getUserByUsername(username);
-        log.info("用户为：{}",u);
+        log.info("用户为：{}", u);
         if (u == null) {
-            jsonObject.put("http_status",400);
+            jsonObject.put("http_status", 400);
             jsonObject.put("status_code", 1);
             jsonObject.put("status_msg", "用户不存在");
             return jsonObject;
         } else if (!u.getPassword().equals(md5Password)) {
-            jsonObject.put("http_status",400);
+            jsonObject.put("http_status", 400);
             jsonObject.put("status_code", 1);
             jsonObject.put("status_msg", "用户密码错误");
             return jsonObject;
         } else {
-            jsonObject.put("http_status",200);
+            jsonObject.put("http_status", 200);
             jsonObject.put("status_code", 0);
             jsonObject.put("status_msg", "登陆成功");
             jsonObject.put("user_id", u.getId().intValue());
             jsonObject.put("token", JwtHelper.createToken(u.getId()));
-            log.info("jsonObject:{}",jsonObject);
+            log.info("jsonObject:{}", jsonObject);
             return jsonObject;
         }
     }
@@ -84,13 +84,13 @@ public class UserController {
     @PostMapping("/register")
     public JSON register(@RequestParam("username") String username, @RequestParam("password") String password) {
         JSONObject jsonObject = new JSONObject();
-        User user = null;
-//        首先先判断数据库中是否有该用户。
+        User user;
+        //首先先判断数据库中是否有该用户
         if (userService.getUserByUsername(username) != null) {
             log.info("已经有用户注册过了");
             user = userService.getUserByUsername(username);
-//            返回错误信息
-            jsonObject.put("http_status",400);
+            //返回错误信息
+            jsonObject.put("http_status", 400);
             jsonObject.put("status_code", 1);
             jsonObject.put("status_msg", "用户已存在");
             jsonObject.put("user_id", user.getId());
@@ -104,13 +104,13 @@ public class UserController {
 //        由于用户初始注册，并没有关注数和被关注数，因此都设置为0
         user = new User(username, md5password, 0, 0);
         boolean save = userService.save(user);
-        log.info("是否添加成功：{}",save);
-        jsonObject.put("http_status",200);
+        log.info("是否添加成功：{}", save);
+        jsonObject.put("http_status", 200);
         jsonObject.put("status_code", 0);
         jsonObject.put("status_msg", "添加成功");
         jsonObject.put("user_id", user.getId());
         jsonObject.put("token", JwtHelper.createToken(user.getId()));
-        log.info("返回的数据体为：{}",jsonObject);
+        log.info("返回的数据体为：{}", jsonObject);
         return jsonObject;
     }
 }
