@@ -5,10 +5,12 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/douyin?serverTimezone=UTC
     username: root
-    password: Abin21428!!
+    password: 87906413
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 100MB
 server:
   port: 8080
-
 douyin:
-  path: E:\curriculum design\douyin\src\main\resources
-
+  path: E:/IDEAproject/douyin/src/main/resources

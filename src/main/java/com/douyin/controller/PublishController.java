@@ -20,10 +20,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 @RestController
 @RequestMapping("/douyin/publish")
@@ -78,7 +75,7 @@ public class PublishController {
         return jsonObject;
     }
     @PostMapping("/action")
-    public JSON uploadVideo(HttpServletRequest request,MultipartFile file,@RequestParam("title") String title,
+    public JSON uploadVideo(HttpServletRequest request,MultipartFile data,@RequestParam("title") String title,
                             @RequestParam("token") String token){
         JSONObject jsonObject = new JSONObject();
         log.info("传输视频的用户的token是：{}",token);
@@ -94,8 +91,8 @@ public class PublishController {
         log.info("解析出的用户ID是：{}",userId);
 
 //        本地视频的地址
-        String filePath = resourcePath + "video" + "\\" + userId;
-        String picturePath = resourcePath + "picture" + "\\" + userId;
+        String filePath = resourcePath + "\\" + "video" + "\\" + userId;
+        String picturePath = resourcePath + "\\" + "picture" + "\\" + userId;
 //        将文件存储到本地
         File fileLoad = new File(filePath);
         File pictureLoad = new File(picturePath);
@@ -110,24 +107,28 @@ public class PublishController {
 //        设置视频名称为UUID
         String uuid = UUID.randomUUID().toString();
         log.info("该视频的UUID为：{}",uuid);
-        String videoPath = filePath + "\\" + uuid +"\\"+ ".mp4";
+        String videoPath = filePath + "\\" + uuid + ".mp4";
+        //        设置图片名称
+        String pictureName = picturePath + "\\" + uuid + ".jpg";
+        File filePathLoad = new File(videoPath);
         try {
-            file.transferTo(fileLoad);
+            data.transferTo(filePathLoad);
         } catch (IOException e) {
             e.printStackTrace();
         }
-//        设置图片名称
-        String pictureName = fileLoad + uuid + ",jpg";
-        log.info("该视频的截图为：{}",pictureName);
+
+
 //      截取图片信息
-        VideoProcessing.grabberVideoFramer(videoPath,fileLoad + "\\"+pictureName);
+        VideoProcessing.grabberVideoFramer(videoPath,pictureName);
+        log.info("该视频的截图为：{}",pictureName);
 //      获取当前时间
-        LocalDateTime now = LocalDateTime.now();
-        log.info("当前时间为：{}",now);
+        long now = System.currentTimeMillis();
+//        log.info("当前时间为：{}",);
 //      创建video对象导入数据库
-//        Video video = new Video(0L,userId,videoPath,pictureName,0,0,(Data)now,title);
-//        videoService.save(video);
-        jsonObject.put("status_code",200);
+        Video video = new Video(0L,userId,videoPath,pictureName,0,0,now,title);
+        videoService.save(video);
+        jsonObject.put("http_status",200);
+        jsonObject.put("status_code",0);
         jsonObject.put("status_msg","视频上传成功");
         return jsonObject;
     }

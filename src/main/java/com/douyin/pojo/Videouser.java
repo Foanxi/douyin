@@ -22,6 +22,6 @@ public class Videouser {
     private String coverUrl;
     private Integer favouriteCount;
     private Integer commentCount;
-    private Data createTime;
+    private Long createTime;
     private String title;
 }
