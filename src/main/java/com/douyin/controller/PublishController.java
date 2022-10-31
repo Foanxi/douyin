@@ -92,16 +92,25 @@ public class PublishController {
 //        解析token得到用户ID
         String userId = JwtHelper.getUserId(token).toString();
         log.info("解析出的用户ID是：{}",userId);
+
+//        本地视频的地址
+        String filePath = resourcePath + "video" + "\\" + userId;
+        String picturePath = resourcePath + "picture" + "\\" + userId;
 //        将文件存储到本地
-        File fileLoad = new File(resourcePath + "video" +"\\"+ userId);
+        File fileLoad = new File(filePath);
+        File pictureLoad = new File(picturePath);
+
 //        判断文件夹是否存在，如果不存在则创建新的文件夹
         if (!fileLoad.exists()) {
             fileLoad.mkdir();
         }
+        if (!pictureLoad.exists()) {
+            pictureLoad.mkdir();
+        }
 //        设置视频名称为UUID
         String uuid = UUID.randomUUID().toString();
         log.info("该视频的UUID为：{}",uuid);
-        String videoPath = fileLoad + uuid + ".mp4";
+        String videoPath = filePath + "\\" + uuid +"\\"+ ".mp4";
         try {
             file.transferTo(fileLoad);
         } catch (IOException e) {

@@ -40,7 +40,7 @@ public class FeedController {
 //        }
         QueryWrapper<Video> queryWrapper = new QueryWrapper<>();
         List<Video> list;
-        if ("".equals(latestTime)) {
+        if ("0".equals(latestTime)) {
             queryWrapper.last("limit 20");
             list = videoService.list(queryWrapper);
         } else {
