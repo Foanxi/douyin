@@ -17,7 +17,7 @@ spring:
   freemarker:
     cache: false    #页面不加载缓存，修改即时生效
 #  resources:
-#    static-locations: classpath:/picture/,classpath:/video/,classpath:/static/
+#    static-locations: classpath:/public/picture/,classpath:/public/video/
 #  mvc:
 #    static-path-pattern: /**
 server:
