@@ -31,7 +31,7 @@ public class FavouriteServiceImpl extends ServiceImpl<FavouriteMapper, Favourite
     @Autowired
     private VideoService videoService;
 
-    @Override
+
     public JSON getFavouriteListService(String userId) {
         User user = userService.getUserById(userId);
         List<Video> videoList = videoService.getVideo(userId);

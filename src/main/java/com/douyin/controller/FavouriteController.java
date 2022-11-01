@@ -25,13 +25,6 @@ public class FavouriteController {
                                  @RequestParam("user_id") String userId){
         JSONObject jsonObject = new JSONObject();
         boolean expiration = JwtHelper.isExpiration(token);
-   /*        if (expiration) {
-            jsonObject.put("status_code", 404);
-            jsonObject.put("status_msg", "token失效");
-            jsonObject.put("user", null);
-            log.info("返回：{}",jsonObject);
-            return jsonObject;
-        }*/
         return favouriteService.getFavouriteListService(userId);
     }
 }

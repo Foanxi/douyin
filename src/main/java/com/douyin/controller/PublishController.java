@@ -9,7 +9,6 @@ import com.douyin.service.UserService;
 import com.douyin.service.VideoService;
 import com.douyin.util.JwtHelper;
 import com.douyin.util.VideoProcessing;
-import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -94,8 +93,8 @@ public class PublishController {
         log.info("解析出的用户ID是：{}", userId);
 
 //        本地视频的地址
-        String filePath = resourcePath + "\\" + "video" + "\\" + userId;
-        String picturePath = resourcePath + "\\" + "picture" + "\\" + userId;
+        String filePath = resourcePath + "\\" + "static\\video" + "\\" + userId;
+        String picturePath = resourcePath + "\\" + "static\\picture" + "\\" + userId;
         System.out.println(filePath);
 //        将文件存储到本地
         File fileLoad = new File(filePath);
@@ -127,11 +126,9 @@ public class PublishController {
         log.info("该视频的截图为：{}", pictureName);
 //      获取当前时间
         long now = System.currentTimeMillis();
-//        log.info("当前时间为：{}",);
 //      创建video对象导入数据库
-//        "\\3\\139fade2-4375-4a91-ab76-7f7a5a570c9e.mp4"
-        videoPath = userId + "/" + uuid + ".mp4";
-        pictureName = userId + "/" + uuid + ".jpg";
+        videoPath = "/video/" + userId + "/" + uuid + ".mp4";
+        pictureName = "/picture/" + userId + "/" + uuid + ".jpg";
         Video video = new Video(0L, userId, videoPath, pictureName, 0, 0, now, title);
         videoService.save(video);
         jsonObject.put("http_status", 200);
