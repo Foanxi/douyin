@@ -9,16 +9,20 @@ import com.douyin.service.FavouriteService;
 import com.douyin.service.VideoService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.text.SimpleDateFormat;
 import java.util.List;
-import java.util.Objects;
 
 @RestController
 @Slf4j
 @RequestMapping("/douyin/feed")
 public class FeedController {
+    @Value("${douyin.ip_path}")
+    private String ipPath;
 
     @Autowired
     private VideoService videoService;
@@ -47,13 +51,15 @@ public class FeedController {
             queryWrapper.le("create_time", latestTime).last("limit 20");
             list = videoService.list(queryWrapper);
         }
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMdd");
-        String strNextTime = simpleDateFormat.format(list.get(list.size() - 1).getCreateTime());
-        Integer nextTime = Integer.parseInt(strNextTime);
+        for (Video video : list) {
+            video.setPlayUrl(ipPath + video.getPlayUrl());
+            video.setCoverUrl(ipPath + video.getCoverUrl());
+        }
+        long createTime = list.get(list.size() - 1).getCreateTime();
 
         jsonObject.put("status_code", 200);
         jsonObject.put("status_msg", "获取视频流成功");
-        jsonObject.put("next_time", nextTime);
+        jsonObject.put("next_time", (int)createTime);
         jsonObject.put("video_list", list);
         System.out.println(jsonObject);
         return jsonObject;
