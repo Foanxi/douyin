@@ -48,7 +48,7 @@ public class FeedController {
             queryWrapper.last("limit 20");
             list = videoService.list(queryWrapper);
         } else {
-            queryWrapper.le("create_time", latestTime).last("limit 20");
+            queryWrapper.last("limit 20");
             list = videoService.list(queryWrapper);
         }
         System.out.println(list.toString());
