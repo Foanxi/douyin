@@ -93,8 +93,8 @@ public class PublishController {
         log.info("解析出的用户ID是：{}", userId);
 
 //        本地视频的地址
-        String filePath = resourcePath + "\\" + "static\\video" + "\\" + userId;
-        String picturePath = resourcePath + "\\" + "static\\picture" + "\\" + userId;
+        String filePath = resourcePath + "\\" + "public\\video" + "\\" + userId;
+        String picturePath = resourcePath + "\\" + "public\\picture" + "\\" + userId;
         System.out.println(filePath);
 //        将文件存储到本地
         File fileLoad = new File(filePath);
