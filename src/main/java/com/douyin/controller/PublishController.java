@@ -46,7 +46,8 @@ public class PublishController {
             return CreateJson.createJson(404, 1, "token失效", "user", null);
         }*/
         VideoModel[] list = videoService.getVideoUser(userId);
-        JSONObject jsonObject = CreateJson.createJson(200, 0, "视频列表展示成功", "video_list", list);
+        JSONObject jsonObject = CreateJson.createJson(200, 0, "视频列表展示成功");
+        jsonObject.put("video_list", list);
         log.info("返回的数据体为:{}", jsonObject);
         return jsonObject;
     }

@@ -12,12 +12,11 @@ public class CreateJson {
     private final static String STATUS_CODE = "status_code";
     private final static String STATUS_MSG = "status_msg";
 
-    public static <T> JSONObject createJson(Integer http_status, Integer status_code, String status_msg, String dataName, T t) {
+    public static JSONObject createJson(Integer http_status, Integer status_code, String status_msg) {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put(HTTP_STATUS, http_status);
         jsonObject.put(STATUS_CODE, status_code);
         jsonObject.put(STATUS_MSG, status_msg);
-        jsonObject.put(dataName, t);
         return jsonObject;
     }
 }

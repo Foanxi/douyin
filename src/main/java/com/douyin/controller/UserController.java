@@ -36,7 +36,8 @@ public class UserController {
         }*/
         //查询数据
         User byId = userService.getUserById(userId);
-        JSONObject jsonObject = CreateJson.createJson(200, 0, "查询成功", "user", byId);
+        JSONObject jsonObject = CreateJson.createJson(200, 0, "查询成功");
+        jsonObject.put("user", byId);
         log.info("返回的数据体为：{}", jsonObject);
         return jsonObject;
     }

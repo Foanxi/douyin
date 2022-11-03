@@ -35,7 +35,8 @@ public class FavouriteController {
                                  @RequestParam("user_id") String userId) {
         boolean expiration = JwtHelper.isExpiration(token);
         VideoModel[] list = videoService.getVideoUser(userId);
-        JSONObject jsonObject = CreateJson.createJson(200, 0, "视频列表展示成功", "video_list", list);
+        JSONObject jsonObject = CreateJson.createJson(200, 0, "视频列表展示成功");
+        jsonObject.put("video_list", list);
         log.info("返回的数据体为:{}", jsonObject);
         return jsonObject;
     }
