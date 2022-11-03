@@ -2,11 +2,10 @@ package com.douyin.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.douyin.model.VideoModel;
 import com.douyin.pojo.Video;
-import com.douyin.pojo.Videouser;
 import com.douyin.service.UserService;
 import com.douyin.service.VideoService;
-import com.douyin.service.VideouserService;
 import com.douyin.util.CreateJson;
 import com.douyin.util.JwtHelper;
 import com.douyin.util.VideoProcessing;
@@ -19,7 +18,6 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -31,8 +29,6 @@ public class PublishController {
     private VideoService videoService;
     @Autowired
     private UserService userService;
-    @Autowired
-    private VideouserService videouserService;
     @Value("${douyin.path}")
     private String resourcePath;
 
@@ -49,7 +45,7 @@ public class PublishController {
         if (expiration) {
             return CreateJson.createJson(404, 1, "token失效", "user", null);
         }*/
-        List<Videouser> list = videouserService.getVideouserList(userId);
+        VideoModel[] list = videoService.getVideoUser(userId);
         JSONObject jsonObject = CreateJson.createJson(200, 0, "视频列表展示成功", "video_list", list);
         log.info("返回的数据体为:{}", jsonObject);
         return jsonObject;

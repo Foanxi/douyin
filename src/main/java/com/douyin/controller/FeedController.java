@@ -67,10 +67,10 @@ public class FeedController {
         UserModel user2 = new UserModel(1L, "Te2stUser", 0, 0, false);
         videoList[0] = new VideoModel(1, user,
                 "https://www.w3schools.com/html/movie.mp4",
-                "https://cdn.pixabay.com/photo/2016/03/27/18/10/bear-1283347_1280.jpg", 0, 0, false);
+                "https://cdn.pixabay.com/photo/2016/03/27/18/10/bear-1283347_1280.jpg", 0, 0, false,"");
         for (int i = 0; i < list.size(); i++) {
             Video video = list.get(i);
-            VideoModel videoModel = new VideoModel(video.getId(), user2, video.getPlayUrl(), video.getCoverUrl(), 0, 0, false);
+            VideoModel videoModel = new VideoModel(video.getId(), user2, video.getPlayUrl(), video.getCoverUrl(), 0, 0, false,"");
             videoModel.setPlay_url(list.get(i).getPlayUrl());
             videoModel.setCover_url(list.get(i).getCoverUrl());
             videoList[i + 1] = videoModel;

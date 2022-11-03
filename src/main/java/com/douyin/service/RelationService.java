@@ -7,4 +7,5 @@ import com.douyin.pojo.Relation;
  * @author foanxi
  */
 public interface RelationService extends IService<Relation> {
+    boolean getIsFollow(String userId, String authorId);
 }

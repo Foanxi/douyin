@@ -19,6 +19,8 @@ public class VideoModel {
     private long comment_count;
     @JSONField(name = "is_favorite")
     private boolean is_favorite;
+    @JSONField(name = "title")
+    private String title;
 }
 
 
