@@ -24,37 +24,10 @@ import java.util.List;
  */
 @Slf4j
 @Service("FavouriteServiceImpl")
-@Transactional
+@Transactional(rollbackFor = Exception.class)
 public class FavouriteServiceImpl extends ServiceImpl<FavouriteMapper, Favourite> implements FavouriteService {
     @Autowired
     private UserService userService;
     @Autowired
     private VideoService videoService;
-
-
-    public JSON getFavouriteListService(String userId) {
-        User user = userService.getUserById(userId);
-        List<Video> videoList = videoService.getVideo(userId);
-        ArrayList<Videouser> list = new ArrayList<>();
-        for (Video video : videoList) {
-            Videouser videouser = new Videouser(
-                    video.getId(),
-                    user,
-                    video.getPlayUrl(),
-                    video.getCoverUrl(),
-                    video.getFavouriteCount(),
-                    video.getCommentCount(),
-                    video.getCreateTime(),
-                    video.getTitle()
-            );
-            list.add(videouser);
-        }
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("http_status", 200);
-        jsonObject.put("status_code", 0);
-        jsonObject.put("status_msg", "视频列表展示成功");
-        jsonObject.put("video_list", list);
-        log.info("返回的数据体为:{}", jsonObject);
-        return jsonObject;
-    }
 }

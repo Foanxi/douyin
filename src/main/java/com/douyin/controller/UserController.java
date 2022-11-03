@@ -4,16 +4,13 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.douyin.pojo.User;
 import com.douyin.service.UserService;
+import com.douyin.util.CreateJson;
 import com.douyin.util.JwtHelper;
 import com.douyin.util.Md5;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.ibatis.annotations.Mapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.DigestUtils;
 import org.springframework.web.bind.annotation.*;
-
-import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
 
 
 @RestController
@@ -32,24 +29,14 @@ public class UserController {
     @GetMapping("/")
     public JSON getUserInformation(@RequestParam("user_id") String userId,
                                    @RequestParam("token") String token) {
-        JSONObject jsonObject = new JSONObject();
-        log.info("用户id" + userId);
-        log.info("用户token" + token);
         //校验token
-        boolean expiration = JwtHelper.isExpiration(token);
-/*        if (expiration) {
-            jsonObject.put("status_code", 404);
-            jsonObject.put("status_msg", "token失效");
-            jsonObject.put("user", null);
-            log.info("返回：{}",jsonObject);
-            return jsonObject;
+/*        boolean expiration = JwtHelper.isExpiration(token);
+        if (expiration) {
+            return CreateJson.createJson(404,1,"token失效","user",null);
         }*/
         //查询数据
         User byId = userService.getUserById(userId);
-        jsonObject.put("http_status", 200);
-        jsonObject.put("status_code", 0);
-        jsonObject.put("status_msg", "查询成功");
-        jsonObject.put("user", byId);
+        JSONObject jsonObject = CreateJson.createJson(200, 0, "查询成功", "user", byId);
         log.info("返回的数据体为：{}", jsonObject);
         return jsonObject;
     }

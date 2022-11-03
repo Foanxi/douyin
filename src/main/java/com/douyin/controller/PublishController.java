@@ -2,11 +2,12 @@ package com.douyin.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.douyin.pojo.User;
 import com.douyin.pojo.Video;
 import com.douyin.pojo.Videouser;
 import com.douyin.service.UserService;
 import com.douyin.service.VideoService;
+import com.douyin.service.VideouserService;
+import com.douyin.util.CreateJson;
 import com.douyin.util.JwtHelper;
 import com.douyin.util.VideoProcessing;
 import lombok.extern.slf4j.Slf4j;
@@ -18,7 +19,6 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -31,6 +31,8 @@ public class PublishController {
     private VideoService videoService;
     @Autowired
     private UserService userService;
+    @Autowired
+    private VideouserService videouserService;
     @Value("${douyin.path}")
     private String resourcePath;
 
@@ -43,35 +45,12 @@ public class PublishController {
     @GetMapping("/list")
     public JSON getUserList(@RequestParam("token") String token,
                             @RequestParam("user_id") String userId) {
-        JSONObject jsonObject = new JSONObject();
-        boolean expiration = JwtHelper.isExpiration(token);
-    /*    if (expiration) {
-            jsonObject.put("status_code", 404);
-            jsonObject.put("status_msg", "token失效");
-            jsonObject.put("user", null);
-            return jsonObject;
+   /*     boolean expiration = JwtHelper.isExpiration(token);
+        if (expiration) {
+            return CreateJson.createJson(404, 1, "token失效", "user", null);
         }*/
-        User user = userService.getUserById(userId);
-        List<Video> videoList = videoService.getVideo(userId);
-        List<Videouser> list = new ArrayList<>();
-        for (Video video : videoList) {
-            Videouser videouser = new Videouser(
-                    video.getId(),
-                    user,
-                    video.getPlayUrl(),
-                    video.getCoverUrl(),
-                    video.getFavouriteCount(),
-                    video.getCommentCount(),
-                    video.getCreateTime(),
-                    video.getTitle()
-            );
-            list.add(videouser);
-        }
-        System.out.println(list);
-        jsonObject.put("http_status", 200);
-        jsonObject.put("status_code", 0);
-        jsonObject.put("status_msg", "视频列表展示成功");
-        jsonObject.put("video_list", list);
+        List<Videouser> list = videouserService.getVideouserList(userId);
+        JSONObject jsonObject = CreateJson.createJson(200, 0, "视频列表展示成功", "video_list", list);
         log.info("返回的数据体为:{}", jsonObject);
         return jsonObject;
     }

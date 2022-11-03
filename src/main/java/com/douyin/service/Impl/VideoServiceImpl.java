@@ -11,7 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Service
-@Transactional
+@Transactional(rollbackFor = Exception.class)
 public class VideoServiceImpl extends ServiceImpl<VideoMapper, Video> implements VideoService {
     @Override
     public List<Video> getVideo(String userId) {

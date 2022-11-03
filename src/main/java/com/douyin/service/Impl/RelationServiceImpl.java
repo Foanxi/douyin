@@ -11,6 +11,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service("RelationServiceImpl")
-@Transactional
+@Transactional(rollbackFor = Exception.class)
 public class RelationServiceImpl extends ServiceImpl<RelationMapper, Relation> implements RelationService {
 }
