@@ -5,13 +5,12 @@ import org.bytedeco.javacv.FFmpegFrameGrabber;
 import org.bytedeco.javacv.Frame;
 import org.bytedeco.javacv.FrameGrabber;
 import org.bytedeco.javacv.Java2DFrameConverter;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.UUID;
+
 /**
  * author: zhuanghaoxin
  * Description:
@@ -19,7 +18,7 @@ import java.util.UUID;
  **/
 @Slf4j
 public class VideoProcessing {
-    public static void grabberVideoFramer(String videoFileName,String pictureName){
+    public static void grabberVideoFramer(String videoFileName, String pictureName) {
         long start = System.currentTimeMillis();
         File targetFile = new File(pictureName);
         FFmpegFrameGrabber ff = new FFmpegFrameGrabber(videoFileName);

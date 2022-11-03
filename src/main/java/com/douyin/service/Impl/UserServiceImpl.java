@@ -1,7 +1,6 @@
 package com.douyin.service.Impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.douyin.mapper.UserMapper;
 import com.douyin.pojo.User;
@@ -18,17 +17,17 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
      * return:用户信息
      */
     @Override
-    public User getUserByUsername(String username){
+    public User getUserByUsername(String username) {
         QueryWrapper<User> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("name",username);
+        queryWrapper.eq("name", username);
         //查询该账号下的用户是否为空
         return baseMapper.selectOne(queryWrapper);
     }
 
     @Override
     public User getUserById(String userId) {
-        QueryWrapper<User> queryWrapper =  new QueryWrapper<>();
-        queryWrapper.eq("id",userId);
+        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("id", userId);
         return baseMapper.selectOne(queryWrapper);
     }
 
