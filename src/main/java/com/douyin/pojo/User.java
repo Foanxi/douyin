@@ -8,6 +8,8 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
+import java.sql.Timestamp;
+
 /**
  * @author foanxi
  */
@@ -18,11 +20,14 @@ import lombok.experimental.Accessors;
 @AllArgsConstructor
 public class User {
     @TableId(type = IdType.INPUT)
-    private Long id;
+    private Long userId;
     private String name;
     private String password;
     private Integer followCount;
     private Integer followerCount;
+    private Timestamp createTime;
+    private Timestamp updateTime;
+    private Timestamp deleteTime;
 
     public User(String name, String password, Integer followCount, Integer followerCount) {
         this.name = name;

@@ -58,7 +58,7 @@ public class VideoServiceImpl extends ServiceImpl<VideoMapper, Video> implements
                 // TODO: 2022/11/3 优化减少查询次数
                 boolean isFavourite = favouriteService.isExistFavourite(id, videoList.get(i).getId()) != null;
                 boolean isFollow = relationService.getIsFollow(id, videoList.get(i).getAuthorId());
-                UserModel userModel = new UserModel(user.getId(), user.getName(), user.getFollowCount(), user.getFollowerCount(), isFollow);
+                UserModel userModel = new UserModel(user.getUserId(), user.getName(), user.getFollowCount(), user.getFollowerCount(), isFollow);
                 videoModel[i] = new VideoModel(
                         videoList.get(i).getId(),
                         userModel,

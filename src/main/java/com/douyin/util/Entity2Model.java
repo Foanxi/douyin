@@ -19,7 +19,7 @@ public class Entity2Model {
 
     public static UserModel user2userModel(User user, String videoId) {
         Long authorId = videoService.getById(Long.parseLong(videoId)).getAuthorId();
-        boolean isFollow = relationService.getIsFollow(user.getId(), authorId);
-        return new UserModel(user.getId(), user.getName(), user.getFollowCount(), user.getFollowerCount(), isFollow);
+        boolean isFollow = relationService.getIsFollow(user.getUserId(), authorId);
+        return new UserModel(user.getUserId(), user.getName(), user.getFollowCount(), user.getFollowerCount(), isFollow);
     }
 }

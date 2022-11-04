@@ -42,12 +42,12 @@ public class SnowFlake {
     /**
      * 数据中心Id
      */
-    @Value("${snowflake.data-center-id}")
+    @Value("${snowflake.data-center-userId}")
     private static long dataCenterId;
     /**
      * 机器标识Id
      */
-    @Value("${snowflake.machine-id}")
+    @Value("${snowflake.machine-userId}")
     private static long machineId;
     /**
      * 序列号

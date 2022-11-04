@@ -55,8 +55,8 @@ public class UserController {
             return CreateJson.createJson(400, 1, "用户密码错误");
         } else {
             JSONObject jsonObject = CreateJson.createJson(200, 0, "登陆成功");
-            jsonObject.put("user_id", u.getId().intValue());
-            jsonObject.put("token", JwtHelper.createToken(u.getId()));
+            jsonObject.put("user_id", u.getUserId().intValue());
+            jsonObject.put("token", JwtHelper.createToken(u.getUserId()));
             log.info("jsonObject:{}", jsonObject);
             return jsonObject;
         }
@@ -71,8 +71,8 @@ public class UserController {
             user = userService.getUserByUsername(username);
             //返回错误信息
             JSONObject jsonObject = CreateJson.createJson(400, 1, "用户已存在");
-            jsonObject.put("user_id", user.getId());
-            jsonObject.put("token", JwtHelper.createToken(user.getId()));
+            jsonObject.put("user_id", user.getUserId());
+            jsonObject.put("token", JwtHelper.createToken(user.getUserId()));
             return jsonObject;
         }
 //        没有该用户，可以进行注册
@@ -84,8 +84,8 @@ public class UserController {
         boolean save = userService.save(user);
         log.info("是否添加成功：{}", save);
         JSONObject jsonObject = CreateJson.createJson(200, 0, "添加成功");
-        jsonObject.put("user_id", user.getId());
-        jsonObject.put("token", JwtHelper.createToken(user.getId()));
+        jsonObject.put("user_id", user.getUserId());
+        jsonObject.put("token", JwtHelper.createToken(user.getUserId()));
         log.info("返回的数据体为：{}", jsonObject);
         return jsonObject;
     }
