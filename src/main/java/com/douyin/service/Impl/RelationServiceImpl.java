@@ -8,6 +8,9 @@ import com.douyin.service.RelationService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+/**
+ * @author hongxiaobin
+ */
 @Service("RelationServiceImpl")
 @Transactional(rollbackFor = Exception.class)
 public class RelationServiceImpl extends ServiceImpl<RelationMapper, Relation> implements RelationService {

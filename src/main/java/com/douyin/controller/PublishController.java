@@ -97,7 +97,6 @@ public class PublishController {
             e.printStackTrace();
         }
 
-
 //      截取图片信息
         VideoProcessing.grabberVideoFramer(videoPath, pictureName);
         log.info("该视频的截图为：{}", pictureName);

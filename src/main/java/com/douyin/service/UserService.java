@@ -3,6 +3,9 @@ package com.douyin.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.douyin.pojo.User;
 
+/**
+ * @author hongxiaobin
+ */
 public interface UserService extends IService<User> {
     /**
      * 根据用户名查询用户信息

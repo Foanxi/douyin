@@ -8,6 +8,9 @@ import com.douyin.service.UserService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+/**
+ * @author hongxiaobin
+ */
 @Service("UserServiceImpl")
 @Transactional(rollbackFor = Exception.class)
 public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements UserService {
@@ -30,5 +33,4 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         queryWrapper.eq("id", userId);
         return baseMapper.selectOne(queryWrapper);
     }
-
 }

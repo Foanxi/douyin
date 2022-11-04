@@ -83,7 +83,7 @@ public class FeedController {
             videoList[i + 1] = videoModel;
         }
         httpResponse.setStatus(200);
-        jsonObject = CreateJson.createJson(200, 0, "视频发布成");
+        jsonObject = CreateJson.createJson(200, 0, "视频发布成功");
         jsonObject.put("video_list", videoList);
         jsonObject.put("next_time", createTime);
         return jsonObject;
