@@ -41,10 +41,11 @@ public class PublishController {
     @GetMapping("/list")
     public JSON getUserList(@RequestParam("token") String token,
                             @RequestParam("user_id") String userId) {
-   /*     boolean expiration = JwtHelper.isExpiration(token);
+        boolean expiration = JwtHelper.isExpiration(token);
         if (expiration) {
-            return CreateJson.createJson(404, 1, "token失效", "user", null);
-        }*/
+            JSONObject jsonObject = CreateJson.createJson(404, 1, "token失效");
+            jsonObject.put("user", null);
+        }
         VideoModel[] list = videoService.getVideoByUser(userId);
         JSONObject jsonObject = CreateJson.createJson(200, 0, "视频列表展示成功");
         jsonObject.put("video_list", list);
@@ -55,13 +56,12 @@ public class PublishController {
     @PostMapping("/action")
     public JSON uploadVideo(HttpServletRequest request, MultipartFile data, @RequestParam("title") String title,
                             @RequestParam("token") String token) {
-        JSONObject jsonObject = new JSONObject();
+        JSONObject jsonObject;
         log.info("传输视频的用户的token是：{}", token);
 //        校验token
         boolean expiration = JwtHelper.isExpiration(token);
         if (expiration) {
-            jsonObject.put("status_code", 400);
-            jsonObject.put("status_msg", "用户验证已过期");
+            jsonObject = CreateJson.createJson(400, 1, "用户验证已过期");
             return jsonObject;
         }
 //        解析token得到用户ID
@@ -107,9 +107,7 @@ public class PublishController {
         pictureName = "/picture/" + userId + "/" + uuid + ".jpg";
         Video video = new Video(0L, userId, videoPath, pictureName, 0, 0, now, title);
         videoService.save(video);
-        jsonObject.put("http_status", 200);
-        jsonObject.put("status_code", 0);
-        jsonObject.put("status_msg", "视频上传成功");
+        jsonObject = CreateJson.createJson(200, 0, "视频上传成功");
         return jsonObject;
     }
 }

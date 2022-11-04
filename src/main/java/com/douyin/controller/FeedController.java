@@ -49,7 +49,7 @@ public class FeedController {
             return CreateJson.createJson(200, 1, "用户token过期，请重新登陆");
         }
 
-        JSONObject jsonObject = new JSONObject();
+        JSONObject jsonObject;
         log.info("latestTime :{}", latestTime);
         QueryWrapper<Video> queryWrapper = new QueryWrapper<>();
         List<Video> list;
@@ -65,8 +65,7 @@ public class FeedController {
             video.setCoverUrl(ipPath + video.getCoverUrl());
         }
         if (list.size() - 1 == -1) {
-            jsonObject.put("status_code", 1);
-            jsonObject.put("status_msg", "当前无视频");
+            jsonObject = CreateJson.createJson(400, 1, "当前无视频");
             return jsonObject;
         }
         long createTime = list.get(list.size() - 1).getCreateTime();
@@ -78,19 +77,15 @@ public class FeedController {
                 "https://cdn.pixabay.com/photo/2016/03/27/18/10/bear-1283347_1280.jpg", 0, 0, false, "");
         for (int i = 0; i < list.size(); i++) {
             Video video = list.get(i);
-
             VideoModel videoModel = new VideoModel(video.getId(), user2, video.getPlayUrl(), video.getCoverUrl(), 0, 0, false, "");
             videoModel.setPlayUrl(list.get(i).getPlayUrl());
             videoModel.setCoverUrl(list.get(i).getCoverUrl());
             videoList[i + 1] = videoModel;
         }
         httpResponse.setStatus(200);
-
-        jsonObject.put("http_status", 200);
-        jsonObject.put("status_code", 0);
+        jsonObject = CreateJson.createJson(200, 0, "视频发布成");
         jsonObject.put("video_list", videoList);
         jsonObject.put("next_time", createTime);
-        System.out.println(jsonObject);
         return jsonObject;
     }
 }
