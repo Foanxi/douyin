@@ -1,116 +1,128 @@
 /*
-SQLyog Ultimate v10.00 Beta1
-MySQL - 8.0.26 : Database - douyin
-*********************************************************************
+ Navicat Premium Data Transfer
+
+ Source Server         : mysql
+ Source Server Type    : MySQL
+ Source Server Version : 80026
+ Source Host           : localhost:3306
+ Source Schema         : douyin
+
+ Target Server Type    : MySQL
+ Target Server Version : 80026
+ File Encoding         : 65001
+
+ Date: 04/11/2022 20:33:43
 */
 
+SET NAMES utf8mb4;
+SET FOREIGN_KEY_CHECKS = 0;
 
-/*!40101 SET NAMES utf8 */;
+CREATE DATABASE IF NOT EXISTS douyin;
+USE douyin;
 
-/*!40101 SET SQL_MODE=''*/;
-
-/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
-/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
-/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
-
-create database if not exists douyin;
-use douyin;
-
-DROP TABLE IF EXISTS `relation`;
-DROP TABLE IF EXISTS `comment`;
-DROP TABLE IF EXISTS `favourite`;
-DROP TABLE IF EXISTS `video`;
+-- ----------------------------
+-- Table structure for user
+-- ----------------------------
 DROP TABLE IF EXISTS `user`;
+CREATE TABLE `user`
+(
+    `user_id`        bigint(0)                                                     NOT NULL COMMENT '用户id',
+    `name`           varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '用户名',
+    `password`       varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '用户密码',
+    `follow_count`   int(0)                                                        NOT NULL COMMENT '关注数',
+    `follower_count` int(0)                                                        NOT NULL COMMENT '粉丝数',
+    `create_time`    timestamp(0)                                                  NULL     DEFAULT CURRENT_TIMESTAMP(0) COMMENT '用户插入时间',
+    `update_time`    timestamp(0)                                                  NULL     DEFAULT NULL COMMENT '用户更新时间',
+    `delete_time`    timestamp(0)                                                  NULL     DEFAULT NULL COMMENT '用户删除时间',
+    `logic_delete`   int(0)                                                        NOT NULL DEFAULT 1 COMMENT '逻辑删除，1-未删除，0-已删除',
+    PRIMARY KEY (`user_id`) USING BTREE
+) ENGINE = InnoDB
+  CHARACTER SET = utf8mb4
+  COLLATE = utf8mb4_0900_ai_ci
+  ROW_FORMAT = Dynamic;
 
-CREATE TABLE `user` (
-                        `id` int NOT NULL AUTO_INCREMENT,
-                        `name` varchar(32) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
-                        `password` varchar(32) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
-                        `follow_count` bigint DEFAULT NULL,
-                        `follower_count` bigint DEFAULT NULL,
-                        PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb3 ROW_FORMAT=DYNAMIC COMMENT='用户信息表';
+-- ----------------------------
+-- Table structure for video
+-- ----------------------------
+DROP TABLE IF EXISTS `video`;
+CREATE TABLE `video`
+(
+    `video_id`        bigint(0)                                                     NOT NULL COMMENT '视频id',
+    `author_id`       bigint(0)                                                     NOT NULL COMMENT '视频作者id',
+    `play_url`        varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '视频播放地址',
+    `cover_url`       varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '视频封面地址',
+    `favourite_count` int(0)                                                        NULL DEFAULT NULL COMMENT '视频被点赞数量',
+    `comment_count`   int(0)                                                        NULL DEFAULT NULL COMMENT '视频评论数量',
+    `create_time`     timestamp(0)                                                  NULL DEFAULT NULL COMMENT '视频的发布时间',
+    `delete_time`     timestamp(0)                                                  NULL DEFAULT NULL COMMENT '视频删除时间',
+    `title`           varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '视频标题',
+    PRIMARY KEY (`video_id`) USING BTREE,
+    INDEX `author_id` (`author_id`) USING BTREE,
+    CONSTRAINT `video_ibfk_1` FOREIGN KEY (`author_id`) REFERENCES `user` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE = InnoDB
+  CHARACTER SET = utf8mb4
+  COLLATE = utf8mb4_0900_ai_ci
+  ROW_FORMAT = Dynamic;
 
-/*Data for the table `user` */
+SET FOREIGN_KEY_CHECKS = 1;
 
-insert  into `user`(`id`,`name`,`password`,`follow_count`,`follower_count`) values (1,'3070364701','80b777ceae80d2ebcbaef0799bc0becf',0,0),(2,'3070364702','80b777ceae80d2ebcbaef0799bc0becf',0,0);
+-- ----------------------------
+-- Table structure for comment
+-- ----------------------------
+DROP TABLE IF EXISTS `comment`;
+CREATE TABLE `comment`
+(
+    `comment_id`   bigint(0)                                                     NOT NULL COMMENT '评论id',
+    `user_id`      bigint(0)                                                     NOT NULL COMMENT '评论者id',
+    `video_id`     bigint(0)                                                     NOT NULL COMMENT '被评论视频id',
+    `commentText`  varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL     DEFAULT NULL COMMENT '评论内容',
+    `create_time`  timestamp(0)                                                  NOT NULL DEFAULT CURRENT_TIMESTAMP(0) COMMENT '评论时间',
+    `delete_time`  timestamp(0)                                                  NULL     DEFAULT NULL COMMENT '删除评论时间',
+    `logic_delete` int(0)                                                        NOT NULL DEFAULT 1 COMMENT '逻辑删除，1-为未删除，0为删除',
+    PRIMARY KEY (`comment_id`, `create_time`) USING BTREE,
+    INDEX `user_id` (`user_id`) USING BTREE,
+    INDEX `video_id` (`video_id`) USING BTREE,
+    CONSTRAINT `comment_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT `comment_ibfk_2` FOREIGN KEY (`video_id`) REFERENCES `video` (`video_id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE = InnoDB
+  CHARACTER SET = utf8mb4
+  COLLATE = utf8mb4_0900_ai_ci
+  ROW_FORMAT = Dynamic;
 
+-- ----------------------------
+-- Table structure for favourite
+-- ----------------------------
+DROP TABLE IF EXISTS `favourite`;
+CREATE TABLE `favourite`
+(
+    `favourite_id` bigint(0) NOT NULL COMMENT '点赞关系id',
+    `user_id`      bigint(0) NOT NULL COMMENT '用户id',
+    `video_id`     bigint(0) NOT NULL COMMENT '视频id',
+    PRIMARY KEY (`favourite_id`, `user_id`, `video_id`) USING BTREE,
+    INDEX `user_id` (`user_id`) USING BTREE,
+    INDEX `video_id` (`video_id`) USING BTREE,
+    CONSTRAINT `favourite_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT `favourite_ibfk_2` FOREIGN KEY (`video_id`) REFERENCES `video` (`video_id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE = InnoDB
+  CHARACTER SET = utf8mb4
+  COLLATE = utf8mb4_0900_ai_ci
+  ROW_FORMAT = Dynamic;
 
-
-
-CREATE TABLE `video` (
-                         `id` int NOT NULL AUTO_INCREMENT,
-                         `author_id` int NOT NULL,
-                         `play_url` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
-                         `cover_url` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
-                         `favourite_count` bigint DEFAULT NULL,
-                         `comment_count` bigint DEFAULT NULL,
-                         `create_time` varchar(20) DEFAULT NULL,
-                         `title` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
-                         PRIMARY KEY (`id`) USING BTREE,
-                         UNIQUE KEY `Video_id_uindex` (`id`) USING BTREE,
-                         KEY `Video_user_id_fk` (`author_id`) USING BTREE,
-                         CONSTRAINT `Video_user_id_fk` FOREIGN KEY (`author_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb3 ROW_FORMAT=DYNAMIC COMMENT='视频信息表';
-
-/*Data for the table `video` */
-
-/*Table structure for table `comment` */
-
-
-
-CREATE TABLE `comment` (
-  `comment_id` int NOT NULL AUTO_INCREMENT,
-  `user_id` int NOT NULL,
-  `video_id` int NOT NULL,
-  `comment_text` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
-  `comment_data` varchar(20) DEFAULT NULL,
-  PRIMARY KEY (`comment_id`) USING BTREE,
-  KEY `comment_user_id_fk` (`user_id`) USING BTREE,
-  KEY `comment_video_id_fk` (`video_id`) USING BTREE,
-  CONSTRAINT `comment_user_id_fk` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `comment_video_id_fk` FOREIGN KEY (`video_id`) REFERENCES `video` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 ROW_FORMAT=DYNAMIC COMMENT='用户评论表';
-
-/*Data for the table `comment` */
-
-/*Table structure for table `favourite` */
-
-
-
-CREATE TABLE `favourite` (
-  `user_id` int NOT NULL,
-  `video_id` int NOT NULL,
-  PRIMARY KEY (`user_id`,`video_id`) USING BTREE,
-  KEY `favourite_video_id_fk` (`video_id`) USING BTREE,
-  CONSTRAINT `favourite_user_id_fk` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `favourite_video_id_fk` FOREIGN KEY (`video_id`) REFERENCES `video` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 ROW_FORMAT=DYNAMIC COMMENT='用户点赞表';
-
-/*Data for the table `favourite` */
-
-/*Table structure for table `relation` */
-
-
-
-CREATE TABLE `relation` (
-  `author_id` int NOT NULL,
-  `favourite_id` int NOT NULL,
-  UNIQUE KEY `relation_pk` (`author_id`,`favourite_id`) USING BTREE,
-  KEY `relation_favourite_id_index` (`favourite_id`) USING BTREE,
-  CONSTRAINT `relation_user_id_fk` FOREIGN KEY (`author_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `relation_user_id_fk_2` FOREIGN KEY (`favourite_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 ROW_FORMAT=DYNAMIC COMMENT='粉丝表';
-
-/*Data for the table `relation` */
-
-/*Table structure for table `user` */
-
-/*Table structure for table `video` */
-
-
-insert  into `video`(`id`,`author_id`,`play_url`,`cover_url`,`favourite_count`,`comment_count`,`create_time`,`title`) values (5,2,'E:/IDEAproject/douyin/src/main/resources/video/2/e205c604-70e0-4187-9270-ddfaf76a534e.mp4','E:/IDEAproject/douyin/src/main/resources/picture/2/e205c604-70e0-4187-9270-ddfaf76a534e.jpg',0,0,'1667218556828','1'),(6,2,'E:/IDEAproject/douyin/src/main/resources/video/2/93aa41a6-49e1-477f-8f52-7101f4fadf8d.mp4','E:/IDEAproject/douyin/src/main/resources/picture/2/93aa41a6-49e1-477f-8f52-7101f4fadf8d.jpg',0,0,'1667218569086','1'),(7,2,'E:/IDEAproject/douyin/src/main/resources\\video\\2\\d284cb47-b89e-4549-8d91-db5c4bef336e.mp4','E:/IDEAproject/douyin/src/main/resources\\picture\\2\\d284cb47-b89e-4549-8d91-db5c4bef336e.jpg',0,0,'1667223856212','1'),(8,2,'E:/IDEAproject/douyin/src/main/resources\\video\\2\\2d8008a9-cdf8-4948-bd7b-1aa03d791de0.mp4','E:/IDEAproject/douyin/src/main/resources\\picture\\2\\2d8008a9-cdf8-4948-bd7b-1aa03d791de0',0,0,'1667223922493','q'),(9,2,'E:/IDEAproject/douyin/src/main/resources\\video\\2\\21871b66-fbe6-4594-9ce1-e19efb809442.mp4','E:/IDEAproject/douyin/src/main/resources\\picture\\2\\21871b66-fbe6-4594-9ce1-e19efb809442.jpg',0,0,'1667224281359','q'),(10,2,'E:/IDEAproject/douyin/src/main/resources\\video\\2\\523c7142-deb8-4cf5-bf24-3be1d10b8a64.mp4','E:/IDEAproject/douyin/src/main/resources\\picture\\2\\523c7142-deb8-4cf5-bf24-3be1d10b8a64.jpg',0,0,'1667224399047','q');
-
-/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
-/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
-/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+-- ----------------------------
+-- Table structure for relation
+-- ----------------------------
+DROP TABLE IF EXISTS `relation`;
+CREATE TABLE `relation`
+(
+    `relation_id`  bigint(0) NOT NULL COMMENT '关注关系id唯一标识符',
+    `author_id`    bigint(0) NOT NULL COMMENT '被关注用户id/作者id',
+    `favourite_id` bigint(0) NOT NULL COMMENT '粉丝id',
+    PRIMARY KEY (`relation_id`, `author_id`, `favourite_id`) USING BTREE,
+    INDEX `author_id` (`author_id`) USING BTREE,
+    INDEX `favourite_id` (`favourite_id`) USING BTREE,
+    CONSTRAINT `relation_ibfk_1` FOREIGN KEY (`author_id`) REFERENCES `user` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT `relation_ibfk_2` FOREIGN KEY (`favourite_id`) REFERENCES `user` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE = InnoDB
+  CHARACTER SET = utf8mb4
+  COLLATE = utf8mb4_0900_ai_ci
+  ROW_FORMAT = Dynamic;
