@@ -34,7 +34,7 @@ public class UserController {
     public JSON getUserInformation(@RequestParam("user_id") String userId,
                                    @RequestParam("token") String token) {
         //校验token
-        if (!JwtHelper.isExpiration(token)) {
+        if (JwtHelper.isExpiration(token)) {
             return CreateJson.createJson(200, 1, "用户token过期，请重新登陆");
         }
         //查询数据
@@ -56,7 +56,7 @@ public class UserController {
             return CreateJson.createJson(400, 1, "用户密码错误");
         } else {
             JSONObject jsonObject = CreateJson.createJson(200, 0, "登陆成功");
-            jsonObject.put("user_id", u.getUserId().intValue());
+            jsonObject.put("user_id", u.getUserId());
             jsonObject.put("token", JwtHelper.createToken(u.getUserId()));
             log.info("jsonObject:{}", jsonObject);
             return jsonObject;

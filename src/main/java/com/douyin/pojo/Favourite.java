@@ -16,9 +16,8 @@ import lombok.experimental.Accessors;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Favourite {
-    @TableId("id")
+    @TableId("favourite_id")
     private Long id;
     private Long userId;
-    private String videoId;
-    private Integer videoType;
+    private Long videoId;
 }

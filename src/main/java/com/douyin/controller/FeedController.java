@@ -45,7 +45,7 @@ public class FeedController {
     public JSON videoFeed(HttpServletResponse httpResponse,
                           @RequestParam("latest_time") String latestTime,
                           @RequestParam(value = "token", required = false) String token) {
-        if (!JwtHelper.isExpiration(token)) {
+        if (JwtHelper.isExpiration(token)) {
             return CreateJson.createJson(200, 1, "用户token过期，请重新登陆");
         }
 
@@ -68,7 +68,7 @@ public class FeedController {
             jsonObject = CreateJson.createJson(400, 1, "当前无视频");
             return jsonObject;
         }
-        long createTime = list.get(list.size() - 1).getCreateTime();
+        long create = System.currentTimeMillis();
         VideoModel[] videoList = new VideoModel[list.size() + 1];
         UserModel user = new UserModel(1L, "Te1stUser", 0, 0, false);
         UserModel user2 = new UserModel(1L, "Te2stUser", 0, 0, false);
@@ -85,7 +85,7 @@ public class FeedController {
         httpResponse.setStatus(200);
         jsonObject = CreateJson.createJson(200, 0, "视频发布成");
         jsonObject.put("video_list", videoList);
-        jsonObject.put("next_time", createTime);
+        jsonObject.put("next_time", create);
         return jsonObject;
     }
 }

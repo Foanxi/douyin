@@ -5,7 +5,7 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/douyin?serverTimezone=UTC
     username: root
-    password: root
+    password: 87906413
   servlet:
     multipart:
       max-file-size: 100MB
@@ -15,8 +15,8 @@ spring:
 server:
   port: 8080
 douyin:
-  path: D:\code\douyin\src\main\resources\public
-  ip_path: http://192.168.220.69:8080/
+  path: E:\IDEAproject\douyin1\src\main\resources
+  ip_path: http://192.168.43.1:8080/
 mybatis-plus:
   global-config:
     db-config:

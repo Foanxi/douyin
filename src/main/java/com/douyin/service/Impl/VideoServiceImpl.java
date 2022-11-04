@@ -60,7 +60,7 @@ public class VideoServiceImpl extends ServiceImpl<VideoMapper, Video> implements
             log.info("视频取消点赞……");
         }
         UpdateWrapper<Video> updateWrapper = new UpdateWrapper<>();
-        updateWrapper.eq("id", videoId).eq("author_id", userId);
+        updateWrapper.eq("video_id", videoId).eq("author_id", userId);
         videoMapper.update(video, updateWrapper);
     }
 

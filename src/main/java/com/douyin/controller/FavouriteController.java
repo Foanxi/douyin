@@ -36,7 +36,7 @@ public class FavouriteController {
     @GetMapping("/list")
     public JSON getFavouriteList(@RequestParam("token") String token,
                                  @RequestParam("user_id") String userId) {
-        if (!JwtHelper.isExpiration(token)) {
+        if (JwtHelper.isExpiration(token)) {
             return CreateJson.createJson(200, 1, "用户token过期，请重新登陆");
         }
         List<VideoModel> list = favouriteService.getVideoByUser(userId);
@@ -52,8 +52,7 @@ public class FavouriteController {
                                       @RequestParam("action_type") String actionType) {
         log.info("传递的数据为：{}，{}，{}", token, videoId, actionType);
 //        校验token
-        boolean expiration = JwtHelper.isExpiration(token);
-        if (expiration) {
+        if (JwtHelper.isExpiration(token)) {
             JSONObject jsonObject = CreateJson.createJson(404, 1, "token失效");
             jsonObject.put("user", null);
             return jsonObject;
@@ -63,10 +62,10 @@ public class FavouriteController {
         //查询点赞表中是否存在该记录
         Favourite favourite = favouriteService.isExistFavourite(userId, Long.parseLong(videoId));
         log.info("点赞列表中是否存在该记录：{}", favourite);
-//      用户如果尚未点赞，则数据库中添加新的数据，并返回点赞成功。
+//      用户如果尚未点赞，则数据库点赞表中添加新的数据，并返回点赞成功。
         if (favourite == null) {
             log.info("用户尚未点赞");
-            Favourite create = new Favourite(0L, userId, videoId, 1);
+            Favourite create = new Favourite(0L, userId, Long.parseLong(videoId));
             favouriteService.save(create);
             JSONObject jsonObject = CreateJson.createJson(200, 0, "点赞成功");
             log.info("返回的数据体为：{}", jsonObject);
@@ -74,6 +73,8 @@ public class FavouriteController {
         }
 //        修改点赞表中记录
         boolean update = favouriteService.updateFavourite(actionType, favourite, userId, videoId);
+//        修改视频表中的记录
+        videoService.updateVideoFavourite(Long.parseLong(videoId), userId, actionType);
         if (!update) {
             log.info("修改用户点赞失败");
             return CreateJson.createJson(500, 1, "点赞失败");

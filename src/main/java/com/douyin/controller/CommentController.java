@@ -28,7 +28,7 @@ public class CommentController {
                                     @RequestParam("comment_text") String commentText,
                                     @RequestParam("comment_id") String commentId) {
         JSONObject json;
-        if (!JwtHelper.isExpiration(token)) {
+        if (JwtHelper.isExpiration(token)) {
             return CreateJson.createJson(200, 1, "用户token过期，请重新登陆");
         }
 
@@ -54,7 +54,7 @@ public class CommentController {
     public JSONObject getCommentList(@RequestParam("token") String token,
                                      @RequestParam("video_id") String videoId) {
         JSONObject json;
-        if (!JwtHelper.isExpiration(token)) {
+        if (JwtHelper.isExpiration(token)) {
             json = CreateJson.createJson(200, 1, "用户token过期，请重新登陆");
         } else {
             List<CommentModel> commentList = commentService.getCommentList(videoId);

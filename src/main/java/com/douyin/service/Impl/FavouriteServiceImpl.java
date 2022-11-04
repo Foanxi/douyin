@@ -51,10 +51,7 @@ public class FavouriteServiceImpl extends ServiceImpl<FavouriteMapper, Favourite
         QueryWrapper<Favourite> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("user_id", userId);
         queryWrapper.eq("video_id", videoId);
-        favourite.setVideoType(Integer.parseInt(actionType));
-        boolean update = super.update(favourite, queryWrapper);
-        videoService.updateVideoFavourite(Long.parseLong(videoId), userId, actionType);
-        return update;
+        return super.update(favourite, queryWrapper);
     }
 
     /**
@@ -67,7 +64,7 @@ public class FavouriteServiceImpl extends ServiceImpl<FavouriteMapper, Favourite
     @Override
     public List<Favourite> getVideoId(Long id) {
         QueryWrapper<Favourite> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("user_id", id);
+        queryWrapper.eq("favourite_id", id);
         return baseMapper.selectList(queryWrapper);
     }
 
