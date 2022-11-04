@@ -84,7 +84,7 @@ public class FavouriteServiceImpl extends ServiceImpl<FavouriteMapper, Favourite
         List<Favourite> videoIdList = getVideoId(id);
         List<Video> videoList = null;
         assert videoList != null;
-        int size = videoList.size();
+        int size = videoIdList.size();
         if (size > 0) {
             for (Favourite favourite : videoIdList) {
                 List<Video> video = videoService.getVideo(favourite.getUserId());
