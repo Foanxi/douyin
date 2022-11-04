@@ -1,5 +1,6 @@
 package com.douyin.pojo;
 
+import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -12,6 +13,9 @@ import lombok.experimental.Accessors;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Favourite {
-    private String userId;
+    @TableId("id")
+    private Long id;
+    private Long userId;
     private String videoId;
+    private Integer videoType;
 }

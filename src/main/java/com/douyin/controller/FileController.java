@@ -28,14 +28,16 @@ public class FileController {
 
     @Autowired
     private NonStaticResourceHttpRequestConfig nonStaticResourceHttpRequestConfig;
-
     @GetMapping("/{type}/{userId}/{fileName}")
     public void getFile(HttpServletRequest httpServletRequest,
-                        HttpServletResponse httpServletResponse,
-                        @PathVariable("type") String type,
-                        @PathVariable("userId") String userId,
-                        @PathVariable("fileName") String fileName) throws IOException, ServletException {
-        String path = resourcePath + "/" + type + "/" + userId + "/" + fileName;
+                           HttpServletResponse httpServletResponse,
+                           @PathVariable("type") String type,
+                           @PathVariable("userId") String userId,
+                           @PathVariable("fileName") String fileName) throws IOException, ServletException {
+        if (!("video".equals(type)||"picture".equals(type))){
+            return;
+        }
+        String path = resourcePath + "public/" + type + "/" + userId + "/" + fileName;
         File file = new File(path);
         Path filePath = Paths.get(path);
         String mimeType = Files.probeContentType(filePath);

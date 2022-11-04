@@ -15,7 +15,8 @@ public class Interceptor implements HandlerInterceptor {
      */
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
-        log.info(request.getRequestURL().toString());
+        log.info("请求URL:{}",request.getRequestURL().toString());
+        log.info(request.getQueryString());
         return true;
     }
 }

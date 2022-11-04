@@ -31,4 +31,22 @@ public class FavouriteServiceImpl extends ServiceImpl<FavouriteMapper, Favourite
         queryWrapper.eq("video_id", id);
         return baseMapper.selectOne(queryWrapper) != null;
     }
+    public Favourite isExistFavourite(Long userId,Long videoId){
+        QueryWrapper<Favourite> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("user_id",userId);
+        queryWrapper.eq("video_id",videoId);
+        Favourite favourite = super.getOne(queryWrapper);
+        log.info("favourite:{}",favourite);
+        return favourite;
+    }
+    public boolean updateFavourite(String actionType, Favourite favourite,Long userId,String videoId) {
+        //        说明用户存在，此时是修改用户的点赞数据
+        QueryWrapper<Favourite> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("user_id",userId);
+        queryWrapper.eq("video_id",videoId);
+        favourite.setVideoType(Integer.parseInt(actionType));
+        boolean update = super.update(favourite, queryWrapper);
+        videoService.updateVideoFavourite(Long.parseLong(videoId),userId,actionType);
+        return update;
+    }
 }

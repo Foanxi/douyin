@@ -9,6 +9,6 @@ import java.util.List;
 
 public interface VideoService extends IService<Video> {
     List<Video> getVideo(String userId);
-
     VideoModel[] getVideoUser(String userId);
+    void updateVideoFavourite(Long videoId, Long userId,String actionType);
 }

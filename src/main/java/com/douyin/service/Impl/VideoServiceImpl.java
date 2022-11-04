@@ -1,6 +1,7 @@
 package com.douyin.service.Impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.douyin.mapper.VideoMapper;
 import com.douyin.model.UserModel;
@@ -11,12 +12,13 @@ import com.douyin.service.FavouriteService;
 import com.douyin.service.RelationService;
 import com.douyin.service.UserService;
 import com.douyin.service.VideoService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-
+@Slf4j
 @Service
 @Transactional(rollbackFor = Exception.class)
 public class VideoServiceImpl extends ServiceImpl<VideoMapper, Video> implements VideoService {
@@ -28,7 +30,8 @@ public class VideoServiceImpl extends ServiceImpl<VideoMapper, Video> implements
     private FavouriteService favouriteService;
     @Autowired
     private RelationService relationService;
-
+    @Autowired
+    private VideoMapper videoMapper;
 
     @Override
     public List<Video> getVideo(String userId) {
@@ -69,4 +72,25 @@ public class VideoServiceImpl extends ServiceImpl<VideoMapper, Video> implements
         }
         return null;
     }
+    public void updateVideoFavourite(Long videoId, Long userId,String actionType) {
+        Video video = new Video();
+//        获取当前视频的点赞数
+        QueryWrapper<Video> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("id",videoId).eq("author_id",userId);
+        Video video1 = videoMapper.selectOne(queryWrapper);
+        log.info("video1:{}",video1);
+        Integer favouriteCount = video1.getFavouriteCount();
+//       判断当前的点击是点赞还是取消点赞
+        if("1".equals(actionType)){
+            video.setFavouriteCount(favouriteCount+1);
+            log.info("视频点赞……");
+        }else if("2".equals(actionType)&&favouriteCount!=0){
+            video.setFavouriteCount(favouriteCount-1);
+            log.info("视频取消点赞……");
+        }
+        UpdateWrapper<Video> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.eq("id",videoId).eq("author_id",userId);
+        videoMapper.update(video,updateWrapper);
+    }
+
 }
