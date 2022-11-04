@@ -29,7 +29,8 @@ public class User {
     private Timestamp updateTime;
     private Timestamp deleteTime;
 
-    public User(String name, String password, Integer followCount, Integer followerCount) {
+    public User(Long userId, String name, String password, Integer followCount, Integer followerCount) {
+        this.userId = userId;
         this.name = name;
         this.password = password;
         this.followCount = followCount;

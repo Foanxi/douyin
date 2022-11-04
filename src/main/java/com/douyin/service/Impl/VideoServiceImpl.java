@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+
 @Slf4j
 @Service
 @Transactional(rollbackFor = Exception.class)
@@ -34,65 +35,68 @@ public class VideoServiceImpl extends ServiceImpl<VideoMapper, Video> implements
     private VideoMapper videoMapper;
 
     @Override
-    public List<Video> getVideo(String userId) {
+    public List<Video> getVideo(Long userId) {
         QueryWrapper<Video> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("author_id", userId);
         return list(queryWrapper);
     }
 
-    /**
-     * 发布列表
-     *
-     * @Param:
-     * @Return:
-     */
-    @Override
-    public VideoModel[] getVideoByUser(String userId) {
-        Long id = Long.parseLong(userId);
-        User user = userService.getById(id);
-        List<Video> videoList = videoService.getVideo(userId);
-        int size = videoList.size();
-        if (size > 0) {
-            VideoModel[] videoModel = new VideoModel[size];
-            for (int i = 0; i < size; i++) {
-                // TODO: 2022/11/3 优化减少查询次数
-                boolean isFavourite = favouriteService.isExistFavourite(id, videoList.get(i).getId()) != null;
-                boolean isFollow = relationService.getIsFollow(id, videoList.get(i).getAuthorId());
-                UserModel userModel = new UserModel(user.getUserId(), user.getName(), user.getFollowCount(), user.getFollowerCount(), isFollow);
-                videoModel[i] = new VideoModel(
-                        videoList.get(i).getId(),
-                        userModel,
-                        videoList.get(i).getPlayUrl(),
-                        videoList.get(i).getCoverUrl(),
-                        videoList.get(i).getFavouriteCount(),
-                        videoList.get(i).getCommentCount(),
-                        isFavourite,
-                        videoList.get(i).getTitle());
-            }
-            return videoModel;
-        }
-        return null;
-    }
 
-    public void updateVideoFavourite(Long videoId, Long userId,String actionType) {
+    @Override
+    public void updateVideoFavourite(Long videoId, Long userId, String actionType) {
         Video video = new Video();
 //        获取当前视频的点赞数
         QueryWrapper<Video> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("id",videoId).eq("author_id",userId);
+        queryWrapper.eq("id", videoId).eq("author_id", userId);
         Video video1 = videoMapper.selectOne(queryWrapper);
-        log.info("video1:{}",video1);
+        log.info("video1:{}", video1);
         Integer favouriteCount = video1.getFavouriteCount();
 //       判断当前的点击是点赞还是取消点赞
-        if("1".equals(actionType)){
-            video.setFavouriteCount(favouriteCount+1);
+        if ("1".equals(actionType)) {
+            video.setFavouriteCount(favouriteCount + 1);
             log.info("视频点赞……");
-        }else if("2".equals(actionType)&&favouriteCount!=0){
-            video.setFavouriteCount(favouriteCount-1);
+        } else if ("2".equals(actionType) && favouriteCount != 0) {
+            video.setFavouriteCount(favouriteCount - 1);
             log.info("视频取消点赞……");
         }
         UpdateWrapper<Video> updateWrapper = new UpdateWrapper<>();
-        updateWrapper.eq("id",videoId).eq("author_id",userId);
-        videoMapper.update(video,updateWrapper);
+        updateWrapper.eq("id", videoId).eq("author_id", userId);
+        videoMapper.update(video, updateWrapper);
+    }
+
+    /**
+     * 通过用户Id获取当前用户的发布列表
+     *
+     * @param userId
+     * @Param: Long userId 用户id
+     * @Return: List<VideoModel>
+     */
+    @Override
+    public List<VideoModel> getVideoById(Long userId) {
+        List<VideoModel> videoModelList = null;
+        List<Video> videoList = videoService.getVideo(userId);
+        int size = videoList.size();
+        if (size > 0) {
+//        得到userModel
+            User user = userService.getById(userId);
+            for (Video video : videoList) {
+                boolean isFavourite = favouriteService.isExistFavourite(userId, video.getId()) != null;
+                boolean isFollow = relationService.getIsFollow(userId, video.getAuthorId());
+                UserModel userModel = new UserModel(user.getUserId(), user.getName(), user.getFollowCount(), user.getFollowerCount(), isFollow);
+                assert videoModelList != null;
+                videoModelList.add(new VideoModel(
+                        video.getId(),
+                        userModel,
+                        video.getPlayUrl(),
+                        video.getCoverUrl(),
+                        video.getFavouriteCount(),
+                        video.getCommentCount(),
+                        isFavourite,
+                        video.getTitle()));
+            }
+            return videoModelList;
+        }
+        return null;
     }
 
 }

@@ -18,6 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -46,7 +47,7 @@ public class PublishController {
             JSONObject jsonObject = CreateJson.createJson(404, 1, "token失效");
             jsonObject.put("user", null);
         }
-        VideoModel[] list = videoService.getVideoByUser(userId);
+        List<VideoModel> list = videoService.getVideoById(Long.valueOf(userId));
         JSONObject jsonObject = CreateJson.createJson(200, 0, "视频列表展示成功");
         jsonObject.put("video_list", list);
         log.info("返回的数据体为:{}", jsonObject);

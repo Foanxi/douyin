@@ -12,6 +12,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 /**
  * @author hongxiaobin
  */
@@ -37,7 +39,7 @@ public class FavouriteController {
         if (!JwtHelper.isExpiration(token)) {
             return CreateJson.createJson(200, 1, "用户token过期，请重新登陆");
         }
-        VideoModel[] list = videoService.getVideoByUser(userId);
+        List<VideoModel> list = favouriteService.getVideoByUser(userId);
         JSONObject jsonObject = CreateJson.createJson(200, 0, "视频列表展示成功");
         jsonObject.put("video_list", list);
         log.info("返回的数据体为:{}", jsonObject);

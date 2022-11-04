@@ -7,6 +7,7 @@ import com.douyin.service.UserService;
 import com.douyin.util.CreateJson;
 import com.douyin.util.JwtHelper;
 import com.douyin.util.Md5;
+import com.douyin.util.SnowFlake;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.DigestUtils;
@@ -80,7 +81,7 @@ public class UserController {
         String md5password = DigestUtils.md5DigestAsHex(password.getBytes());
         log.info("用户加密后的密码为：{}", md5password);
 //        由于用户初始注册，并没有关注数和被关注数，因此都设置为0
-        user = new User(username, md5password, 0, 0);
+        user = new User(SnowFlake.nextId(), username, md5password, 0, 0);
         boolean save = userService.save(user);
         log.info("是否添加成功：{}", save);
         JSONObject jsonObject = CreateJson.createJson(200, 0, "添加成功");

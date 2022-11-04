@@ -17,15 +17,16 @@ public interface VideoService extends IService<Video> {
      * @param userId 用户id
      * @return 返回视频列表
      */
-    List<Video> getVideo(String userId);
+    List<Video> getVideo(Long userId);
 
-    /**
-     * 通过用户id获取该用户的视频列表
-     *
-     * @param userId 用户id
-     * @return 返回于该用户相关的所有视频列表
-     */
-    VideoModel[] getVideoByUser(String userId);
 
     void updateVideoFavourite(Long videoId, Long userId, String actionType);
+
+    /**
+     * 通过用户Id获取当前用户的发布列表
+     *
+     * @Param: Long userId 用户id
+     * @Return: List<VideoModel>
+     */
+    List<VideoModel> getVideoById(Long userId);
 }
