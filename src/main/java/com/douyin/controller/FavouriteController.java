@@ -2,8 +2,6 @@ package com.douyin.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.douyin.model.VideoModel;
 import com.douyin.pojo.Favourite;
 import com.douyin.service.FavouriteService;
@@ -40,48 +38,39 @@ public class FavouriteController {
         log.info("返回的数据体为:{}", jsonObject);
         return jsonObject;
     }
+
     @PostMapping("/action")
-    public JSONObject favouriteAction(@RequestParam("token")String token,
+    public JSONObject favouriteAction(@RequestParam("token") String token,
                                       @RequestParam("video_id") String videoId,
-                                      @RequestParam("action_type") String actionType){
-        log.info("传递的数据为：{}，{}，{}",token,videoId,actionType);
-        JSONObject jsonObject = new JSONObject();
+                                      @RequestParam("action_type") String actionType) {
+        log.info("传递的数据为：{}，{}，{}", token, videoId, actionType);
 //        校验token
         boolean expiration = JwtHelper.isExpiration(token);
         if (expiration) {
-            jsonObject.put("status_code", 404);
-            jsonObject.put("status_msg", "token失效");
+            JSONObject jsonObject = CreateJson.createJson(404, 1, "token失效");
             jsonObject.put("user", null);
             return jsonObject;
         }
         Long userId = JwtHelper.getUserId(token);
-        log.info("userId:{}",userId);
+        log.info("userId:{}", userId);
         //查询点赞表中是否存在该记录
         Favourite favourite = favouriteService.isExistFavourite(userId, Long.parseLong(videoId));
-        log.info("点赞列表中是否存在该记录：{}",favourite);
+        log.info("点赞列表中是否存在该记录：{}", favourite);
 //      用户如果尚未点赞，则数据库中添加新的数据，并返回点赞成功。
-        if (favourite == null){
+        if (favourite == null) {
             log.info("用户尚未点赞");
             Favourite create = new Favourite(0L, userId, videoId, 1);
             favouriteService.save(create);
-            jsonObject.put("http_status", 200);
-            jsonObject.put("status_code", 0);
-            jsonObject.put("status_msg", "点赞成功");
+            JSONObject jsonObject = CreateJson.createJson(200, 0, "点赞成功");
             log.info("返回的数据体为：{}", jsonObject);
             return jsonObject;
         }
 //        修改点赞表中记录
-        boolean update = favouriteService.updateFavourite(actionType, favourite,userId,videoId);
-        if (!update){
+        boolean update = favouriteService.updateFavourite(actionType, favourite, userId, videoId);
+        if (!update) {
             log.info("修改用户点赞失败");
-            jsonObject.put("http_status", 500);
-            jsonObject.put("status_code", 1);
-            jsonObject.put("status_msg", "点赞失败");
-            return jsonObject;
+            return CreateJson.createJson(500, 1, "点赞失败");
         }
-        jsonObject.put("http_status", 200);
-        jsonObject.put("status_code",0);
-        jsonObject.put("status_msg","取消点赞成功");
-        return jsonObject;
+        return CreateJson.createJson(200, 0, "取消点赞成功");
     }
 }

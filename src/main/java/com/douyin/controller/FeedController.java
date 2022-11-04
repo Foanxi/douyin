@@ -9,6 +9,7 @@ import com.douyin.pojo.Video;
 import com.douyin.service.CommentService;
 import com.douyin.service.FavouriteService;
 import com.douyin.service.VideoService;
+import com.douyin.util.CreateJson;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -40,7 +41,6 @@ public class FeedController {
     public JSON videoFeed(HttpServletResponse httpResponse,
                           @RequestParam("latest_time") String latestTime,
                           @RequestParam("token") String token) {
-        JSONObject jsonObject = new JSONObject();
         log.info("latestTime :{}", latestTime);
         QueryWrapper<Video> queryWrapper = new QueryWrapper<>();
         List<Video> list;
@@ -57,9 +57,7 @@ public class FeedController {
             video.setCoverUrl(ipPath + video.getCoverUrl());
         }
         if (list.size() - 1 == -1) {
-            jsonObject.put("status_code", 1);
-            jsonObject.put("status_msg", "当前无视频");
-            return jsonObject;
+            return CreateJson.createJson(404, 1, "当前无视频");
         }
         long createTime = list.get(list.size() - 1).getCreateTime();
         VideoModel[] videoList = new VideoModel[list.size() + 1];
@@ -77,9 +75,7 @@ public class FeedController {
             videoList[i + 1] = videoModel;
         }
         httpResponse.setStatus(200);
-
-        jsonObject.put("http_status", 200);
-        jsonObject.put("status_code", 0);
+        JSONObject jsonObject = CreateJson.createJson(200, 0, "");
         jsonObject.put("video_list", videoList);
         jsonObject.put("next_time", createTime);
         System.out.println(jsonObject);

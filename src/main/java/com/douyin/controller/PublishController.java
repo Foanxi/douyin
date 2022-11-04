@@ -55,13 +55,11 @@ public class PublishController {
     @PostMapping("/action")
     public JSON uploadVideo(HttpServletRequest request, MultipartFile data, @RequestParam("title") String title,
                             @RequestParam("token") String token) {
-        JSONObject jsonObject = new JSONObject();
         log.info("传输视频的用户的token是：{}", token);
 //        校验token
         boolean expiration = JwtHelper.isExpiration(token);
         if (expiration) {
-            jsonObject.put("status_code", 400);
-            jsonObject.put("status_msg", "用户验证已过期");
+            JSONObject jsonObject = CreateJson.createJson(400, 1, "用户验证已过期");
             return jsonObject;
         }
 //        解析token得到用户ID
@@ -107,9 +105,7 @@ public class PublishController {
         pictureName = "/picture/" + userId + "/" + uuid + ".jpg";
         Video video = new Video(0L, userId, videoPath, pictureName, 0, 0, now, title);
         videoService.save(video);
-        jsonObject.put("http_status", 200);
-        jsonObject.put("status_code", 0);
-        jsonObject.put("status_msg", "视频上传成功");
+        JSONObject jsonObject = CreateJson.createJson(200, 0, "视频上传成功");
         return jsonObject;
     }
 }
