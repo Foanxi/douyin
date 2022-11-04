@@ -3,6 +3,17 @@
     {
       "name": "douyin.ip_path",
       "type": "java.lang.String",
-      "description": "Description for douyin.ip_path."
-  }
-] }
+      "description": "抖音当前服务器的Ip地址."
+    },
+    {
+      "name": "snowflake.machine-id",
+      "type": "java.lang.String",
+      "description": "雪花算法的机器标识号."
+    },
+    {
+      "name": "snowflake.data-center-id",
+      "type": "java.lang.String",
+      "description": "雪花算法的数据中心标识号."
+    }
+  ]
+}

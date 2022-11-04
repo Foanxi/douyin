@@ -9,6 +9,8 @@ import com.douyin.pojo.Video;
 import com.douyin.service.CommentService;
 import com.douyin.service.FavouriteService;
 import com.douyin.service.VideoService;
+import com.douyin.util.CreateJson;
+import com.douyin.util.JwtHelper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,6 +22,9 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
+/**
+ * @author foanxi
+ */
 @RestController
 @Slf4j
 @RequestMapping("/douyin/feed")
@@ -39,19 +44,22 @@ public class FeedController {
     @GetMapping("")
     public JSON videoFeed(HttpServletResponse httpResponse,
                           @RequestParam("latest_time") String latestTime,
-                          @RequestParam("token") String token) {
+                          @RequestParam(value = "token", required = false) String token) {
+        if (!JwtHelper.isExpiration(token)) {
+            return CreateJson.createJson(200, 1, "用户token过期，请重新登陆");
+        }
+
         JSONObject jsonObject = new JSONObject();
         log.info("latestTime :{}", latestTime);
         QueryWrapper<Video> queryWrapper = new QueryWrapper<>();
         List<Video> list;
-        if ("0".equals(latestTime)) {
+        if ("0".equals(latestTime) || latestTime == null) {
             queryWrapper.last("limit 20");
             list = videoService.list(queryWrapper);
         } else {
             queryWrapper.last("limit 20");
             list = videoService.list(queryWrapper);
         }
-        System.out.println(list.toString());
         for (Video video : list) {
             video.setPlayUrl(ipPath + video.getPlayUrl());
             video.setCoverUrl(ipPath + video.getCoverUrl());
@@ -67,13 +75,13 @@ public class FeedController {
         UserModel user2 = new UserModel(1L, "Te2stUser", 0, 0, false);
         videoList[0] = new VideoModel(1, user,
                 "https://www.w3schools.com/html/movie.mp4",
-                "https://cdn.pixabay.com/photo/2016/03/27/18/10/bear-1283347_1280.jpg", 0, 0, false,"");
+                "https://cdn.pixabay.com/photo/2016/03/27/18/10/bear-1283347_1280.jpg", 0, 0, false, "");
         for (int i = 0; i < list.size(); i++) {
             Video video = list.get(i);
 
-            VideoModel videoModel = new VideoModel(video.getId(), user2, video.getPlayUrl(), video.getCoverUrl(), 0, 0, false,"");
-            videoModel.setPlay_url(list.get(i).getPlayUrl());
-            videoModel.setCover_url(list.get(i).getCoverUrl());
+            VideoModel videoModel = new VideoModel(video.getId(), user2, video.getPlayUrl(), video.getCoverUrl(), 0, 0, false, "");
+            videoModel.setPlayUrl(list.get(i).getPlayUrl());
+            videoModel.setCoverUrl(list.get(i).getCoverUrl());
             videoList[i + 1] = videoModel;
         }
         httpResponse.setStatus(200);
@@ -84,6 +92,5 @@ public class FeedController {
         jsonObject.put("next_time", createTime);
         System.out.println(jsonObject);
         return jsonObject;
-
     }
 }

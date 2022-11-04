@@ -45,7 +45,7 @@ public class PublishController {
         if (expiration) {
             return CreateJson.createJson(404, 1, "token失效", "user", null);
         }*/
-        VideoModel[] list = videoService.getVideoUser(userId);
+        VideoModel[] list = videoService.getVideoByUser(userId);
         JSONObject jsonObject = CreateJson.createJson(200, 0, "视频列表展示成功");
         jsonObject.put("video_list", list);
         log.info("返回的数据体为:{}", jsonObject);
@@ -65,7 +65,7 @@ public class PublishController {
             return jsonObject;
         }
 //        解析token得到用户ID
-        String userId = JwtHelper.getUserId(token).toString();
+        Long userId = JwtHelper.getUserId(token);
         log.info("解析出的用户ID是：{}", userId);
 
 //        本地视频的地址

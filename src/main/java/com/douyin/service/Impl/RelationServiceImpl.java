@@ -12,10 +12,10 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(rollbackFor = Exception.class)
 public class RelationServiceImpl extends ServiceImpl<RelationMapper, Relation> implements RelationService {
     @Override
-    public boolean getIsFollow(String authorId, String favouriteId) {
+    public boolean getIsFollow(Long authorId, Long favouriteId) {
         QueryWrapper<Relation> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("author_id", authorId);
-        queryWrapper.eq("favourote_id", favouriteId);
+        queryWrapper.eq("favourite_id", favouriteId);
         return baseMapper.selectOne(queryWrapper) != null;
     }
 }

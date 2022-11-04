@@ -13,6 +13,9 @@ import org.springframework.util.DigestUtils;
 import org.springframework.web.bind.annotation.*;
 
 
+/**
+ * @author foanxi, hongxiaobin
+ */
 @RestController
 @RequestMapping("/douyin/user")
 @Slf4j
@@ -30,10 +33,9 @@ public class UserController {
     public JSON getUserInformation(@RequestParam("user_id") String userId,
                                    @RequestParam("token") String token) {
         //校验token
-/*        boolean expiration = JwtHelper.isExpiration(token);
-        if (expiration) {
-            return CreateJson.createJson(404,1,"token失效","user",null);
-        }*/
+        if (!JwtHelper.isExpiration(token)) {
+            return CreateJson.createJson(200, 1, "用户token过期，请重新登陆");
+        }
         //查询数据
         User byId = userService.getUserById(userId);
         JSONObject jsonObject = CreateJson.createJson(200, 0, "查询成功");

@@ -6,6 +6,9 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
+/**
+ * @author hongxiaobin
+ */
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)

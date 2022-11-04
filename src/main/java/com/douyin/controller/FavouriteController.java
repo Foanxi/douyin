@@ -2,8 +2,6 @@ package com.douyin.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.douyin.model.VideoModel;
 import com.douyin.pojo.Favourite;
 import com.douyin.service.FavouriteService;
@@ -14,6 +12,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+/**
+ * @author hongxiaobin
+ */
 @Slf4j
 @RestController
 @RequestMapping("/douyin/favorite")
@@ -24,22 +25,25 @@ public class FavouriteController {
     private VideoService videoService;
 
     /**
-     * 点赞操作
-     * param token
-     * param videoId
-     * param actionType
-     * return
+     * 获取用户的点赞视频列表
+     *
+     * @param token  用户token
+     * @param userId 用户id
+     * @return 返回用户点赞过的视频
      */
     @GetMapping("/list")
     public JSON getFavouriteList(@RequestParam("token") String token,
                                  @RequestParam("user_id") String userId) {
-        boolean expiration = JwtHelper.isExpiration(token);
-        VideoModel[] list = videoService.getVideoUser(userId);
+        if (!JwtHelper.isExpiration(token)) {
+            return CreateJson.createJson(200, 1, "用户token过期，请重新登陆");
+        }
+        VideoModel[] list = videoService.getVideoByUser(userId);
         JSONObject jsonObject = CreateJson.createJson(200, 0, "视频列表展示成功");
         jsonObject.put("video_list", list);
         log.info("返回的数据体为:{}", jsonObject);
         return jsonObject;
     }
+
     @PostMapping("/action")
     public JSONObject favouriteAction(@RequestParam("token")String token,
                                       @RequestParam("video_id") String videoId,

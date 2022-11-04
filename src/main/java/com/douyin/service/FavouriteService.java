@@ -1,13 +1,20 @@
 package com.douyin.service;
 
-import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.douyin.pojo.Favourite;
 
+/**
+ * @author zhuanghaoxin, hongxiaobin
+ */
 public interface FavouriteService extends IService<Favourite> {
-    boolean getIsFavourite(String userId, Long id);
-//    JSON getFavouriteListService(String userId);
-    Favourite isExistFavourite(Long userId,Long videoId);
-//    修改点赞记录，返回boolean值
-    boolean updateFavourite(String actionType,Favourite favourite,Long userId,String videoId);
+    /**
+     * 获取是否存在点赞关系
+     *
+     * @param userId  用户id
+     * @param videoId 视频id
+     * @return 返回是否存在点赞关系
+     */
+    Favourite isExistFavourite(Long userId, Long videoId);
+
+    boolean updateFavourite(String actionType, Favourite favourite, Long userId, String videoId);
 }
