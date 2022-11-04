@@ -18,6 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.IOException;
+import java.util.Objects;
 import java.util.UUID;
 
 @RestController
@@ -59,11 +60,10 @@ public class PublishController {
 //        校验token
         boolean expiration = JwtHelper.isExpiration(token);
         if (expiration) {
-            JSONObject jsonObject = CreateJson.createJson(400, 1, "用户验证已过期");
-            return jsonObject;
+            return CreateJson.createJson(400, 1, "用户验证已过期");
         }
 //        解析token得到用户ID
-        String userId = JwtHelper.getUserId(token).toString();
+        String userId = Objects.requireNonNull(JwtHelper.getUserId(token)).toString();
         log.info("解析出的用户ID是：{}", userId);
 
 //        本地视频的地址
@@ -105,7 +105,6 @@ public class PublishController {
         pictureName = "/picture/" + userId + "/" + uuid + ".jpg";
         Video video = new Video(0L, userId, videoPath, pictureName, 0, 0, now, title);
         videoService.save(video);
-        JSONObject jsonObject = CreateJson.createJson(200, 0, "视频上传成功");
-        return jsonObject;
+        return CreateJson.createJson(200, 0, "视频上传成功");
     }
 }

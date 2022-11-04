@@ -56,8 +56,8 @@ public class VideoServiceImpl extends ServiceImpl<VideoMapper, Video> implements
             for (int i = 0; i < size; i++) {
                 // TODO: 2022/11/3 优化减少查询次数
                 boolean isFavourite = favouriteService.getIsFavourite(userId, videoList.get(i).getId());
-                boolean isFolllow = relationService.getIsFollow(userId, videoList.get(i).getAuthorId());
-                UserModel userModel = new UserModel(user.getId(), user.getName(), user.getFollowCount(), user.getFollowerCount(), isFolllow);
+                boolean isFollow = relationService.getIsFollow(userId, videoList.get(i).getAuthorId());
+                UserModel userModel = new UserModel(user.getId(), user.getName(), user.getFollowCount(), user.getFollowerCount(), isFollow);
                 videoModel[i] = new VideoModel(
                         videoList.get(i).getId(),
                         userModel,
@@ -72,17 +72,19 @@ public class VideoServiceImpl extends ServiceImpl<VideoMapper, Video> implements
         }
         return null;
     }
-    public void updateVideoFavourite(Long videoId, Long userId,String actionType) {
+
+    @Override
+    public void updateVideoFavourite(Long videoId, Long userId, String actionType) {
         Video video = new Video();
 //        获取当前视频的点赞数
         QueryWrapper<Video> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("id",videoId).eq("author_id",userId);
+        queryWrapper.eq("id", videoId).eq("author_id", userId);
         Video video1 = videoMapper.selectOne(queryWrapper);
-        log.info("video1:{}",video1);
+        log.info("video1:{}", video1);
         Integer favouriteCount = video1.getFavouriteCount();
 //       判断当前的点击是点赞还是取消点赞
-        if("1".equals(actionType)){
-            video.setFavouriteCount(favouriteCount+1);
+        if ("1".equals(actionType)) {
+            video.setFavouriteCount(favouriteCount + 1);
             log.info("视频点赞……");
         }else if("2".equals(actionType)&&favouriteCount!=0){
             video.setFavouriteCount(favouriteCount-1);
