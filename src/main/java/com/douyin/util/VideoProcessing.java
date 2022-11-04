@@ -12,9 +12,9 @@ import java.io.File;
 import java.io.IOException;
 
 /**
- * author: zhuanghaoxin
- * Description:
- * create: 2022-10-29 10:03
+ * @author: zhuanghaoxin
+ * @Description:
+ * @create: 2022-10-29 10:03
  **/
 @Slf4j
 public class VideoProcessing {
