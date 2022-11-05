@@ -13,10 +13,12 @@ import com.douyin.util.DateUtil;
 import com.douyin.util.Entity2Model;
 import com.douyin.util.JwtHelper;
 import com.douyin.util.SnowFlake;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,6 +27,7 @@ import java.util.List;
  */
 @Service("CommentServiceImpl")
 @Transactional(rollbackFor = Exception.class)
+@Slf4j
 public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> implements CommentService {
 
     @Autowired
@@ -33,15 +36,14 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
     @Override
     public CommentModel addComment(String token, String videoId, String commentText) {
         Long userId = JwtHelper.getUserId(token);
-        Long nowTime = System.currentTimeMillis();
+        Timestamp now = new Timestamp(System.currentTimeMillis());
         Long id = SnowFlake.nextId();
 
-        Comment comment = new Comment(id, userId, Long.parseLong(videoId), commentText, String.valueOf(nowTime), 1);
-
+        Comment comment = new Comment(id, userId, Long.parseLong(videoId), commentText,null,null, 1L);
         if (baseMapper.insert(comment) == 1) {
             User user = userService.getById(userId);
             UserModel userModel = Entity2Model.user2userModel(user, videoId);
-            return new CommentModel(id, userModel, commentText, DateUtil.timestampToDate(nowTime));
+            return new CommentModel(id, userModel, commentText, now);
         } else {
             return null;
         }
@@ -54,14 +56,14 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
 
     @Override
     public List<CommentModel> getCommentList(String videoId) {
+        log.info("getCommentList的vidoeId:{}",videoId);
         QueryWrapper<Comment> qw = new QueryWrapper<>();
-        qw.eq("video_id", videoId);
         List<Comment> comments = baseMapper.selectList(qw);
         List<CommentModel> commentModelList = new ArrayList<>();
         for (Comment c : comments) {
             User user = userService.getById(c.getUserId());
             UserModel userModel = Entity2Model.user2userModel(user, videoId);
-            CommentModel commentModel = new CommentModel(c.getCommentId(), userModel, c.getCommentText(), c.getCommentDate());
+            CommentModel commentModel = new CommentModel(c.getCommentId(), userModel, c.getCommentText(), c.getCreateTime());
             commentModelList.add(commentModel);
         }
         return commentModelList;

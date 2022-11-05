@@ -9,6 +9,8 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
+import java.sql.Timestamp;
+
 /**
  * @author foanxi
  */
@@ -23,7 +25,8 @@ public class Comment {
     private Long userId;
     private Long videoId;
     private String commentText;
-    private String commentDate;
+    private Timestamp createTime;
+    private Timestamp deleteTime;
     @TableLogic(value = "1", delval = "0")
-    private Integer logicDelete;
+    private Long logicDelete;
 }

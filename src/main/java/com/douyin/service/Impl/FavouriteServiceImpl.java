@@ -82,13 +82,19 @@ public class FavouriteServiceImpl extends ServiceImpl<FavouriteMapper, Favourite
 //        当前用户点赞的视频id列表
         // TODO: 2022/11/4 优化：减少查询次数-多表连接
         List<Favourite> videoIdList = getVideoId(id);
-        List<Video> videoList = null;
-        assert videoList != null;
+        List<Video> videoList = new ArrayList<>();
         int size = videoIdList.size();
         if (size > 0) {
             for (Favourite favourite : videoIdList) {
+
                 List<Video> video = videoService.getVideo(favourite.getUserId());
+                log.info("提取出的视频为：{}",video);
+                if(video == null){
+                    log.info("video为空");
+                    break;
+                }
                 videoList.addAll(video);
+                log.info("videoList:{}",videoList);
             }
             for (Video video : videoList) {
                 User user = userService.getById(video.getAuthorId());
