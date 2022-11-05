@@ -47,7 +47,7 @@ public class VideoServiceImpl extends ServiceImpl<VideoMapper, Video> implements
         Video video = new Video();
 //        获取当前视频的点赞数
         QueryWrapper<Video> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("id", videoId).eq("author_id", userId);
+        queryWrapper.eq("video_id", videoId).eq("author_id", userId);
         Video video1 = videoMapper.selectOne(queryWrapper);
         log.info("video1:{}", video1);
         Integer favouriteCount = video1.getFavouriteCount();

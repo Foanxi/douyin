@@ -5,6 +5,7 @@ import com.douyin.model.CommentModel;
 import com.douyin.service.CommentService;
 import com.douyin.util.CreateJson;
 import com.douyin.util.JwtHelper;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,6 +17,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/douyin/comment")
+@Slf4j
 public class CommentController {
 
     @Autowired
@@ -26,8 +28,9 @@ public class CommentController {
                                     @RequestParam("video_id") String videoId,
                                     @RequestParam("action_type") String actionType,
                                     @RequestParam("comment_text") String commentText,
-                                    @RequestParam("comment_id") String commentId) {
+                                    @RequestParam(value = "comment_id",required = false) String commentId) {
         JSONObject json;
+        log.info("传递过来的comment_id为：{}",commentId);
         if (JwtHelper.isExpiration(token)) {
             return CreateJson.createJson(200, 1, "用户token过期，请重新登陆");
         }
