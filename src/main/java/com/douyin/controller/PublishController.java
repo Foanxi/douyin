@@ -8,6 +8,7 @@ import com.douyin.service.UserService;
 import com.douyin.service.VideoService;
 import com.douyin.util.CreateJson;
 import com.douyin.util.JwtHelper;
+import com.douyin.util.SnowFlake;
 import com.douyin.util.VideoProcessing;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -99,11 +100,11 @@ public class PublishController {
         VideoProcessing.grabberVideoFramer(videoPath, pictureName);
         log.info("该视频的截图为：{}", pictureName);
 //      获取当前时间
-        long now = System.currentTimeMillis();
 //      创建video对象导入数据库
         videoPath = "/video/" + userId + "/" + uuid + ".mp4";
         pictureName = "/picture/" + userId + "/" + uuid + ".jpg";
-        Video video = new Video(0L, userId, videoPath, pictureName, 0, 0, null,null, title);
+        Long videoId = SnowFlake.nextId();
+        Video video = new Video(videoId, userId, videoPath, pictureName, 0, 0, null, null, title);
         videoService.save(video);
         jsonObject = CreateJson.createJson(200, 0, "视频上传成功");
         return jsonObject;

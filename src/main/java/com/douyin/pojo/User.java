@@ -2,6 +2,7 @@ package com.douyin.pojo;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableLogic;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -28,6 +29,8 @@ public class User {
     private Timestamp createTime;
     private Timestamp updateTime;
     private Timestamp deleteTime;
+    @TableLogic(value = "1", delval = "0")
+    private Integer logicDelete;
 
     public User(Long userId, String name, String password, Integer followCount, Integer followerCount) {
         this.userId = userId;

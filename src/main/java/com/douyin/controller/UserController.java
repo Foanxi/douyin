@@ -25,10 +25,9 @@ public class UserController {
     private UserService userService;
 
     /**
-     * 用户信息
-     *
-     * @Param:
-     * @Return:
+     * @param userId 用户唯一标识id
+     * @param token  用户令牌
+     * @return 返回用户信息
      */
     @GetMapping("/")
     public JSON getUserInformation(@RequestParam("user_id") String userId,

@@ -14,6 +14,11 @@
       "name": "snowflake.data-center-id",
       "type": "java.lang.String",
       "description": "雪花算法的数据中心标识号."
+    },
+    {
+      "name": "video.limit",
+      "type": "java.lang.String",
+      "description": "视频流一次返回的视频数量"
     }
   ]
 }

@@ -17,7 +17,7 @@ public class FeedTest {
     private VideoService videoService;
 
     @Test
-    public void getDataTime(){
+    public void getDataTime() {
         QueryWrapper<Video> queryWrapper = new QueryWrapper<>();
         queryWrapper.last("limit 20");
         List<Video> list = videoService.list(queryWrapper);
@@ -25,5 +25,10 @@ public class FeedTest {
         String strNextTime = simpleDateFormat.format(list.get(list.size() - 1).getCreateTime());
         Integer nextTime = Integer.parseInt(strNextTime);
         System.out.println(nextTime);
+    }
+
+    @Test
+    public void getAuthor() {
+        System.out.println(videoService.getById(0L).getAuthorId());
     }
 }

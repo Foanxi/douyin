@@ -9,7 +9,6 @@ import com.douyin.pojo.Comment;
 import com.douyin.pojo.User;
 import com.douyin.service.CommentService;
 import com.douyin.service.UserService;
-import com.douyin.util.DateUtil;
 import com.douyin.util.Entity2Model;
 import com.douyin.util.JwtHelper;
 import com.douyin.util.SnowFlake;
@@ -32,6 +31,8 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
 
     @Autowired
     private UserService userService;
+    @Autowired
+    private Entity2Model entity2Model;
 
     @Override
     public CommentModel addComment(String token, String videoId, String commentText) {
@@ -39,10 +40,10 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
         Timestamp now = new Timestamp(System.currentTimeMillis());
         Long id = SnowFlake.nextId();
 
-        Comment comment = new Comment(id, userId, Long.parseLong(videoId), commentText,null,null, 1L);
+        Comment comment = new Comment(id, userId, Long.parseLong(videoId), commentText, null, null, 1);
         if (baseMapper.insert(comment) == 1) {
             User user = userService.getById(userId);
-            UserModel userModel = Entity2Model.user2userModel(user, videoId);
+            UserModel userModel = entity2Model.user2userModel(user, Long.valueOf(videoId));
             return new CommentModel(id, userModel, commentText, now);
         } else {
             return null;
@@ -62,7 +63,7 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
         List<CommentModel> commentModelList = new ArrayList<>();
         for (Comment c : comments) {
             User user = userService.getById(c.getUserId());
-            UserModel userModel = Entity2Model.user2userModel(user, videoId);
+            UserModel userModel = entity2Model.user2userModel(user, Long.valueOf(videoId));
             CommentModel commentModel = new CommentModel(c.getCommentId(), userModel, c.getCommentText(), c.getCreateTime());
             commentModelList.add(commentModel);
         }

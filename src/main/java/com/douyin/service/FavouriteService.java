@@ -17,7 +17,6 @@ public interface FavouriteService extends IService<Favourite> {
      * @param videoId 视频id
      * @return 返回是否存在点赞关系
      */
-
     Favourite isExistFavourite(Long userId, Long videoId);
 
     boolean updateFavourite(String actionType, Favourite favourite, Long userId, String videoId);

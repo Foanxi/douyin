@@ -1,5 +1,7 @@
 package com.douyin.pojo;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -15,6 +17,8 @@ import lombok.experimental.Accessors;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Relation {
-    private String authorId;
-    private String favouriteId;
+    @TableId(type = IdType.INPUT)
+    private Long relationId;
+    private Long authorId;
+    private Long favouriteId;
 }

@@ -57,9 +57,8 @@ public class FavouriteServiceImpl extends ServiceImpl<FavouriteMapper, Favourite
     /**
      * 获取当前用户点赞过的视频id集合
      *
-     * @param id
-     * @Param:
-     * @Return:
+     * @param id 用户id
+     * @Return: 返回用户点赞过的所有视频集合
      */
     @Override
     public List<Favourite> getVideoId(Long id) {
@@ -68,12 +67,10 @@ public class FavouriteServiceImpl extends ServiceImpl<FavouriteMapper, Favourite
         return baseMapper.selectList(queryWrapper);
     }
 
+
     /**
-     * 点赞列表
-     *
-     * @return
-     * @Param:
-     * @Return:
+     * @param userId 用户id
+     * @return 返回用户点赞过的视频模型列表
      */
     @Override
     public List<VideoModel> getVideoByUser(String userId) {
@@ -98,11 +95,11 @@ public class FavouriteServiceImpl extends ServiceImpl<FavouriteMapper, Favourite
             }
             for (Video video : videoList) {
                 User user = userService.getById(video.getAuthorId());
-                boolean isFavourite = isExistFavourite(id, video.getId()) != null;
+                boolean isFavourite = isExistFavourite(id, video.getVideoId()) != null;
                 boolean isFollow = relationService.getIsFollow(id, video.getAuthorId());
                 UserModel userModel = new UserModel(user.getUserId(), user.getName(), user.getFollowCount(), user.getFollowerCount(), isFollow);
                 videoModelList.add(new VideoModel(
-                        video.getId(),
+                        video.getVideoId(),
                         userModel,
                         video.getPlayUrl(),
                         video.getCoverUrl(),

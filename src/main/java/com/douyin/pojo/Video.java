@@ -21,7 +21,7 @@ import java.sql.Timestamp;
 @AllArgsConstructor
 public class Video {
     @TableId(value = "video_id", type = IdType.INPUT)
-    private Long id;
+    private Long videoId;
     private Long authorId;
     private String playUrl;
     private String coverUrl;

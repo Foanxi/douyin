@@ -20,7 +20,7 @@ import java.sql.Timestamp;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Comment {
-    @TableId(value = "comment_id", type = IdType.INPUT)
+    @TableId(type = IdType.INPUT)
     private Long commentId;
     private Long userId;
     private Long videoId;
@@ -28,5 +28,5 @@ public class Comment {
     private Timestamp createTime;
     private Timestamp deleteTime;
     @TableLogic(value = "1", delval = "0")
-    private Long logicDelete;
+    private Integer logicDelete;
 }

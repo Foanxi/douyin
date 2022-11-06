@@ -5,6 +5,7 @@ import com.douyin.model.VideoModel;
 import com.douyin.pojo.Video;
 
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -19,7 +20,19 @@ public interface VideoService extends IService<Video> {
      */
     List<Video> getVideo(Long userId);
 
+    /**
+     * 返回视频流的视频集合
+     *
+     * @param latestTime 上次返回的视频时间
+     * @return 视频集合
+     */
+    Map<String, Object> feedVideo(String latestTime);
 
+    /**
+     * @param videoId    视频id
+     * @param userId     用户id
+     * @param actionType 操作类型
+     */
     void updateVideoFavourite(Long videoId, Long userId, String actionType);
 
     /**

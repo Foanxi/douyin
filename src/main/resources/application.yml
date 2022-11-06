@@ -5,7 +5,7 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/douyin?serverTimezone=UTC
     username: root
-    password: 87906413
+    password: root
   servlet:
     multipart:
       max-file-size: 100MB
@@ -15,7 +15,7 @@ spring:
 server:
   port: 8080
 douyin:
-  path: E:\IDEAproject\douyin1\src\main\resources
+  path: D:\code\douyin\src\main\resources
   ip_path: http://192.168.43.1:8080/
 mybatis-plus:
   global-config:
@@ -25,3 +25,5 @@ mybatis-plus:
 snowflake:
   data-center-id: 0 #雪花算法的机器标识号
   machine-id: 001 #雪花算法的数据中心标识号
+video:
+  limit: 10
