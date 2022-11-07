@@ -27,10 +27,10 @@ public class CommentController {
     public JSONObject commentAction(@RequestParam("token") String token,
                                     @RequestParam("video_id") String videoId,
                                     @RequestParam("action_type") String actionType,
-                                    @RequestParam("comment_text") String commentText,
-                                    @RequestParam(value = "comment_id",required = false) String commentId) {
+                                    @RequestParam(value = "comment_text", required = false) String commentText,
+                                    @RequestParam(value = "comment_id", required = false) String commentId) {
         JSONObject json;
-        log.info("传递过来的comment_id为：{}",commentId);
+        log.info("传递过来的comment_id为：{}", commentId);
         if (JwtHelper.isExpiration(token)) {
             return CreateJson.createJson(200, 1, "用户token过期，请重新登陆");
         }
@@ -44,7 +44,7 @@ public class CommentController {
                 json = CreateJson.createJson(200, 1, "评论失败");
             }
         } else {
-            if (commentService.deleteComment(commentId)) {
+            if (commentService.deleteComment(videoId, commentId)) {
                 json = CreateJson.createJson(200, 0, "删除评论成功");
             } else {
                 json = CreateJson.createJson(200, 1, "删除评论失败");
@@ -63,6 +63,7 @@ public class CommentController {
             List<CommentModel> commentList = commentService.getCommentList(videoId);
             json = CreateJson.createJson(200, 0, "");
             json.put("comment_list", commentList);
+            log.info("CommentController的评论列表为" + json);
         }
         return json;
     }

@@ -47,15 +47,6 @@ public class FavouriteServiceImpl extends ServiceImpl<FavouriteMapper, Favourite
         return baseMapper.selectOne(queryWrapper);
     }
 
-    @Override
-    public boolean updateFavourite(String actionType, Favourite favourite, Long userId, String videoId) {
-        //说明用户存在，此时是修改用户的点赞数据
-        QueryWrapper<Favourite> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("user_id", userId);
-        queryWrapper.eq("video_id", videoId);
-        return super.update(favourite, queryWrapper);
-    }
-
     /**
      * 获取当前用户点赞过的视频id集合
      *

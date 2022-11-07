@@ -19,7 +19,6 @@ public interface FavouriteService extends IService<Favourite> {
      */
     Favourite isExistFavourite(Long userId, Long videoId);
 
-    boolean updateFavourite(String actionType, Favourite favourite, Long userId, String videoId);
 
     /**
      * 获取当前用户点赞过的视频id集合

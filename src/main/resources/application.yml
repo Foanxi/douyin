@@ -22,6 +22,8 @@ mybatis-plus:
     db-config:
       logic-delete-value: 0
       logic-not-delete-value: 1
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
 snowflake:
   data-center-id: 0 #雪花算法的机器标识号
   machine-id: 001 #雪花算法的数据中心标识号

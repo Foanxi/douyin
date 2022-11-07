@@ -1,7 +1,6 @@
 package com.douyin.service.Impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.douyin.mapper.VideoMapper;
 import com.douyin.model.UserModel;
@@ -76,6 +75,9 @@ public class VideoServiceImpl extends ServiceImpl<VideoMapper, Video> implements
             Timestamp timestamp = new Timestamp(Long.parseLong(latestTime));
             queryWrapper.le("create_time", timestamp).last("limit " + limit);
             videos = videoService.list(queryWrapper);
+            if (videos.size() == 0) {
+                videos = baseMapper.selectList(new QueryWrapper<Video>().last("limit" + limit));
+            }
         }
         if (videos.size() == 0) {
             return null;
@@ -95,29 +97,6 @@ public class VideoServiceImpl extends ServiceImpl<VideoMapper, Video> implements
         }
         feedMap.put("videoModelList", videoModelList);
         return feedMap;
-    }
-
-
-    @Override
-    public void updateVideoFavourite(Long videoId, Long userId, String actionType) {
-        Video video = new Video();
-//        获取当前视频的点赞数
-        QueryWrapper<Video> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("video_id", videoId).eq("author_id", userId);
-        Video video1 = videoMapper.selectOne(queryWrapper);
-        log.info("video1:{}", video1);
-        Integer favouriteCount = video1.getFavouriteCount();
-//       判断当前的点击是点赞还是取消点赞
-        if ("1".equals(actionType)) {
-            video.setFavouriteCount(favouriteCount + 1);
-            log.info("视频点赞……");
-        } else if ("2".equals(actionType) && favouriteCount != 0) {
-            video.setFavouriteCount(favouriteCount - 1);
-            log.info("视频取消点赞……");
-        }
-        UpdateWrapper<Video> updateWrapper = new UpdateWrapper<>();
-        updateWrapper.eq("video_id", videoId).eq("author_id", userId);
-        videoMapper.update(video, updateWrapper);
     }
 
     /**

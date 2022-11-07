@@ -36,13 +36,4 @@ public interface VideoService extends IService<Video> {
      */
     List<VideoModel> getVideoById(Long userId);
 
-    /**
-     * 点赞操作
-     * @param actionType
-     * @param video
-     * @param userId
-     * @param favouriteCount
-     * @return
-     */
-
 }
