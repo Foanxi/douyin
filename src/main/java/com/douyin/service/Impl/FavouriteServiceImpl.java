@@ -63,7 +63,7 @@ public class FavouriteServiceImpl extends ServiceImpl<FavouriteMapper, Favourite
     @Override
     public List<Favourite> getVideoId(Long id) {
         QueryWrapper<Favourite> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("favourite_id", id);
+        queryWrapper.eq("user_id", id);
         return baseMapper.selectList(queryWrapper);
     }
 
