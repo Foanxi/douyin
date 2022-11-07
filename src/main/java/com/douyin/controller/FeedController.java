@@ -54,9 +54,9 @@ public class FeedController {
             JSONObject jsonObject;
             log.info("latestTime :{}", latestTime);
             httpResponse.setStatus(200);
-            jsonObject = CreateJson.createJson(200, 0, "视频发布成功");
+            jsonObject = CreateJson.createJson(200, 0, "视频流获取成功");
             jsonObject.put("video_list", videoModelList);
-            jsonObject.put("next_time", nextTime);
+            jsonObject.put("next_time", nextTime.getTime());
             return jsonObject;
         }
 

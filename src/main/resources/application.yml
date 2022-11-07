@@ -15,8 +15,8 @@ spring:
 server:
   port: 8080
 douyin:
-  path: D:\code\douyin\src\main\resources
-  ip_path: http://192.168.43.1:8080/
+  path: D:\code\douyin\src\main\resources\
+  ip_path: http://10.34.140.181:8080/
 mybatis-plus:
   global-config:
     db-config:

@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -62,11 +63,12 @@ public class VideoServiceImpl extends ServiceImpl<VideoMapper, Video> implements
         QueryWrapper<Video> queryWrapper = new QueryWrapper<>();
         List<Video> videos;
         Map<String, Object> feedMap = new HashMap<>();
-        if ("".equals(latestTime) || latestTime == null) {
+        if ("0".equals(latestTime) || latestTime == null) {
             queryWrapper.last("limit " + limit);
             videos = baseMapper.selectList(queryWrapper);
         } else {
-            queryWrapper.le("create_time", latestTime).last("limit " + limit);
+            Timestamp timestamp = new Timestamp(Long.parseLong(latestTime));
+            queryWrapper.le("create_time", timestamp).last("limit " + limit);
             videos = videoService.list(queryWrapper);
         }
         if (videos == null) {

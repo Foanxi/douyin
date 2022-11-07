@@ -1,23 +1,25 @@
 package com.douyin;
 
+import com.douyin.service.VideoService;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.sql.Date;
+import java.sql.Timestamp;
+import java.util.Map;
 
 
 @SpringBootTest
 public class TimeTest {
 
+    @Autowired
+    private VideoService videoService;
+
     @Test
-    public void Timestamp2Date(){
-        String Timestamp = "1508824283292";
-        String Timestamp2 = "1508824283295";
-        long timestampLong = Long.parseLong(Timestamp);
-        long timestampLong2 = Long.parseLong(Timestamp2);
-        System.out.println(timestampLong<timestampLong2);
-        Date date = new Date(timestampLong);
-        Date date2 = new Date(timestampLong2);
-        System.out.println(date.compareTo(date2));
+    public void Timestamp2Date() {
+        Map<String, Object> map = videoService.feedVideo("1667818133790");
+        Timestamp nextTime = (Timestamp) map.get("nextTime");
+        System.out.println(nextTime.getTime());
+        System.out.println(nextTime);
     }
 }
