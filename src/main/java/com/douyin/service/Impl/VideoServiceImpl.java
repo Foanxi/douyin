@@ -128,7 +128,6 @@ public class VideoServiceImpl extends ServiceImpl<VideoMapper, Video> implements
                 UserModel userModel = entity2Model.user2userModel(user, video.getVideoId());
                 VideoModel videoModel = entity2Model.video2videoModel(video, userModel);
                 videoModelList.add(videoModel);
-
             }
             return videoModelList;
         }

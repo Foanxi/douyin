@@ -2,6 +2,7 @@ package com.douyin.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.douyin.model.UserModel;
 import com.douyin.pojo.User;
 import com.douyin.service.UserService;
 import com.douyin.util.CreateJson;
@@ -36,8 +37,10 @@ public class UserController {
         if (JwtHelper.isExpiration(token)) {
             return CreateJson.createJson(200, 1, "用户token过期，请重新登陆");
         }
+//        当前用户id
+        Long id = JwtHelper.getUserId(token);
         //查询数据
-        User byId = userService.getUserById(userId);
+        UserModel byId = userService.getUserById(id, Long.valueOf(userId));
         JSONObject jsonObject = CreateJson.createJson(200, 0, "查询成功");
         jsonObject.put("user", byId);
         log.info("返回的数据体为：{}", jsonObject);

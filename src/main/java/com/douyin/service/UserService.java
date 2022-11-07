@@ -1,6 +1,7 @@
 package com.douyin.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.douyin.model.UserModel;
 import com.douyin.pojo.User;
 
 /**
@@ -21,5 +22,5 @@ public interface UserService extends IService<User> {
      * @param userId 用户id
      * @return 用户信息
      */
-    User getUserById(String userId);
+    UserModel getUserById(Long id, Long userId);
 }
