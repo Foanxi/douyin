@@ -55,7 +55,13 @@ public class VideoServiceImpl extends ServiceImpl<VideoMapper, Video> implements
     public List<Video> getVideo(Long userId) {
         QueryWrapper<Video> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("author_id", userId);
-        return list(queryWrapper);
+        List<Video> list = list(queryWrapper);
+        for (Video video : list) {
+            video.setPlayUrl(ipPath + video.getPlayUrl());
+            video.setCoverUrl(ipPath + video.getCoverUrl());
+        }
+        log.info(String.valueOf(list));
+        return list;
     }
 
     @Override
