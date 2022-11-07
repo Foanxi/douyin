@@ -47,7 +47,7 @@ public class FeedController {
         }
         Map<String, Object> map = videoService.feedVideo(latestTime);
         if (map == null) {
-            return CreateJson.createJson(200, 0, "当前无视频");
+            return CreateJson.createJson(200, 1, "当前无视频");
         } else {
             List<VideoModel> videoModelList = (List<VideoModel>) map.get("videoModelList");
             Timestamp nextTime = (Timestamp) map.get("nextTime");
@@ -57,6 +57,7 @@ public class FeedController {
             jsonObject = CreateJson.createJson(200, 0, "视频流获取成功");
             jsonObject.put("video_list", videoModelList);
             jsonObject.put("next_time", nextTime.getTime());
+            log.info("视频流" + jsonObject.toJSONString());
             return jsonObject;
         }
 

@@ -71,7 +71,7 @@ public class VideoServiceImpl extends ServiceImpl<VideoMapper, Video> implements
             queryWrapper.le("create_time", timestamp).last("limit " + limit);
             videos = videoService.list(queryWrapper);
         }
-        if (videos == null) {
+        if (videos.size() == 0) {
             return null;
         }
 
