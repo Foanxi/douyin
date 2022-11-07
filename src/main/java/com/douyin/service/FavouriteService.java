@@ -36,4 +36,7 @@ public interface FavouriteService extends IService<Favourite> {
      * @return 返回于该用户相关的所有视频列表
      */
     List<VideoModel> getVideoByUser(String userId);
+
+    boolean giveFavourite(String actionType,Long video,Long userId);
+    boolean notGiveFavourite(String actionType,Long video,Long userId);
 }

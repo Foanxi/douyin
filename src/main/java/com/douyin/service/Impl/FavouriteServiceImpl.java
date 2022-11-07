@@ -1,6 +1,7 @@
 package com.douyin.service.Impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.douyin.mapper.FavouriteMapper;
 import com.douyin.model.UserModel;
@@ -36,7 +37,8 @@ public class FavouriteServiceImpl extends ServiceImpl<FavouriteMapper, Favourite
 
     @Autowired
     private RelationService relationService;
-
+    @Autowired
+    private FavouriteService favouriteService;
     @Override
     public Favourite isExistFavourite(Long userId, Long videoId) {
         QueryWrapper<Favourite> queryWrapper = new QueryWrapper<>();
@@ -111,5 +113,33 @@ public class FavouriteServiceImpl extends ServiceImpl<FavouriteMapper, Favourite
             return videoModelList;
         }
         return null;
+    }
+    @Override
+    public boolean giveFavourite(String actionType,Long videoId,Long userId) {
+        Video video1 = videoService.getById(videoId);
+        Favourite favourite1 = new Favourite();
+        favourite1.setVideoId(videoId);
+        favourite1.setUserId(userId);
+        boolean save = favouriteService.save(favourite1);
+        log.info("点赞列是否创建成功：{}", save);
+        // 然后再在视频表中将点赞数+1
+        UpdateWrapper<Video> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.eq("video_id", videoId).set("favourite_count", video1.getFavouriteCount() + 1);
+        boolean update = videoService.update(video1, updateWrapper);
+        log.info("视频表点赞数是否已+1：{}", update);
+        return update;
+    }
+    public boolean notGiveFavourite(String actionType, Long videoId, Long userId) {
+        Video video1 = videoService.getById(videoId);
+        QueryWrapper<Favourite> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("video_id", videoId).eq("user_id", userId);
+        boolean remove = favouriteService.remove(queryWrapper);
+        log.info("点赞列是否移除成功：{}", remove);
+        //然后再在视频表中将点赞数-1
+        UpdateWrapper<Video> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.eq("video_id", videoId).set("favourite_count", video1.getFavouriteCount() - 1);
+        boolean update = videoService.update(video1, updateWrapper);
+        log.info("视频表点赞数是否已-1：{}", update);
+        return update;
     }
 }

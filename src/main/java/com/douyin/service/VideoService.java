@@ -29,17 +29,20 @@ public interface VideoService extends IService<Video> {
     Map<String, Object> feedVideo(String latestTime);
 
     /**
-     * @param videoId    视频id
-     * @param userId     用户id
-     * @param actionType 操作类型
-     */
-    void updateVideoFavourite(Long videoId, Long userId, String actionType);
-
-    /**
      * 通过用户Id获取当前用户的发布列表
      *
      * @Param: Long userId 用户id
      * @Return: List<VideoModel>
      */
     List<VideoModel> getVideoById(Long userId);
+
+    /**
+     * 点赞操作
+     * @param actionType
+     * @param video
+     * @param userId
+     * @param favouriteCount
+     * @return
+     */
+
 }

@@ -2,17 +2,22 @@ package com.douyin.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.douyin.model.VideoModel;
 import com.douyin.pojo.Favourite;
+import com.douyin.pojo.Video;
 import com.douyin.service.FavouriteService;
 import com.douyin.service.VideoService;
 import com.douyin.util.CreateJson;
 import com.douyin.util.JwtHelper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author hongxiaobin
@@ -20,6 +25,7 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequestMapping("/douyin/favorite")
+
 public class FavouriteController {
     @Autowired
     private FavouriteService favouriteService;
@@ -47,7 +53,7 @@ public class FavouriteController {
     }
 
     @PostMapping("/action")
-    public JSONObject favouriteAction(@RequestParam("token") String token,
+    public JSON favouriteAction(@RequestParam("token") String token,
                                       @RequestParam("video_id") String videoId,
                                       @RequestParam("action_type") String actionType) {
         log.info("传递的数据为：{}，{}，{}", token, videoId, actionType);
@@ -58,27 +64,26 @@ public class FavouriteController {
             return jsonObject;
         }
         Long userId = JwtHelper.getUserId(token);
+        Long videoIdLong = Long.parseLong(videoId);
         log.info("userId:{}", userId);
-        //查询点赞表中是否存在该记录
-        Favourite favourite = favouriteService.isExistFavourite(userId, Long.parseLong(videoId));
-        log.info("点赞列表中是否存在该记录：{}", favourite);
-//      用户如果尚未点赞，则数据库点赞表中添加新的数据，并返回点赞成功。
-        if (favourite == null) {
-            log.info("用户尚未点赞");
-            Favourite create = new Favourite(0L, userId, Long.parseLong(videoId));
-            favouriteService.save(create);
-            JSONObject jsonObject = CreateJson.createJson(200, 0, "点赞成功");
-            log.info("返回的数据体为：{}", jsonObject);
-            return jsonObject;
+        //获取某个视频的点赞数
+        QueryWrapper<Favourite> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("video_id", videoId).eq("user_id", userId);
+        Favourite favourite = favouriteService.getOne(queryWrapper);
+        log.info("favourite:{}", favourite);
+        if (Objects.equals(actionType, "1")) {
+            //说明用户点赞，首先先在点赞表中创建新的点赞
+            boolean giveFavourite = favouriteService.giveFavourite(actionType, videoIdLong, userId);
+            if (giveFavourite){CreateJson.createJson(500, 1, "点赞失败");}
+            return CreateJson.createJson(200, 0, "点赞成功");
+        } else if (Objects.equals(actionType, "2")) {
+            //说明用户取消点赞，首先先删除点赞表中的点赞列，
+            boolean notGiveFavourite = favouriteService.notGiveFavourite(actionType, videoIdLong, userId);
+            if (notGiveFavourite){return CreateJson.createJson(500, 1, "取消点赞失败");}
+            return CreateJson.createJson(200, 0, "取消点赞成功");
+        }else {
+            return CreateJson.createJson(400,1,"操作失败");
         }
-//        修改点赞表中记录
-        boolean update = favouriteService.updateFavourite(actionType, favourite, userId, videoId);
-//        修改视频表中的记录
-        videoService.updateVideoFavourite(Long.parseLong(videoId), userId, actionType);
-        if (!update) {
-            log.info("修改用户点赞失败");
-            return CreateJson.createJson(500, 1, "点赞失败");
-        }
-        return CreateJson.createJson(200, 0, "取消点赞成功");
     }
 }
+
