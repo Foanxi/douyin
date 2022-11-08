@@ -61,21 +61,22 @@ public class FavouriteController {
         }
         Long userId = JwtHelper.getUserId(token);
         Long videoIdLong = Long.parseLong(videoId);
+
         // 获取某个视频的点赞数
         QueryWrapper<Favourite> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("video_id", videoId).eq("user_id", userId);
         favouriteService.getOne(queryWrapper);
         if (Objects.equals(actionType, addType)) {
             // 说明用户点赞，首先先在点赞表中创建新的点赞
-            boolean giveFavourite = favouriteService.doFavourite(videoIdLong, userId);
-            if (giveFavourite) {
+            boolean doFavourite = favouriteService.doFavourite(videoIdLong, userId);
+            if (doFavourite) {
                 CreateJson.createJson(200, 1, "点赞失败");
             }
             return CreateJson.createJson(200, 0, "点赞成功");
         } else if (Objects.equals(actionType, deleteType)) {
             // 说明用户取消点赞，首先先删除点赞表中的点赞列，
-            boolean notGiveFavourite = favouriteService.cancelFavourite(videoIdLong, userId);
-            if (notGiveFavourite) {
+            boolean cancelFavourite = favouriteService.cancelFavourite(videoIdLong, userId);
+            if (cancelFavourite) {
                 return CreateJson.createJson(200, 1, "取消点赞失败");
             }
             return CreateJson.createJson(200, 0, "取消点赞成功");

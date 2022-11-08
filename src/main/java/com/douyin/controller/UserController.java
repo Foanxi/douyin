@@ -65,19 +65,19 @@ public class UserController {
     @PostMapping("/register")
     public JSON register(@RequestParam("username") String username, @RequestParam("password") String password) {
 
-        final Integer success = 0;
-        final Integer exist = 1;
-        final Integer fail = 2;
+        final Integer success = 1;
+        final Integer exist = -1;
+        final String statusCode = "statusCode";
 
         Map<String, Object> map = userService.register(username, password);
         JSONObject json;
         //首先先判断数据库中是否有该用户
-        if (map.get("statusCode").equals(exist)) {
+        if (map.get(statusCode).equals(exist)) {
             //返回错误信息
             return CreateJson.createJson(200, 1, "用户已存在");
         }
 
-        if (map.get("statusCode").equals(success)) {
+        if (map.get(statusCode).equals(success)) {
             json = CreateJson.createJson(200, 0, "添加成功");
             json.put("user_id", map.get("userId"));
             json.put("token", map.get("token"));

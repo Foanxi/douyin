@@ -3,23 +3,16 @@ package com.douyin.controller;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.douyin.model.VideoModel;
-import com.douyin.pojo.Video;
 import com.douyin.service.UserService;
 import com.douyin.service.VideoService;
 import com.douyin.util.CreateJson;
 import com.douyin.util.JwtHelper;
-import com.douyin.util.SnowFlake;
-import com.douyin.util.VideoProcessing;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.List;
-import java.util.UUID;
 
 /**
  * @author hongxiaobin
@@ -33,8 +26,7 @@ public class PublishController {
     private VideoService videoService;
     @Autowired
     private UserService userService;
-    @Value("${douyin.path}")
-    private String resourcePath;
+
 
     /**
      * 发布列表
@@ -60,44 +52,19 @@ public class PublishController {
     public JSON uploadVideo(MultipartFile data, @RequestParam("title") String title,
                             @RequestParam("token") String token) {
         JSONObject jsonObject;
-        log.info("传输视频的用户的token是：{}", token);
         // 校验token
         if (JwtHelper.isExpiration(token)) {
-            jsonObject = CreateJson.createJson(200, 1, "用户验证已过期");
+            jsonObject = CreateJson.createJson(200, 1, "用户token已过期");
             return jsonObject;
         }
-        // 解析token得到用户ID
-        Long userId = JwtHelper.getUserId(token);
-        log.info("解析出的用户ID是：{}", userId);
 
-        // 本地视频的地址
-        String filePath = resourcePath + "\\" + "public\\video" + "\\" + userId;
-        String picturePath = resourcePath + "\\" + "public\\picture" + "\\" + userId;
-        System.out.println(filePath);
-        //设置视频名称为UUID
-        String uuid = UUID.randomUUID().toString();
-        log.info("该视频的UUID为：{}", uuid);
-        String videoPath = filePath + "/" + uuid + ".mp4";
-        //设置图片名称
-        String pictureName = picturePath + "/" + uuid + ".jpg";
-        File filePathLoad = new File(videoPath);
-        try {
-            data.transferTo(filePathLoad);
-        } catch (IOException e) {
-            e.printStackTrace();
+        boolean status = videoService.publishVideo(data, title, token);
+
+        if (status) {
+            jsonObject = CreateJson.createJson(200, 0, "视频上传成功");
+        } else {
+            jsonObject = CreateJson.createJson(200, 1, "视频上传失败");
         }
-
-        // 截取图片信息
-        VideoProcessing.grabberVideoFramer(videoPath, pictureName);
-        log.info("该视频的截图为：{}", pictureName);
-        // 获取当前时间
-        // 创建video对象导入数据库
-        videoPath = "/video/" + userId + "/" + uuid + ".mp4";
-        pictureName = "/picture/" + userId + "/" + uuid + ".jpg";
-        Long videoId = SnowFlake.nextId();
-        Video video = new Video(videoId, userId, videoPath, pictureName, 0, 0, null, null, title);
-        videoService.save(video);
-        jsonObject = CreateJson.createJson(200, 0, "视频上传成功");
         return jsonObject;
     }
 }

@@ -3,6 +3,7 @@ package com.douyin.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.douyin.model.VideoModel;
 import com.douyin.pojo.Video;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Map;
@@ -36,4 +37,14 @@ public interface VideoService extends IService<Video> {
      */
     List<VideoModel> getPublishById(Long userId);
 
+
+    /**
+     * 处理上传的视频
+     *
+     * @param title 视频标题
+     * @param token 上传视频的作者的token
+     * @param data  视频数据
+     * @return 返回视频上传是否成功
+     */
+    boolean publishVideo(MultipartFile data, String title, String token);
 }

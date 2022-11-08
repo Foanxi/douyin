@@ -3,7 +3,6 @@ package com.douyin.util;
 import lombok.extern.slf4j.Slf4j;
 import org.bytedeco.javacv.FFmpegFrameGrabber;
 import org.bytedeco.javacv.Frame;
-import org.bytedeco.javacv.FrameGrabber;
 import org.bytedeco.javacv.Java2DFrameConverter;
 
 import javax.imageio.ImageIO;
@@ -16,41 +15,26 @@ import java.io.IOException;
  */
 @Slf4j
 public class VideoProcessing {
-    public static void grabberVideoFramer(String videoFileName, String pictureName) {
+    public static void grabberVideoFramer(String videoFileName, String pictureName) throws IOException {
         File targetFile = new File(pictureName);
         try (FFmpegFrameGrabber ff = new FFmpegFrameGrabber(videoFileName)) {
-            try {
-                ff.start();
-            } catch (FrameGrabber.Exception e) {
-                e.printStackTrace();
-            }
+            ff.start();
             int length = ff.getLengthInFrames();
             int i = 0;
             Frame f = new Frame();
             while (i < length) {
                 // 去掉前5帧，避免出现全黑的图片，依自己情况而定
-                try {
-                    f = ff.grabImage();
-                } catch (FrameGrabber.Exception e) {
-                    e.printStackTrace();
-                }
+                f = ff.grabImage();
                 if ((i > 5) && (f.image != null)) {
                     break;
                 }
                 i++;
             }
-            try {
-                ImageIO.write(frameToBufferedImage(f), "jpg", targetFile);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            try {
-                ff.stop();
-            } catch (FrameGrabber.Exception e) {
-                e.printStackTrace();
-            }
-        } catch (FrameGrabber.Exception e) {
+            ImageIO.write(frameToBufferedImage(f), "jpg", targetFile);
+            ff.stop();
+        } catch (IOException e) {
             log.error("视频截图出现异常");
+            throw new IOException();
         }
     }
 

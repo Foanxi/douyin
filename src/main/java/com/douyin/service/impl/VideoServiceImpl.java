@@ -12,17 +12,20 @@ import com.douyin.service.RelationService;
 import com.douyin.service.UserService;
 import com.douyin.service.VideoService;
 import com.douyin.util.Entity2Model;
+import com.douyin.util.JwtHelper;
+import com.douyin.util.SnowFlake;
+import com.douyin.util.VideoProcessing;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author foanxi
@@ -36,6 +39,8 @@ public class VideoServiceImpl extends ServiceImpl<VideoMapper, Video> implements
 
     @Value("${video.limit}")
     private Integer limit;
+    @Value("${douyin.path}")
+    private String resourcePath;
 
     @Autowired
     private VideoService videoService;
@@ -110,7 +115,7 @@ public class VideoServiceImpl extends ServiceImpl<VideoMapper, Video> implements
         List<Video> videoList = videoService.getVideo(userId);
         int size = videoList.size();
         if (size > 0) {
-//        得到userModel
+            // 得到userModel
             User user = userService.getById(userId);
             for (Video video : videoList) {
                 UserModel userModel = entity2Model.user2userModel(user, video.getVideoId());
@@ -120,5 +125,57 @@ public class VideoServiceImpl extends ServiceImpl<VideoMapper, Video> implements
             return videoModelList;
         }
         return null;
+    }
+
+    @Override
+    public boolean publishVideo(MultipartFile data, String title, String token) {
+        // 解析token得到用户ID
+        Long userId = JwtHelper.getUserId(token);
+
+        String filePath = resourcePath + "/" + "public/video" + "/" + userId;
+        String picturePath = resourcePath + "/" + "public/picture" + "/" + userId;
+
+        // 将文件存储到本地
+        File fileLoad = new File(filePath);
+        File pictureLoad = new File(picturePath);
+
+        // 判断文件夹是否存在，如果不存在则创建新的文件夹
+        if (!fileLoad.exists()) {
+            if (!fileLoad.mkdir()) {
+                return false;
+            }
+        }
+        if (!pictureLoad.exists()) {
+            if (!pictureLoad.mkdir()) {
+                return false;
+            }
+        }
+
+        //设置视频名称为UUID
+        String uuid = UUID.randomUUID().toString();
+        String videoPath = filePath + "/" + uuid + ".mp4";
+        //设置图片名称
+        String pictureName = picturePath + "/" + uuid + ".jpg";
+        File filePathLoad = new File(videoPath);
+        try {
+            data.transferTo(filePathLoad);
+        } catch (IOException e) {
+            return false;
+        }
+
+        // 截取图片信息
+        try {
+            VideoProcessing.grabberVideoFramer(videoPath, pictureName);
+        } catch (IOException e) {
+            return false;
+        }
+        // 获取当前时间
+        // 创建video对象导入数据库
+        videoPath = "/video/" + userId + "/" + uuid + ".mp4";
+        pictureName = "/picture/" + userId + "/" + uuid + ".jpg";
+        Long videoId = SnowFlake.nextId();
+        Video video = new Video(videoId, userId, videoPath, pictureName, title);
+        videoService.save(video);
+        return true;
     }
 }
