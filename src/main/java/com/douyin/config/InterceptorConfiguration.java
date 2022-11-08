@@ -13,14 +13,12 @@ public class InterceptorConfiguration implements WebMvcConfigurer {
     /**
      * 重写addInterceptors()实现拦截器
      * 配置：要拦截的路径以及不拦截的路径
-     *
      * @param registry 注册设置
      */
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         InterceptorRegistration registration = registry.addInterceptor(new Interceptor());
-        registration.addPathPatterns("/**");
+        registration.addPathPatterns("/**").excludePathPatterns("/**/video/**", "/**/picture/**");
     }
-
 }
 

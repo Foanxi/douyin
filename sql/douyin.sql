@@ -11,11 +11,12 @@
  Target Server Version : 80026
  File Encoding         : 65001
 
- Date: 07/11/2022 22:47:57
+ Date: 08/11/2022 12:56:08
 */
 
 CREATE DATABASE douyin;
 USE douyin;
+
 
 SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
@@ -30,9 +31,9 @@ CREATE TABLE `user`
     `user_id`        bigint(0)                                                     NOT NULL COMMENT '用户id',
     `name`           varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '用户名',
     `password`       varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '用户密码',
-    `follow_count`   int(0)                                                        NOT NULL COMMENT '关注数',
-    `follower_count` int(0)                                                        NOT NULL COMMENT '粉丝数',
-    `create_time`    timestamp(0)                                                  NULL     DEFAULT CURRENT_TIMESTAMP(0) COMMENT '用户插入时间',
+    `follow_count`   int(0)                                                        NOT NULL DEFAULT 0 COMMENT '关注数',
+    `follower_count` int(0)                                                        NOT NULL DEFAULT 0 COMMENT '粉丝数',
+    `create_time`    timestamp(0)                                                  NOT NULL DEFAULT CURRENT_TIMESTAMP(0) COMMENT '用户插入时间',
     `update_time`    timestamp(0)                                                  NULL     DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '用户更新时间',
     `delete_time`    timestamp(0)                                                  NULL     DEFAULT NULL COMMENT '用户删除时间',
     `logic_delete`   int(0)                                                        NOT NULL DEFAULT 1 COMMENT '逻辑删除，1-未删除，0-已删除',
@@ -52,10 +53,10 @@ CREATE TABLE `video`
     `author_id`       bigint(0)                                                     NOT NULL COMMENT '视频作者id',
     `play_url`        varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '视频播放地址',
     `cover_url`       varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '视频封面地址',
-    `favourite_count` int(0)                                                        NULL DEFAULT NULL COMMENT '视频被点赞数量',
-    `comment_count`   int(0)                                                        NULL DEFAULT NULL COMMENT '视频评论数量',
-    `create_time`     timestamp(0)                                                  NULL DEFAULT CURRENT_TIMESTAMP(0) COMMENT '视频的发布时间',
-    `delete_time`     timestamp(0)                                                  NULL DEFAULT NULL COMMENT '视频删除时间',
+    `favourite_count` int(0)                                                        NOT NULL DEFAULT 0 COMMENT '视频被点赞数量',
+    `comment_count`   int(0)                                                        NOT NULL DEFAULT 0 COMMENT '视频评论数量',
+    `create_time`     timestamp(0)                                                  NOT NULL DEFAULT CURRENT_TIMESTAMP(0) COMMENT '视频的发布时间',
+    `delete_time`     timestamp(0)                                                  NULL     DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '视频删除时间',
     `title`           varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '视频标题',
     PRIMARY KEY (`video_id`) USING BTREE,
     INDEX `author_id` (`author_id`) USING BTREE,
@@ -66,7 +67,6 @@ CREATE TABLE `video`
   ROW_FORMAT = Dynamic;
 
 SET FOREIGN_KEY_CHECKS = 1;
-
 
 -- ----------------------------
 -- Table structure for comment

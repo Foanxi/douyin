@@ -31,4 +31,11 @@ public class Comment {
 
     @TableLogic(delval = "1", value = "0")
     private Integer isDeleted;
+
+    public Comment(Long commentId, Long userId, Long videoId, String commentText) {
+        this.commentId = commentId;
+        this.userId = userId;
+        this.videoId = videoId;
+        this.commentText = commentText;
+    }
 }

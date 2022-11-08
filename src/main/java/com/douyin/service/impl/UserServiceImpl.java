@@ -1,4 +1,4 @@
-package com.douyin.service.Impl;
+package com.douyin.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -34,11 +34,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     }
 
     @Override
-    public UserModel getUserById(Long id, Long userId) {
+    public UserModel getUserById(Long id, Long authorId) {
         QueryWrapper<User> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("user_id", userId);
+        queryWrapper.eq("user_id", authorId);
         User user = baseMapper.selectOne(queryWrapper);
-        boolean isFollow = relationService.getIsFollow(id, userId);
+        boolean isFollow = relationService.getIsFollow(id, authorId);
         return new UserModel(user.getUserId(), user.getName(), user.getFollowCount(), user.getFollowerCount(), isFollow);
     }
 }

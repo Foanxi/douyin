@@ -29,11 +29,11 @@ public interface VideoService extends IService<Video> {
     Map<String, Object> feedVideo(String latestTime);
 
     /**
-     * 通过用户Id获取当前用户的发布列表
+     * 获取用户发布列表
      *
-     * @Param: Long userId 用户id
-     * @Return: List<VideoModel>
+     * @param userId 用户id
+     * @return 返回视频列表模型
      */
-    List<VideoModel> getVideoById(Long userId);
+    List<VideoModel> getPublishById(Long userId);
 
 }

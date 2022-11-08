@@ -19,8 +19,9 @@ public interface UserService extends IService<User> {
     /**
      * 根据用户id查询用户信息
      *
-     * @param userId 用户id
-     * @return 用户信息
+     * @param userId   用户id
+     * @param authorId 关注者的id
+     * @return 返回用户模型
      */
-    UserModel getUserById(Long id, Long userId);
+    UserModel getUserById(Long userId, Long authorId);
 }

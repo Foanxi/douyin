@@ -1,4 +1,4 @@
-package com.douyin.service.Impl;
+package com.douyin.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -41,13 +41,17 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
     @Autowired
     private Entity2Model entity2Model;
 
+    private final Integer SUCCESS = 1;
+
     @Override
     public CommentModel addComment(String token, String videoId, String commentText) {
         Long userId = JwtHelper.getUserId(token);
         Long id = SnowFlake.nextId();
 
-        Comment comment = new Comment(id, userId, Long.parseLong(videoId), commentText, null, null, 1);
-        if (commentMapper.insert(comment) == 1) {
+
+        Comment comment = new Comment(id, userId, Long.parseLong(videoId), commentText);
+        int insert = commentMapper.insert(comment);
+        if (insert == SUCCESS) {
             QueryWrapper<Video> qw = new QueryWrapper<>();
             qw.eq("video_id", videoId);
             Video video = videoMapper.selectById(videoId);
@@ -71,7 +75,7 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
         Video video = videoMapper.selectById(videoId);
         video.setCommentCount(video.getCommentCount() - 1);
         videoMapper.update(video, qw);
-        return 1 == commentMapper.deleteById(commentId);
+        return commentMapper.deleteById(commentId) == SUCCESS;
     }
 
     @Override

@@ -1,4 +1,4 @@
-package com.douyin.service.Impl;
+package com.douyin.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;

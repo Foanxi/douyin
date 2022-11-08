@@ -12,52 +12,51 @@ import java.io.File;
 import java.io.IOException;
 
 /**
- * @author: zhuanghaoxin
- * @Description:
- * @create: 2022-10-29 10:03
- **/
+ * @author zhuanghaoxin
+ */
 @Slf4j
 public class VideoProcessing {
     public static void grabberVideoFramer(String videoFileName, String pictureName) {
-        long start = System.currentTimeMillis();
         File targetFile = new File(pictureName);
-        FFmpegFrameGrabber ff = new FFmpegFrameGrabber(videoFileName);
-        try {
-            ff.start();
-        } catch (FrameGrabber.Exception e) {
-            e.printStackTrace();
-        }
-        int length = ff.getLengthInFrames();
-        int i = 0;
-        Frame f = null;
-        while (i < length) {
-            // 去掉前5帧，避免出现全黑的图片，依自己情况而定
+        try (FFmpegFrameGrabber ff = new FFmpegFrameGrabber(videoFileName)) {
             try {
-                f = ff.grabImage();
+                ff.start();
             } catch (FrameGrabber.Exception e) {
                 e.printStackTrace();
             }
-            if ((i > 5) && (f.image != null)) {
-                break;
+            int length = ff.getLengthInFrames();
+            int i = 0;
+            Frame f = new Frame();
+            while (i < length) {
+                // 去掉前5帧，避免出现全黑的图片，依自己情况而定
+                try {
+                    f = ff.grabImage();
+                } catch (FrameGrabber.Exception e) {
+                    e.printStackTrace();
+                }
+                if ((i > 5) && (f.image != null)) {
+                    break;
+                }
+                i++;
             }
-            i++;
-        }
-        try {
-            ImageIO.write(FrameToBufferedImage(f), "jpg", targetFile);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        try {
-            ff.stop();
+            try {
+                ImageIO.write(frameToBufferedImage(f), "jpg", targetFile);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            try {
+                ff.stop();
+            } catch (FrameGrabber.Exception e) {
+                e.printStackTrace();
+            }
         } catch (FrameGrabber.Exception e) {
-            e.printStackTrace();
+            log.error("视频截图出现异常");
         }
     }
 
-    public static BufferedImage FrameToBufferedImage(Frame frame) {
+    public static BufferedImage frameToBufferedImage(Frame frame) {
         //创建BufferedImage对象
         Java2DFrameConverter converter = new Java2DFrameConverter();
-        BufferedImage bufferedImage = converter.getBufferedImage(frame);
-        return bufferedImage;
+        return converter.getBufferedImage(frame);
     }
 }

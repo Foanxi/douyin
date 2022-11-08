@@ -7,7 +7,7 @@ import java.util.Date;
 /**
  * token口令生成JwtHelper
  *
- * @Author hongxiaobin
+ * @author hongxiaobin
  * @Time 2022/10/11-11:22
  */
 public class JwtHelper {

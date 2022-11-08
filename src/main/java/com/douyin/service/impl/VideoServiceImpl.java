@@ -1,4 +1,4 @@
-package com.douyin.service.Impl;
+package com.douyin.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -65,10 +65,11 @@ public class VideoServiceImpl extends ServiceImpl<VideoMapper, Video> implements
 
     @Override
     public Map<String, Object> feedVideo(String latestTime) {
+        final String init = "0";
         QueryWrapper<Video> queryWrapper = new QueryWrapper<>();
         List<Video> videos;
         Map<String, Object> feedMap = new HashMap<>();
-        if ("0".equals(latestTime) || latestTime == null) {
+        if (init.equals(latestTime) || latestTime == null) {
             queryWrapper.last("limit " + limit);
             videos = baseMapper.selectList(queryWrapper);
         } else {
@@ -104,7 +105,7 @@ public class VideoServiceImpl extends ServiceImpl<VideoMapper, Video> implements
      * @return 返回作者id视频模型
      */
     @Override
-    public List<VideoModel> getVideoById(Long userId) {
+    public List<VideoModel> getPublishById(Long userId) {
         List<VideoModel> videoModelList = new ArrayList<>();
         List<Video> videoList = videoService.getVideo(userId);
         int size = videoList.size();

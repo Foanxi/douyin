@@ -17,8 +17,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 /**
- * @Author hongxiaobin
- * @Time 2022/11/1-19:02
+ * @author hongxiaobin, foanxi
  */
 @Controller
 public class FileController {
@@ -35,7 +34,9 @@ public class FileController {
                         @PathVariable("type") String type,
                         @PathVariable("userId") String userId,
                         @PathVariable("fileName") String fileName) throws IOException, ServletException {
-        if (!("video".equals(type) || "picture".equals(type))) {
+        final String videoType = "video";
+        final String pictureType = "picture";
+        if (!(videoType.equals(type) || pictureType.equals(type))) {
             return;
         }
         String path = resourcePath + "public/" + type + "/" + userId + "/" + fileName;
