@@ -15,7 +15,6 @@ import com.douyin.util.Entity2Model;
 import com.douyin.util.JwtHelper;
 import com.douyin.util.SnowFlake;
 import com.douyin.util.VideoProcessing;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -30,7 +29,6 @@ import java.util.*;
 /**
  * @author foanxi
  */
-@Slf4j
 @Service
 @Transactional(rollbackFor = Exception.class)
 public class VideoServiceImpl extends ServiceImpl<VideoMapper, Video> implements VideoService {

@@ -37,14 +37,17 @@ public class PublishController {
     @GetMapping("/list")
     public JSON getUserList(@RequestParam("token") String token,
                             @RequestParam("user_id") String userId) {
+        log.info("getUserList enter param token: {}, userId: {}", token, userId);
         if (JwtHelper.isExpiration(token)) {
+            log.warn("getUserList token: {} isExpiration", token);
             JSONObject jsonObject = CreateJson.createJson(200, 1, "token失效");
             jsonObject.put("user", null);
         }
         List<VideoModel> list = videoService.getPublishById(Long.valueOf(userId));
+        log.info("getUserList list: {}", list);
         JSONObject jsonObject = CreateJson.createJson(200, 0, "视频列表展示成功");
         jsonObject.put("video_list", list);
-        log.info("返回的数据体为:{}", jsonObject);
+        log.info("getUserList out param json:{}", jsonObject);
         return jsonObject;
     }
 

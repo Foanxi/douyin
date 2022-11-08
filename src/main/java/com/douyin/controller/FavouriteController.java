@@ -39,12 +39,16 @@ public class FavouriteController {
     @GetMapping("/list")
     public JSON getFavouriteList(@RequestParam("token") String token,
                                  @RequestParam("user_id") String userId) {
+        log.info("getFavouriteList enter param token: {}, userId: {}", token, userId);
         if (JwtHelper.isExpiration(token)) {
+            log.warn("getFavouriteList token: {} isExpiration", token);
             return CreateJson.createJson(200, 1, "用户token过期，请重新登陆");
         }
         List<VideoModel> list = favouriteService.getVideoByUser(userId);
+        log.info("getFavouriteList list: {}", list);
         JSONObject jsonObject = CreateJson.createJson(200, 0, "视频列表展示成功");
         jsonObject.put("video_list", list);
+        log.info("getFavouriteList out param json:{}", jsonObject);
         return jsonObject;
     }
 

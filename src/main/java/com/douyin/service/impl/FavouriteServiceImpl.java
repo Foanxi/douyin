@@ -15,7 +15,6 @@ import com.douyin.service.UserService;
 import com.douyin.service.VideoService;
 import com.douyin.util.Entity2Model;
 import com.douyin.util.SnowFlake;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -27,7 +26,6 @@ import java.util.List;
 /**
  * @author hongxiaobin
  */
-@Slf4j
 @Service("FavouriteServiceImpl")
 @Transactional(rollbackFor = Exception.class)
 public class FavouriteServiceImpl extends ServiceImpl<FavouriteMapper, Favourite> implements FavouriteService {
@@ -125,7 +123,6 @@ public class FavouriteServiceImpl extends ServiceImpl<FavouriteMapper, Favourite
             UpdateWrapper<Video> updateWrapper = new UpdateWrapper<>();
             updateWrapper.eq("video_id", videoId).set("favourite_count", video1.getFavouriteCount() - 1);
             boolean update = videoService.update(video1, updateWrapper);
-            log.info("视频表点赞数是否已-1：{}", update);
             return update;
         }
         return false;

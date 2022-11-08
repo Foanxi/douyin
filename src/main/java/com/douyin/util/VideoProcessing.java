@@ -1,6 +1,5 @@
 package com.douyin.util;
 
-import lombok.extern.slf4j.Slf4j;
 import org.bytedeco.javacv.FFmpegFrameGrabber;
 import org.bytedeco.javacv.Frame;
 import org.bytedeco.javacv.Java2DFrameConverter;
@@ -13,7 +12,6 @@ import java.io.IOException;
 /**
  * @author zhuanghaoxin
  */
-@Slf4j
 public class VideoProcessing {
     public static void grabberVideoFramer(String videoFileName, String pictureName) throws IOException {
         File targetFile = new File(pictureName);
@@ -33,7 +31,6 @@ public class VideoProcessing {
             ImageIO.write(frameToBufferedImage(f), "jpg", targetFile);
             ff.stop();
         } catch (IOException e) {
-            log.error("视频截图出现异常");
             throw new IOException();
         }
     }

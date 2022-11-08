@@ -7,7 +7,6 @@ import com.douyin.pojo.Video;
 import com.douyin.service.FavouriteService;
 import com.douyin.service.RelationService;
 import com.douyin.service.VideoService;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -15,7 +14,6 @@ import org.springframework.stereotype.Component;
  * @author foanxi
  */
 @Component
-@Slf4j
 public class Entity2Model {
 
     @Autowired
@@ -26,7 +24,6 @@ public class Entity2Model {
     private FavouriteService favouriteService;
 
     public UserModel user2userModel(User user, Long videoId) {
-        log.info("user2userModel的videoId为：{}", videoId);
         Long authorId = videoService.getById(videoId).getAuthorId();
         boolean isFollow = relationService.getIsFollow(user.getUserId(), authorId);
         return new UserModel(user.getUserId(), user.getName(), user.getFollowCount(), user.getFollowerCount(), isFollow);

@@ -33,16 +33,20 @@ public class UserController {
     @GetMapping("/")
     public JSON getUserInformation(@RequestParam("user_id") String userId,
                                    @RequestParam("token") String token) {
+        log.info("getUserInformation enter param token: {}, userId: {}", token, userId);
         // 校验token
         if (JwtHelper.isExpiration(token)) {
+            log.warn("getUserInformation token: {} isExpiration", token);
             return CreateJson.createJson(200, 1, "用户token过期，请重新登陆");
         }
         // 当前用户id
         Long id = JwtHelper.getUserId(token);
         // 查询数据
-        UserModel byId = userService.getUserById(id, Long.valueOf(userId));
+        UserModel byIdList = userService.getUserById(id, Long.valueOf(userId));
+        log.info("getUserInformation list: {}", byIdList);
         JSONObject jsonObject = CreateJson.createJson(200, 0, "查询成功");
-        jsonObject.put("user", byId);
+        jsonObject.put("user", byIdList);
+        log.info("getUserInformation out param json:{}", jsonObject);
         return jsonObject;
     }
 

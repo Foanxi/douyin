@@ -46,22 +46,6 @@ public class JwtHelper {
     }
 
     /**
-     * 从token字符串获取username
-     *
-     * @Param: String token
-     * @Return: String
-     */
-    public static String getUserName(String token) {
-        if (token.isEmpty()) {
-            return "";
-        }
-        Jws<Claims> claimsJws
-                = Jwts.parser().setSigningKey(TOKEN_SIGN_KEY).parseClaimsJws(token);
-        Claims claims = claimsJws.getBody();
-        return (String) claims.get("userName");
-    }
-
-    /**
      * 判读token是否有效
      *
      * @Param: String token
@@ -79,25 +63,5 @@ public class JwtHelper {
 //            过期出现异常，返回true
             return true;
         }
-    }
-
-    /**
-     * 刷新token
-     *
-     * @Param: String token
-     * @Return: String
-     */
-    public String refreshToken(String token) {
-        String refreshedToken;
-        try {
-            final Claims claims = Jwts.parser()
-                    .setSigningKey(TOKEN_SIGN_KEY)
-                    .parseClaimsJws(token)
-                    .getBody();
-            refreshedToken = JwtHelper.createToken(getUserId(token));
-        } catch (Exception e) {
-            refreshedToken = null;
-        }
-        return refreshedToken;
     }
 }

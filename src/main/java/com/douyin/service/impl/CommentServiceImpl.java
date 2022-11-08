@@ -14,7 +14,6 @@ import com.douyin.service.UserService;
 import com.douyin.util.Entity2Model;
 import com.douyin.util.JwtHelper;
 import com.douyin.util.SnowFlake;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,7 +28,6 @@ import java.util.List;
  */
 @Service("CommentServiceImpl")
 @Transactional(rollbackFor = Exception.class)
-@Slf4j
 public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> implements CommentService {
 
     @Autowired
