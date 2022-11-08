@@ -7,9 +7,15 @@ import com.douyin.model.UserModel;
 import com.douyin.pojo.User;
 import com.douyin.service.RelationService;
 import com.douyin.service.UserService;
+import com.douyin.util.JwtHelper;
+import com.douyin.util.SnowFlake;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.DigestUtils;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author hongxiaobin
@@ -40,5 +46,32 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         User user = baseMapper.selectOne(queryWrapper);
         boolean isFollow = relationService.getIsFollow(id, authorId);
         return new UserModel(user.getUserId(), user.getName(), user.getFollowCount(), user.getFollowerCount(), isFollow);
+    }
+
+    @Override
+    public Map<String, Object> register(String username, String password) {
+        final int success = 1;
+        final Integer exist = -1;
+        final Integer fail = 0;
+        Map<String, Object> map = new HashMap<>();
+        if (this.getUserByUsername(username) != null) {
+            map.put("statusCode", exist);
+            return map;
+        }
+        // 先对用户的密码进行加密，后将账号密码发送到数据库存储
+        String md5password = DigestUtils.md5DigestAsHex(password.getBytes());
+        // 由于用户初始注册，并没有关注数和被关注数，因此都设置为0
+        long id = SnowFlake.nextId();
+        User user = new User(id, username, md5password);
+        int insert = baseMapper.insert(user);
+        if (insert != success) {
+            map.put("statusCode", fail);
+        } else {
+            map.put("statusCode", success);
+            String token = JwtHelper.createToken(id);
+            map.put("userId", id);
+            map.put("token", token);
+        }
+        return map;
     }
 }

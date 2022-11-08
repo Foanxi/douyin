@@ -8,11 +8,11 @@ import com.douyin.service.UserService;
 import com.douyin.util.CreateJson;
 import com.douyin.util.JwtHelper;
 import com.douyin.util.Md5;
-import com.douyin.util.SnowFlake;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.DigestUtils;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 
 /**
@@ -64,25 +64,23 @@ public class UserController {
 
     @PostMapping("/register")
     public JSON register(@RequestParam("username") String username, @RequestParam("password") String password) {
-        User user;
-        //首先先判断数据库中是否有该用户
-        if (userService.getUserByUsername(username) != null) {
-            user = userService.getUserByUsername(username);
-            //返回错误信息
-            JSONObject jsonObject = CreateJson.createJson(200, 1, "用户已存在");
-            jsonObject.put("user_id", user.getUserId());
-            jsonObject.put("token", JwtHelper.createToken(user.getUserId()));
-            return jsonObject;
-        }
-        // 先对用户的密码进行加密，后将账号密码发送到数据库存储
-        String md5password = DigestUtils.md5DigestAsHex(password.getBytes());
-        // 由于用户初始注册，并没有关注数和被关注数，因此都设置为0
-        user = new User(SnowFlake.nextId(), username, md5password, 0, 0);
+
+        final Integer success = 0;
+        final Integer exist = 1;
+        final Integer fail = 2;
+
+        Map<String, Object> map = userService.register(username, password);
         JSONObject json;
-        if (userService.save(user)) {
+        //首先先判断数据库中是否有该用户
+        if (map.get("statusCode").equals(exist)) {
+            //返回错误信息
+            return CreateJson.createJson(200, 1, "用户已存在");
+        }
+
+        if (map.get("statusCode").equals(success)) {
             json = CreateJson.createJson(200, 0, "添加成功");
-            json.put("user_id", user.getUserId());
-            json.put("token", JwtHelper.createToken(user.getUserId()));
+            json.put("user_id", map.get("userId"));
+            json.put("token", map.get("token"));
         } else {
             json = CreateJson.createJson(200, 1, "注册失败");
         }
