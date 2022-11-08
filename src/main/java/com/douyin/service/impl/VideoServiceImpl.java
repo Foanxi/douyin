@@ -64,7 +64,6 @@ public class VideoServiceImpl extends ServiceImpl<VideoMapper, Video> implements
             video.setPlayUrl(ipPath + video.getPlayUrl());
             video.setCoverUrl(ipPath + video.getCoverUrl());
         }
-        log.info(String.valueOf(list));
         return list;
     }
 

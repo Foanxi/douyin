@@ -17,6 +17,7 @@ import com.douyin.util.Entity2Model;
 import com.douyin.util.SnowFlake;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,6 +32,8 @@ import java.util.List;
 @Transactional(rollbackFor = Exception.class)
 public class FavouriteServiceImpl extends ServiceImpl<FavouriteMapper, Favourite> implements FavouriteService {
 
+    @Value("${douyin.ip_path}")
+    private String ipPath;
     @Autowired
     private UserService userService;
     @Autowired
@@ -80,12 +83,13 @@ public class FavouriteServiceImpl extends ServiceImpl<FavouriteMapper, Favourite
         int size = videoIdList.size();
         if (size > 0) {
             for (Favourite favourite : videoIdList) {
-
-                List<Video> video = videoService.getVideo(favourite.getUserId());
+                Video video = videoService.getById(favourite.getVideoId());
+                video.setPlayUrl(ipPath + video.getPlayUrl());
+                video.setCoverUrl(ipPath + video.getCoverUrl());
                 if (video == null) {
                     break;
                 }
-                videoList.addAll(video);
+                videoList.add(video);
             }
             for (Video video : videoList) {
                 User user = userService.getById(video.getAuthorId());
