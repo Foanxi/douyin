@@ -39,12 +39,11 @@ public class FavouriteController {
     @GetMapping("/list")
     public JSON getFavouriteList(@RequestParam("token") String token,
                                  @RequestParam("user_id") String userId) {
-        log.info("getFavouriteList enter param token: {}, userId: {}", token, userId);
+        log.info("getFavouriteList enter param token:{},userId:{}",token,userId);
         if (JwtHelper.isExpiration(token)) {
-            log.warn("getFavouriteList token: {} isExpiration", token);
             return CreateJson.createJson(200, 1, "用户token过期，请重新登陆");
         }
-        List<VideoModel> list = favouriteService.getVideoByUser(userId);
+        List<VideoModel> list = favouriteService.getVideoByUser(userId,token);
         log.info("getFavouriteList list: {}", list);
         JSONObject jsonObject = CreateJson.createJson(200, 0, "视频列表展示成功");
         jsonObject.put("video_list", list);
@@ -52,41 +51,55 @@ public class FavouriteController {
         return jsonObject;
     }
 
+    /**
+     *
+     * param token 用于判断用户是否已登陆以及获取用户Id
+     * param videoId 被点赞的视频Id
+     * param actionType 1 表示点赞，2表示取消点赞
+     * return
+     */
     @PostMapping("/action")
     public JSON favouriteAction(@RequestParam("token") String token,
                                 @RequestParam("video_id") String videoId,
                                 @RequestParam("action_type") String actionType) {
+        log.info("action enter param token:{},videoId:{},actionType:{}",token,videoId,actionType);
         final String addType = "1";
         final String deleteType = "2";
-
+        JSONObject json = null;
         // 校验token
         if (JwtHelper.isExpiration(token)) {
+            log.warn("favouriteAction token: {} isExpiration", token);
             return CreateJson.createJson(200, 1, "token失效");
         }
         Long userId = JwtHelper.getUserId(token);
         Long videoIdLong = Long.parseLong(videoId);
-
-        // 获取某个视频的点赞数
-        QueryWrapper<Favourite> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("video_id", videoId).eq("user_id", userId);
-        favouriteService.getOne(queryWrapper);
         if (Objects.equals(actionType, addType)) {
             // 说明用户点赞，首先先在点赞表中创建新的点赞
             boolean doFavourite = favouriteService.doFavourite(videoIdLong, userId);
             if (doFavourite) {
-                CreateJson.createJson(200, 1, "点赞失败");
+                json = CreateJson.createJson(200, 0, "点赞成功");
+                log.info("favouriteAction return Json: {}",JSONObject.toJSONString(json,true));
+                return json;
             }
-            return CreateJson.createJson(200, 0, "点赞成功");
+            json = CreateJson.createJson(200, 1, "点赞失败");
+            log.warn("favouriteAction operation failed");
+            return json;
         } else if (Objects.equals(actionType, deleteType)) {
             // 说明用户取消点赞，首先先删除点赞表中的点赞列，
             boolean cancelFavourite = favouriteService.cancelFavourite(videoIdLong, userId);
             if (cancelFavourite) {
-                return CreateJson.createJson(200, 1, "取消点赞失败");
+                log.info("favouriteAction return Json:{}",JSONObject.toJSONString(json,true));
+                json = CreateJson.createJson(200, 0, "取消点赞成功");
+                return json;
             }
-            return CreateJson.createJson(200, 0, "取消点赞成功");
+            log.warn("favouriteAction cancelOperation failed");
+            json = CreateJson.createJson(200, 1, "取消点赞失败");
+            return json;
         } else {
+            log.warn("favouriteAction operation failed");
             return CreateJson.createJson(200, 1, "操作失败");
         }
+
     }
 }
 

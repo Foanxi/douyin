@@ -7,6 +7,7 @@ import com.douyin.pojo.Video;
 import com.douyin.service.FavouriteService;
 import com.douyin.service.RelationService;
 import com.douyin.service.VideoService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Component;
  * @author foanxi
  */
 @Component
+@Slf4j
 public class Entity2Model {
 
     @Autowired
@@ -29,8 +31,12 @@ public class Entity2Model {
         return new UserModel(user.getUserId(), user.getName(), user.getFollowCount(), user.getFollowerCount(), isFollow);
     }
 
-    public VideoModel video2videoModel(Video video, UserModel userModel) {
-        boolean isFavourite = favouriteService.isExistFavourite(userModel.getId(), video.getVideoId()) != null;
+    public VideoModel video2videoModel(Video video, UserModel userModel,String token) {
+
+        boolean isFavourite = false;
+        if (token != null && !"".equals(token)){
+            isFavourite = favouriteService.isExistFavourite(userModel.getId(), video.getVideoId()) != null;
+        }
         return new VideoModel(
                 video.getVideoId(),
                 userModel,

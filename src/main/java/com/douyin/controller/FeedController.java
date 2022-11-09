@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * @author foanxi
@@ -40,12 +41,12 @@ public class FeedController {
     @GetMapping("")
     public JSON videoFeed(@RequestParam("latest_time") String latestTime,
                           @RequestParam(value = "token", required = false) String token) {
-
+        log.info("token：{}",token);
         if (token != null && JwtHelper.isExpiration(token)) {
             log.warn("videoFeed token: {} isExpiration", token);
             return CreateJson.createJson(200, 1, "用户token过期，请重新登陆");
         }
-        Map<String, Object> map = videoService.feedVideo(latestTime);
+        Map<String, Object> map = videoService.feedVideo(latestTime,token);
         if (map == null) {
             log.warn("videoFeed is currently no video to play");
             return CreateJson.createJson(200, 1, "当前无视频");

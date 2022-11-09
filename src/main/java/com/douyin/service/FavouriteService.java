@@ -33,7 +33,7 @@ public interface FavouriteService extends IService<Favourite> {
      * @param userId 用户id
      * @return 返回于该用户相关的所有视频列表
      */
-    List<VideoModel> getVideoByUser(String userId);
+    List<VideoModel> getVideoByUser(String userId,String token);
 
     /**
      * 添加用户对该视频的点赞关系
@@ -46,7 +46,6 @@ public interface FavouriteService extends IService<Favourite> {
 
     /**
      * 删除用户对该视频的点赞关系
-     *
      * @param videoId 视频id
      * @param userId  用户id
      * @return 返回删除状态

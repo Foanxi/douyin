@@ -27,7 +27,7 @@ public interface VideoService extends IService<Video> {
      * @param latestTime 上次返回的视频时间
      * @return 视频集合
      */
-    Map<String, Object> feedVideo(String latestTime);
+    Map<String, Object> feedVideo(String latestTime,String token);
 
     /**
      * 获取用户发布列表
@@ -35,7 +35,7 @@ public interface VideoService extends IService<Video> {
      * @param userId 用户id
      * @return 返回视频列表模型
      */
-    List<VideoModel> getPublishById(Long userId);
+    List<VideoModel> getPublishById(Long userId,String token);
 
 
     /**

@@ -43,7 +43,7 @@ public class PublishController {
             JSONObject jsonObject = CreateJson.createJson(200, 1, "token失效");
             jsonObject.put("user", null);
         }
-        List<VideoModel> list = videoService.getPublishById(Long.valueOf(userId));
+        List<VideoModel> list = videoService.getPublishById(Long.valueOf(userId),token);
         log.info("getUserList list: {}", list);
         JSONObject jsonObject = CreateJson.createJson(200, 0, "视频列表展示成功");
         jsonObject.put("video_list", list);

@@ -70,9 +70,15 @@ public class UserController {
         }
     }
 
+    /**
+     *
+     * param username 登陆时的账号
+     * param password 登陆时的密码
+     * return
+     */
     @PostMapping("/register")
     public JSON register(@RequestParam("username") String username, @RequestParam("password") String password) {
-
+        log.info("register enter param username:{},password:{}",username,password);
         final Integer success = 1;
         final Integer exist = -1;
         final String statusCode = "statusCode";
@@ -82,6 +88,7 @@ public class UserController {
         //首先先判断数据库中是否有该用户
         if (map.get(statusCode).equals(exist)) {
             //返回错误信息
+            log.warn("register User is existed");
             return CreateJson.createJson(200, 1, "用户已存在");
         }
 
@@ -89,8 +96,10 @@ public class UserController {
             json = CreateJson.createJson(200, 0, "添加成功");
             json.put("user_id", map.get("userId"));
             json.put("token", map.get("token"));
+            log.info("register return json:{}",json);
         } else {
             json = CreateJson.createJson(200, 1, "注册失败");
+            log.warn("register User failed");
         }
         return json;
     }

@@ -66,7 +66,7 @@ public class VideoServiceImpl extends ServiceImpl<VideoMapper, Video> implements
     }
 
     @Override
-    public Map<String, Object> feedVideo(String latestTime) {
+    public Map<String, Object> feedVideo(String latestTime,String token) {
         final String init = "0";
         QueryWrapper<Video> queryWrapper = new QueryWrapper<>();
         List<Video> videos;
@@ -95,7 +95,7 @@ public class VideoServiceImpl extends ServiceImpl<VideoMapper, Video> implements
         for (Video video : videos) {
             User user = userService.getById(video.getAuthorId());
             UserModel userModel = entity2Model.user2userModel(user, video.getVideoId());
-            VideoModel videoModel = entity2Model.video2videoModel(video, userModel);
+            VideoModel videoModel = entity2Model.video2videoModel(video, userModel,token);
             videoModelList.add(videoModel);
         }
         feedMap.put("videoModelList", videoModelList);
@@ -107,7 +107,7 @@ public class VideoServiceImpl extends ServiceImpl<VideoMapper, Video> implements
      * @return 返回作者id视频模型
      */
     @Override
-    public List<VideoModel> getPublishById(Long userId) {
+    public List<VideoModel> getPublishById(Long userId,String token) {
         List<VideoModel> videoModelList = new ArrayList<>();
         List<Video> videoList = videoService.getVideo(userId);
         int size = videoList.size();
@@ -116,7 +116,7 @@ public class VideoServiceImpl extends ServiceImpl<VideoMapper, Video> implements
             User user = userService.getById(userId);
             for (Video video : videoList) {
                 UserModel userModel = entity2Model.user2userModel(user, video.getVideoId());
-                VideoModel videoModel = entity2Model.video2videoModel(video, userModel);
+                VideoModel videoModel = entity2Model.video2videoModel(video, userModel,token);
                 videoModelList.add(videoModel);
             }
             return videoModelList;
