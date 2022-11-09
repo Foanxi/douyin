@@ -32,10 +32,11 @@ public interface VideoService extends IService<Video> {
     /**
      * 获取用户发布列表
      *
-     * @param userId 用户id
+     * @param authorId 作者id
+     * @param token    当前登录用户的token
      * @return 返回视频列表模型
      */
-    List<VideoModel> getPublishById(Long userId,String token);
+    List<VideoModel> getPublishById(Long authorId, String token);
 
 
     /**

@@ -10,7 +10,6 @@ import com.douyin.service.RelationService;
 import com.douyin.service.UserService;
 import com.douyin.util.JwtHelper;
 import com.douyin.util.SnowFlake;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,6 +28,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     private RelationService relationService;
     @Autowired
     private UserService userService;
+
     /**
      * 根据账号返回用户信息
      * param: username
@@ -77,15 +77,16 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         }
         return map;
     }
+
     @Override
-    public boolean updateUserFollowCount(Long authorId, Integer authorFollowerCount, Long userId,Integer followCount) {
+    public boolean updateUserFollowCount(Long authorId, Integer authorFollowerCount, Long userId, Integer followCount) {
         User author = userService.getById(authorId);
         UpdateWrapper<User> updateWrapper1 = new UpdateWrapper<>();
-        updateWrapper1.eq("user_id", authorId).set("follower_count", authorFollowerCount +1);
+        updateWrapper1.eq("user_id", authorId).set("follower_count", authorFollowerCount + 1);
         boolean update = userService.update(author, updateWrapper1);
         User user = userService.getById(userId);
         UpdateWrapper<User> updateWrapper2 = new UpdateWrapper<>();
-        updateWrapper2.eq("user_id", userId).set("follow_count", followCount +1);
+        updateWrapper2.eq("user_id", userId).set("follow_count", followCount + 1);
         boolean update2 = userService.update(user, updateWrapper2);
         return update && update2;
     }
@@ -94,11 +95,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     public boolean updateUserFollowerCount(Long authorId, Integer authorFollowerCount, Long userId, Integer followCount) {
         User author = userService.getById(authorId);
         UpdateWrapper<User> updateWrapper1 = new UpdateWrapper<>();
-        updateWrapper1.eq("user_id", authorId).set("follower_count", authorFollowerCount -1);
+        updateWrapper1.eq("user_id", authorId).set("follower_count", authorFollowerCount - 1);
         boolean update = userService.update(author, updateWrapper1);
         User toUser = userService.getById(authorId);
         UpdateWrapper<User> updateWrapper2 = new UpdateWrapper<>();
-        updateWrapper2.eq("user_id", authorId).set("follow_count", followCount -1);
+        updateWrapper2.eq("user_id", authorId).set("follow_count", followCount - 1);
         boolean update2 = userService.update(toUser, updateWrapper2);
         return update && update2;
     }

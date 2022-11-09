@@ -70,7 +70,7 @@ public class CommentController {
             log.warn("getCommentList token: {} isExpiration", token);
             json = CreateJson.createJson(200, 1, "用户token过期，请重新登陆");
         } else {
-            List<CommentModel> commentList = commentService.getCommentList(videoId);
+            List<CommentModel> commentList = commentService.getCommentList(videoId, token);
             json = CreateJson.createJson(200, 0, "");
             json.put("comment_list", commentList);
             log.info("getCommentList return json: {}", JSONObject.toJSONString(json, true));

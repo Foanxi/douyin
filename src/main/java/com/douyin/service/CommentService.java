@@ -34,7 +34,8 @@ public interface CommentService extends IService<Comment> {
      * 获得该视频的完整的评论列表
      *
      * @param videoId 需要获取的视频的id
+     * @param token   当前用户的token值
      * @return 返回该视频的评论列表
      */
-    List<CommentModel> getCommentList(String videoId);
+    List<CommentModel> getCommentList(String videoId, String token);
 }

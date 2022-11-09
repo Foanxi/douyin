@@ -56,7 +56,7 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
             video.setCommentCount(video.getCommentCount() + 1);
             videoMapper.update(video, qw);
             User user = userService.getById(userId);
-            UserModel userModel = entity2Model.user2userModel(user, Long.valueOf(videoId));
+            UserModel userModel = entity2Model.user2userModel(user, Long.valueOf(videoId), token);
             Comment newComment = commentMapper.selectById(id);
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM-dd");
             String time = simpleDateFormat.format(new Date(newComment.getCreateTime().getTime()));
@@ -77,14 +77,14 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
     }
 
     @Override
-    public List<CommentModel> getCommentList(String videoId) {
+    public List<CommentModel> getCommentList(String videoId, String token) {
         QueryWrapper<Comment> qw = new QueryWrapper<>();
         qw.eq("video_id", videoId);
         List<Comment> comments = commentMapper.selectList(qw);
         List<CommentModel> commentModelList = new ArrayList<>();
         for (Comment c : comments) {
             User user = userService.getById(c.getUserId());
-            UserModel userModel = entity2Model.user2userModel(user, Long.valueOf(videoId));
+            UserModel userModel = entity2Model.user2userModel(user, Long.valueOf(videoId), token);
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM-dd");
             String time = simpleDateFormat.format(new Date(c.getCreateTime().getTime()));
             CommentModel commentModel = new CommentModel(c.getCommentId(), userModel, c.getCommentText(), time);

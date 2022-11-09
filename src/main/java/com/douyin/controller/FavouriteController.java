@@ -37,20 +37,18 @@ public class FavouriteController {
     @GetMapping("/list")
     public JSON getFavouriteList(@RequestParam("token") String token,
                                  @RequestParam("user_id") String userId) {
-        log.info("getFavouriteList enter param token:{},userId:{}",token,userId);
+        log.info("getFavouriteList enter param token:{},userId:{}", token, userId);
         if (JwtHelper.isExpiration(token)) {
             return CreateJson.createJson(200, 1, "用户token过期，请重新登陆");
         }
-        List<VideoModel> list = favouriteService.getVideoByUser(userId,token);
-        log.info("getFavouriteList list: {}", list);
-        JSONObject jsonObject = CreateJson.createJson(200, 0, "视频列表展示成功");
+        List<VideoModel> list = favouriteService.getVideoByUser(userId, token);
+        JSONObject jsonObject = CreateJson.createJson(200, 0, "用户点赞视频列表展示成功");
         jsonObject.put("video_list", list);
         log.info("getFavouriteList return json:{}", JSONObject.toJSONString(jsonObject, true));
         return jsonObject;
     }
 
     /**
-     *
      * param token 用于判断用户是否已登陆以及获取用户Id
      * param videoId 被点赞的视频Id
      * param actionType 1 表示点赞，2表示取消点赞
@@ -76,7 +74,7 @@ public class FavouriteController {
             boolean doFavourite = favouriteService.doFavourite(videoIdLong, userId);
             if (doFavourite) {
                 json = CreateJson.createJson(200, 0, "点赞成功");
-                log.info("favouriteAction return Json: {}",JSONObject.toJSONString(json,true));
+                log.info("favouriteAction return Json: {}", JSONObject.toJSONString(json, true));
                 return json;
             }
             json = CreateJson.createJson(200, 1, "点赞失败");
@@ -86,7 +84,7 @@ public class FavouriteController {
             // 说明用户取消点赞，首先先删除点赞表中的点赞列，
             boolean cancelFavourite = favouriteService.cancelFavourite(videoIdLong, userId);
             if (cancelFavourite) {
-                log.info("favouriteAction return Json:{}",JSONObject.toJSONString(json,true));
+                log.info("favouriteAction return Json:{}", JSONObject.toJSONString(json, true));
                 json = CreateJson.createJson(200, 0, "取消点赞成功");
                 return json;
             }

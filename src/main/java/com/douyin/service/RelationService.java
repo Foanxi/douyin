@@ -13,11 +13,11 @@ public interface RelationService extends IService<Relation> {
     /**
      * 查询是否存在关注关系
      *
-     * @param userId   关注者id
-     * @param authorId 被关注者id
+     * @param favouriteId 被关注者id
+     * @param authorId    关注者id
      * @return 返回是否存在被关注
      */
-    boolean getIsFollow(Long userId, Long authorId);
+    boolean getIsFollow(Long favouriteId, Long authorId);
 
     /**
      * 用户点击关注

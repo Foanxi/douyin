@@ -31,7 +31,7 @@ public class RelationServiceImpl extends ServiceImpl<RelationMapper, Relation> i
     private Entity2Model entity2Model;
 
     @Override
-    public boolean getIsFollow(Long authorId, Long favouriteId) {
+    public boolean getIsFollow(Long favouriteId, Long authorId) {
         QueryWrapper<Relation> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("author_id", authorId);
         queryWrapper.eq("favourite_id", favouriteId);
