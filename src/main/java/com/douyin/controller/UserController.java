@@ -46,7 +46,7 @@ public class UserController {
         log.info("getUserInformation list: {}", byIdList);
         JSONObject jsonObject = CreateJson.createJson(200, 0, "查询成功");
         jsonObject.put("user", byIdList);
-        log.info("getUserInformation out param json:{}", jsonObject);
+        log.info("getUserInformation out param json:{}", JSONObject.toJSONString(jsonObject, true));
         return jsonObject;
     }
 

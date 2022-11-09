@@ -47,7 +47,7 @@ public class PublishController {
         log.info("getUserList list: {}", list);
         JSONObject jsonObject = CreateJson.createJson(200, 0, "视频列表展示成功");
         jsonObject.put("video_list", list);
-        log.info("getUserList out param json:{}", jsonObject);
+        log.info("getUserList out param json:{}", JSONObject.toJSONString(jsonObject, true));
         return jsonObject;
     }
 

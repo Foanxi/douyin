@@ -48,7 +48,7 @@ public class FavouriteController {
         log.info("getFavouriteList list: {}", list);
         JSONObject jsonObject = CreateJson.createJson(200, 0, "视频列表展示成功");
         jsonObject.put("video_list", list);
-        log.info("getFavouriteList out param json:{}", jsonObject);
+        log.info("getFavouriteList out param json:{}", JSONObject.toJSONString(jsonObject, true));
         return jsonObject;
     }
 
