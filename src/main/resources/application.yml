@@ -21,7 +21,7 @@ server:
   port: 8080
 douyin:
   path: D:\code\douyin\src\main\resources\
-  ip_path: http://10.34.151.198:8080/
+  ip_path: http://10.34.140.181:8080/
 mybatis-plus:
   global-config:
     db-config:
@@ -63,7 +63,7 @@ server:
   port: 8080
 douyin:
   path: D:\code\douyin\src\main\resources\
-  ip_path: http://10.34.151.198:8080/
+  ip_path: http://10.34.140.181:8080/
 mybatis-plus:
   global-config:
     db-config:

@@ -2,9 +2,7 @@ package com.douyin.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.douyin.model.VideoModel;
-import com.douyin.pojo.Favourite;
 import com.douyin.service.FavouriteService;
 import com.douyin.service.VideoService;
 import com.douyin.util.CreateJson;
@@ -62,7 +60,7 @@ public class FavouriteController {
     public JSON favouriteAction(@RequestParam("token") String token,
                                 @RequestParam("video_id") String videoId,
                                 @RequestParam("action_type") String actionType) {
-        log.info("action enter param token:{},videoId:{},actionType:{}",token,videoId,actionType);
+        log.info("favouriteAction enter param token: {},videoId: {},actionType: {}", token, videoId, actionType);
         final String addType = "1";
         final String deleteType = "2";
         JSONObject json = null;
