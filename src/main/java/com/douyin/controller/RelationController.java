@@ -88,4 +88,33 @@ public class RelationController {
         }
 
     }
+
+
+    /**
+     * 展示粉丝列表
+     *
+     * @Param: userId 当前登录的用户id
+     * @Param: token 用户token鉴权
+     * @Return: 粉丝列表
+     */
+    @GetMapping("/follower/list/")
+    public JSONObject followerList(@RequestParam("user_id") String userId,
+                                   @RequestParam("token") String token) {
+        log.info("followerList enter param user_id: {},token: {}", userId, token);
+        JSONObject jsonObject;
+        if (JwtHelper.isExpiration(token)) {
+            log.warn("followerList token: {} isExpiration", token);
+            return CreateJson.createJson(200, 1, "用户token过期，请重新登陆");
+        }
+        List<UserModel> followerList = relationService.getFollowerList(Long.valueOf(userId));
+        if (followerList == null) {
+            log.info("followerList is null,The current user has not followed anyone");
+            return CreateJson.createJson(200, 0, "当前用户没有任何粉丝");
+        } else {
+            jsonObject = CreateJson.createJson(200, 0, "");
+            jsonObject.put("user_list", followerList);
+            log.info("followerList return json: {}", JSONObject.toJSONString(jsonObject, true));
+            return jsonObject;
+        }
+    }
 }

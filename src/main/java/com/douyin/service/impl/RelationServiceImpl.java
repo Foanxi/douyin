@@ -81,4 +81,25 @@ public class RelationServiceImpl extends ServiceImpl<RelationMapper, Relation> i
         }
         return userModelList;
     }
+
+    /**
+     * 查询用户的粉丝列表
+     *
+     * @param userId 目前查看状态的用户的id
+     * @return 返回用户的粉丝列表
+     */
+    @Override
+    public List<UserModel> getFollowerList(Long userId) {
+        QueryWrapper<Relation> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("author_id", userId);
+        List<UserModel> userModelFanList = new ArrayList<>();
+        List<Relation> relations = baseMapper.selectList(queryWrapper);
+        for (Relation relation : relations) {
+            Long favouriteId = relation.getFavouriteId();
+            User favourite = userService.getById(favouriteId);
+            UserModel userModel = new UserModel(favourite.getUserId(), favourite.getName(), favourite.getFollowCount(), favourite.getFollowerCount(), true);
+            userModelFanList.add(userModel);
+        }
+        return userModelFanList;
+    }
 }

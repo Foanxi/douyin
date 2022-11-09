@@ -44,4 +44,13 @@ public interface RelationService extends IService<Relation> {
      * @return 返回用户的关注列表
      */
     List<UserModel> getFollowList(Long userId);
+
+
+    /**
+     * 查询用户的粉丝列表
+     *
+     * @param userId 目前查看状态的用户的id
+     * @return 返回用户的粉丝列表
+     */
+    List<UserModel> getFollowerList(Long userId);
 }
