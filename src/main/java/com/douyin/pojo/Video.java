@@ -30,4 +30,12 @@ public class Video {
     private Timestamp createTime;
     private Timestamp deleteTime;
     private String title;
+
+    public Video(Long videoId, Long authorId, String playUrl, String coverUrl, String title) {
+        this.videoId = videoId;
+        this.authorId = authorId;
+        this.playUrl = playUrl;
+        this.coverUrl = coverUrl;
+        this.title = title;
+    }
 }

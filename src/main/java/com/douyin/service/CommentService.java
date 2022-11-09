@@ -24,10 +24,11 @@ public interface CommentService extends IService<Comment> {
     /**
      * 删除评论，但是执行的是软删除
      *
+     * @param videoId   需要删除评论的视频id
      * @param commentId 需要删除的评论的id
      * @return 返回是否软删除成功
      */
-    boolean deleteComment(String commentId);
+    boolean deleteComment(String videoId, String commentId);
 
     /**
      * 获得该视频的完整的评论列表

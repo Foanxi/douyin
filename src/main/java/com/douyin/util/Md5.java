@@ -24,7 +24,6 @@ public class Md5 {
             }
             return new String(chars);
         } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
             throw new RuntimeException("MD5加密出错！！！" + e);
         }
     }

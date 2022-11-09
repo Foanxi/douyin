@@ -8,11 +8,11 @@ import com.douyin.service.UserService;
 import com.douyin.util.CreateJson;
 import com.douyin.util.JwtHelper;
 import com.douyin.util.Md5;
-import com.douyin.util.SnowFlake;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.DigestUtils;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 
 /**
@@ -33,63 +33,74 @@ public class UserController {
     @GetMapping("/")
     public JSON getUserInformation(@RequestParam("user_id") String userId,
                                    @RequestParam("token") String token) {
-        //校验token
+        log.info("getUserInformation enter param token: {}, userId: {}", token, userId);
+        // 校验token
         if (JwtHelper.isExpiration(token)) {
+            log.warn("getUserInformation token: {} isExpiration", token);
             return CreateJson.createJson(200, 1, "用户token过期，请重新登陆");
         }
-//        当前用户id
+        // 当前用户id
         Long id = JwtHelper.getUserId(token);
-        //查询数据
-        UserModel byId = userService.getUserById(id, Long.valueOf(userId));
+        // 查询数据
+        UserModel byIdList = userService.getUserById(id, Long.valueOf(userId));
+        log.info("getUserInformation list: {}", byIdList);
         JSONObject jsonObject = CreateJson.createJson(200, 0, "查询成功");
-        jsonObject.put("user", byId);
-        log.info("返回的数据体为：{}", jsonObject);
+        jsonObject.put("user", byIdList);
+        log.info("getUserInformation out param json:{}", JSONObject.toJSONString(jsonObject, true));
         return jsonObject;
     }
 
     @PostMapping("/login")
     public JSON login(@RequestParam("username") String username, @RequestParam("password") String password) {
+        log.info("login enter param username: {},password: {}", username, password);
         String md5Password = Md5.encrypt(password);
         User u = userService.getUserByUsername(username);
-        log.info("用户为：{}", u);
         if (u == null) {
-            return CreateJson.createJson(400, 1, "用户不存在");
+            log.warn("login operation failed,username: {} is not exist", username);
+            return CreateJson.createJson(200, 1, "用户不存在");
         } else if (!u.getPassword().equals(md5Password)) {
-            return CreateJson.createJson(400, 1, "用户密码错误");
+            log.warn("login operation failed,username: {} and password: {} are inconsistent", username, password);
+            return CreateJson.createJson(200, 1, "用户密码错误");
         } else {
             JSONObject jsonObject = CreateJson.createJson(200, 0, "登陆成功");
             jsonObject.put("user_id", u.getUserId());
             jsonObject.put("token", JwtHelper.createToken(u.getUserId()));
-            log.info("jsonObject:{}", jsonObject);
+            log.info("login return json: {}", JSONObject.toJSONString(jsonObject, true));
             return jsonObject;
         }
     }
 
+    /**
+     *
+     * param username 登陆时的账号
+     * param password 登陆时的密码
+     * return
+     */
     @PostMapping("/register")
     public JSON register(@RequestParam("username") String username, @RequestParam("password") String password) {
-        User user;
+        log.info("register enter param username:{},password:{}",username,password);
+        final Integer success = 1;
+        final Integer exist = -1;
+        final String statusCode = "statusCode";
+
+        Map<String, Object> map = userService.register(username, password);
+        JSONObject json;
         //首先先判断数据库中是否有该用户
-        if (userService.getUserByUsername(username) != null) {
-            log.info("已经有用户注册过了");
-            user = userService.getUserByUsername(username);
+        if (map.get(statusCode).equals(exist)) {
             //返回错误信息
-            JSONObject jsonObject = CreateJson.createJson(400, 1, "用户已存在");
-            jsonObject.put("user_id", user.getUserId());
-            jsonObject.put("token", JwtHelper.createToken(user.getUserId()));
-            return jsonObject;
+            log.warn("register User is existed");
+            return CreateJson.createJson(200, 1, "用户已存在");
         }
-//        没有该用户，可以进行注册
-//        先对用户的密码进行加密，后将账号密码发送到数据库存储
-        String md5password = DigestUtils.md5DigestAsHex(password.getBytes());
-        log.info("用户加密后的密码为：{}", md5password);
-//        由于用户初始注册，并没有关注数和被关注数，因此都设置为0
-        user = new User(SnowFlake.nextId(), username, md5password, 0, 0);
-        boolean save = userService.save(user);
-        log.info("是否添加成功：{}", save);
-        JSONObject jsonObject = CreateJson.createJson(200, 0, "添加成功");
-        jsonObject.put("user_id", user.getUserId());
-        jsonObject.put("token", JwtHelper.createToken(user.getUserId()));
-        log.info("返回的数据体为：{}", jsonObject);
-        return jsonObject;
+
+        if (map.get(statusCode).equals(success)) {
+            json = CreateJson.createJson(200, 0, "添加成功");
+            json.put("user_id", map.get("userId"));
+            json.put("token", map.get("token"));
+            log.info("register return json:{}",json);
+        } else {
+            json = CreateJson.createJson(200, 1, "注册失败");
+            log.warn("register User failed");
+        }
+        return json;
     }
 }

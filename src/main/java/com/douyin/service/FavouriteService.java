@@ -19,15 +19,13 @@ public interface FavouriteService extends IService<Favourite> {
      */
     Favourite isExistFavourite(Long userId, Long videoId);
 
-    boolean updateFavourite(String actionType, Favourite favourite, Long userId, String videoId);
-
     /**
-     * 获取当前用户点赞过的视频id集合
+     * 获取当前用户点赞过关系
      *
-     * @Param:
-     * @Return:
+     * @param id 用户id
+     * @return 返回用户点赞过的数据
      */
-    List<Favourite> getVideoId(Long id);
+    List<Favourite> getFavouriteByVideoId(Long id);
 
     /**
      * 通过用户id获取该用户点赞的用户信息
@@ -35,5 +33,22 @@ public interface FavouriteService extends IService<Favourite> {
      * @param userId 用户id
      * @return 返回于该用户相关的所有视频列表
      */
-    List<VideoModel> getVideoByUser(String userId);
+    List<VideoModel> getVideoByUser(String userId,String token);
+
+    /**
+     * 添加用户对该视频的点赞关系
+     *
+     * @param videoId 视频id
+     * @param userId  用户id
+     * @return 返回添加状态
+     */
+    boolean doFavourite(Long videoId, Long userId);
+
+    /**
+     * 删除用户对该视频的点赞关系
+     * @param videoId 视频id
+     * @param userId  用户id
+     * @return 返回删除状态
+     */
+    boolean cancelFavourite(Long videoId, Long userId);
 }

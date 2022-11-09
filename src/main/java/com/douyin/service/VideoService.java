@@ -3,6 +3,7 @@ package com.douyin.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.douyin.model.VideoModel;
 import com.douyin.pojo.Video;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Map;
@@ -26,20 +27,24 @@ public interface VideoService extends IService<Video> {
      * @param latestTime 上次返回的视频时间
      * @return 视频集合
      */
-    Map<String, Object> feedVideo(String latestTime);
+    Map<String, Object> feedVideo(String latestTime,String token);
 
     /**
-     * @param videoId    视频id
-     * @param userId     用户id
-     * @param actionType 操作类型
-     */
-    void updateVideoFavourite(Long videoId, Long userId, String actionType);
-
-    /**
-     * 通过用户Id获取当前用户的发布列表
+     * 获取用户发布列表
      *
-     * @Param: Long userId 用户id
-     * @Return: List<VideoModel>
+     * @param userId 用户id
+     * @return 返回视频列表模型
      */
-    List<VideoModel> getVideoById(Long userId);
+    List<VideoModel> getPublishById(Long userId,String token);
+
+
+    /**
+     * 处理上传的视频
+     *
+     * @param title 视频标题
+     * @param token 上传视频的作者的token
+     * @param data  视频数据
+     * @return 返回视频上传是否成功
+     */
+    boolean publishVideo(MultipartFile data, String title, String token);
 }
