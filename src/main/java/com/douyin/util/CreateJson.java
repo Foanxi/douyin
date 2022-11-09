@@ -3,7 +3,7 @@ package com.douyin.util;
 import com.alibaba.fastjson.JSONObject;
 
 /**
- * @Author hongxiaobin
+ * @author hongxiaobin
  * @Time 2022/11/3-16:32
  */
 

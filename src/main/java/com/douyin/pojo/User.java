@@ -39,4 +39,10 @@ public class User {
         this.followCount = followCount;
         this.followerCount = followerCount;
     }
+
+    public User(Long userId, String name, String password) {
+        this.userId = userId;
+        this.name = name;
+        this.password = password;
+    }
 }

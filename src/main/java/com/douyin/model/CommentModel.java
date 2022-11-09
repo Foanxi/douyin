@@ -4,8 +4,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
-import java.sql.Timestamp;
-
 /**
  * @author foanxi
  */
@@ -15,6 +13,6 @@ public class CommentModel {
     private Long id;
     private UserModel user;
     private String content;
-    @JsonProperty("create_date")
-    private Timestamp createDate;
+    @JsonProperty(value = "create_date")
+    private String createDate;
 }

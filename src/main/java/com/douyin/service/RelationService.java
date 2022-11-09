@@ -15,4 +15,19 @@ public interface RelationService extends IService<Relation> {
      * @return 返回是否存在被关注
      */
     boolean getIsFollow(Long userId, Long authorId);
+    /**
+     * 用户点击关注
+     * param userId
+     * param authorId
+     * return
+     */
+    boolean updateVideoAndRelation(Long userId, Long authorId);
+
+    /**
+     * 用户取消关注
+     * param userId
+     * param authorId
+     * return
+     */
+    boolean cancelRelation(Long userId, Long authorId);
 }

@@ -26,14 +26,17 @@ public class Entity2Model {
     private FavouriteService favouriteService;
 
     public UserModel user2userModel(User user, Long videoId) {
-        log.info("user2userModel的videoId为：{}", videoId);
         Long authorId = videoService.getById(videoId).getAuthorId();
         boolean isFollow = relationService.getIsFollow(user.getUserId(), authorId);
         return new UserModel(user.getUserId(), user.getName(), user.getFollowCount(), user.getFollowerCount(), isFollow);
     }
 
-    public VideoModel video2videoModel(Video video, UserModel userModel) {
-        boolean isFavourite = favouriteService.isExistFavourite(userModel.getId(), video.getVideoId()) != null;
+    public VideoModel video2videoModel(Video video, UserModel userModel,String token) {
+
+        boolean isFavourite = false;
+        if (token != null && !"".equals(token)){
+            isFavourite = favouriteService.isExistFavourite(userModel.getId(), video.getVideoId()) != null;
+        }
         return new VideoModel(
                 video.getVideoId(),
                 userModel,

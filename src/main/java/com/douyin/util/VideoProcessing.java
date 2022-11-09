@@ -1,9 +1,7 @@
 package com.douyin.util;
 
-import lombok.extern.slf4j.Slf4j;
 import org.bytedeco.javacv.FFmpegFrameGrabber;
 import org.bytedeco.javacv.Frame;
-import org.bytedeco.javacv.FrameGrabber;
 import org.bytedeco.javacv.Java2DFrameConverter;
 
 import javax.imageio.ImageIO;
@@ -12,52 +10,34 @@ import java.io.File;
 import java.io.IOException;
 
 /**
- * @author: zhuanghaoxin
- * @Description:
- * @create: 2022-10-29 10:03
- **/
-@Slf4j
+ * @author zhuanghaoxin
+ */
 public class VideoProcessing {
-    public static void grabberVideoFramer(String videoFileName, String pictureName) {
-        long start = System.currentTimeMillis();
+    public static void grabberVideoFramer(String videoFileName, String pictureName) throws IOException {
         File targetFile = new File(pictureName);
-        FFmpegFrameGrabber ff = new FFmpegFrameGrabber(videoFileName);
-        try {
+        try (FFmpegFrameGrabber ff = new FFmpegFrameGrabber(videoFileName)) {
             ff.start();
-        } catch (FrameGrabber.Exception e) {
-            e.printStackTrace();
-        }
-        int length = ff.getLengthInFrames();
-        int i = 0;
-        Frame f = null;
-        while (i < length) {
-            // 去掉前5帧，避免出现全黑的图片，依自己情况而定
-            try {
+            int length = ff.getLengthInFrames();
+            int i = 0;
+            Frame f = new Frame();
+            while (i < length) {
+                // 去掉前5帧，避免出现全黑的图片，依自己情况而定
                 f = ff.grabImage();
-            } catch (FrameGrabber.Exception e) {
-                e.printStackTrace();
+                if ((i > 5) && (f.image != null)) {
+                    break;
+                }
+                i++;
             }
-            if ((i > 5) && (f.image != null)) {
-                break;
-            }
-            i++;
-        }
-        try {
-            ImageIO.write(FrameToBufferedImage(f), "jpg", targetFile);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        try {
+            ImageIO.write(frameToBufferedImage(f), "jpg", targetFile);
             ff.stop();
-        } catch (FrameGrabber.Exception e) {
-            e.printStackTrace();
+        } catch (IOException e) {
+            throw new IOException();
         }
     }
 
-    public static BufferedImage FrameToBufferedImage(Frame frame) {
+    public static BufferedImage frameToBufferedImage(Frame frame) {
         //创建BufferedImage对象
         Java2DFrameConverter converter = new Java2DFrameConverter();
-        BufferedImage bufferedImage = converter.getBufferedImage(frame);
-        return bufferedImage;
+        return converter.getBufferedImage(frame);
     }
 }
