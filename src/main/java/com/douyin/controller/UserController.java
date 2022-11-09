@@ -52,16 +52,20 @@ public class UserController {
 
     @PostMapping("/login")
     public JSON login(@RequestParam("username") String username, @RequestParam("password") String password) {
+        log.info("login enter param username: {},password: {}", username, password);
         String md5Password = Md5.encrypt(password);
         User u = userService.getUserByUsername(username);
         if (u == null) {
+            log.warn("login operation failed,username: {} is not exist", username);
             return CreateJson.createJson(200, 1, "用户不存在");
         } else if (!u.getPassword().equals(md5Password)) {
+            log.warn("login operation failed,username: {} and password: {} are inconsistent", username, password);
             return CreateJson.createJson(200, 1, "用户密码错误");
         } else {
             JSONObject jsonObject = CreateJson.createJson(200, 0, "登陆成功");
             jsonObject.put("user_id", u.getUserId());
             jsonObject.put("token", JwtHelper.createToken(u.getUserId()));
+            log.info("login return json: {}", JSONObject.toJSONString(jsonObject, true));
             return jsonObject;
         }
     }

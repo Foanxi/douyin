@@ -42,10 +42,12 @@ public class FeedController {
                           @RequestParam(value = "token", required = false) String token) {
 
         if (token != null && JwtHelper.isExpiration(token)) {
+            log.warn("videoFeed token: {} isExpiration", token);
             return CreateJson.createJson(200, 1, "用户token过期，请重新登陆");
         }
         Map<String, Object> map = videoService.feedVideo(latestTime);
         if (map == null) {
+            log.warn("videoFeed is currently no video to play");
             return CreateJson.createJson(200, 1, "当前无视频");
         } else {
             List<VideoModel> videoModelList = (List<VideoModel>) map.get("videoModelList");
@@ -54,6 +56,7 @@ public class FeedController {
             jsonObject = CreateJson.createJson(200, 0, "视频流获取成功");
             jsonObject.put("video_list", videoModelList);
             jsonObject.put("next_time", nextTime.getTime());
+            log.info("videoFeed return json: {}", JSONObject.toJSONString(jsonObject, true));
             return jsonObject;
         }
 

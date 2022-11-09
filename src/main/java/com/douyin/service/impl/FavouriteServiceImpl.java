@@ -122,8 +122,7 @@ public class FavouriteServiceImpl extends ServiceImpl<FavouriteMapper, Favourite
             // 然后再在视频表中将点赞数-1
             UpdateWrapper<Video> updateWrapper = new UpdateWrapper<>();
             updateWrapper.eq("video_id", videoId).set("favourite_count", video1.getFavouriteCount() - 1);
-            boolean update = videoService.update(video1, updateWrapper);
-            return update;
+            return videoService.update(video1, updateWrapper);
         }
         return false;
     }
