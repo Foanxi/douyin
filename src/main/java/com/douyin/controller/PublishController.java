@@ -35,19 +35,19 @@ public class PublishController {
      * @Return:
      */
     @GetMapping("/list")
-    public JSON getUserList(@RequestParam("token") String token,
-                            @RequestParam("user_id") String userId) {
-        log.info("getUserList enter param token: {}, userId: {}", token, userId);
+    public JSON getPublishList(@RequestParam("token") String token,
+                               @RequestParam("user_id") String userId) {
+        log.info("getPublishList enter param token: {}, userId: {}", token, userId);
         if (JwtHelper.isExpiration(token)) {
-            log.warn("getUserList token: {} isExpiration", token);
+            log.warn("getPublishList token: {} isExpiration", token);
             JSONObject jsonObject = CreateJson.createJson(200, 1, "token失效");
             jsonObject.put("user", null);
         }
-        List<VideoModel> list = videoService.getPublishById(Long.valueOf(userId),token);
-        log.info("getUserList list: {}", list);
-        JSONObject jsonObject = CreateJson.createJson(200, 0, "视频列表展示成功");
+        List<VideoModel> list = videoService.getPublishById(Long.valueOf(userId), token);
+        log.info("getPublishList list: {}", list);
+        JSONObject jsonObject = CreateJson.createJson(200, 0, "发布视频列表展示成功");
         jsonObject.put("video_list", list);
-        log.info("getUserList out param json:{}", JSONObject.toJSONString(jsonObject, true));
+        log.info("getPublishList out param json:{}", JSONObject.toJSONString(jsonObject, true));
         return jsonObject;
     }
 

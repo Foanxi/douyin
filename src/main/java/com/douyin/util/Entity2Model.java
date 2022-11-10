@@ -25,16 +25,20 @@ public class Entity2Model {
     @Autowired
     private FavouriteService favouriteService;
 
-    public UserModel user2userModel(User user, Long videoId) {
-        Long authorId = videoService.getById(videoId).getAuthorId();
-        boolean isFollow = relationService.getIsFollow(user.getUserId(), authorId);
+    public UserModel user2userModel(User user, Long videoId, String token) {
+        boolean isFollow = false;
+        if (token != null) {
+            Long userId = JwtHelper.getUserId(token);
+            Long authorId = videoService.getById(videoId).getAuthorId();
+            isFollow = relationService.getIsFollow(userId, authorId);
+        }
         return new UserModel(user.getUserId(), user.getName(), user.getFollowCount(), user.getFollowerCount(), isFollow);
     }
 
-    public VideoModel video2videoModel(Video video, UserModel userModel,String token) {
+    public VideoModel video2videoModel(Video video, UserModel userModel, String token) {
 
         boolean isFavourite = false;
-        if (token != null && !"".equals(token)){
+        if (token != null && !"".equals(token)) {
             isFavourite = favouriteService.isExistFavourite(userModel.getId(), video.getVideoId()) != null;
         }
         return new VideoModel(

@@ -43,7 +43,6 @@ public class UserController {
         Long id = JwtHelper.getUserId(token);
         // 查询数据
         UserModel byIdList = userService.getUserById(id, Long.valueOf(userId));
-        log.info("getUserInformation list: {}", byIdList);
         JSONObject jsonObject = CreateJson.createJson(200, 0, "查询成功");
         jsonObject.put("user", byIdList);
         log.info("getUserInformation out param json:{}", JSONObject.toJSONString(jsonObject, true));
@@ -71,14 +70,13 @@ public class UserController {
     }
 
     /**
-     *
      * param username 登陆时的账号
      * param password 登陆时的密码
      * return
      */
     @PostMapping("/register")
     public JSON register(@RequestParam("username") String username, @RequestParam("password") String password) {
-        log.info("register enter param username:{},password:{}",username,password);
+        log.info("register enter param username:{},password:{}", username, password);
         final Integer success = 1;
         final Integer exist = -1;
         final String statusCode = "statusCode";
@@ -96,7 +94,7 @@ public class UserController {
             json = CreateJson.createJson(200, 0, "添加成功");
             json.put("user_id", map.get("userId"));
             json.put("token", map.get("token"));
-            log.info("register return json:{}",json);
+            log.info("register return json:{}", json);
         } else {
             json = CreateJson.createJson(200, 1, "注册失败");
             log.warn("register User failed");

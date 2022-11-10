@@ -66,20 +66,20 @@ public class VideoServiceImpl extends ServiceImpl<VideoMapper, Video> implements
     }
 
     @Override
-    public Map<String, Object> feedVideo(String latestTime,String token) {
+    public Map<String, Object> feedVideo(String latestTime, String token) {
         final String init = "0";
         QueryWrapper<Video> queryWrapper = new QueryWrapper<>();
         List<Video> videos;
         Map<String, Object> feedMap = new HashMap<>();
         if (init.equals(latestTime) || latestTime == null) {
-            queryWrapper.last("limit " + limit);
+            queryWrapper.orderByDesc("create_time").last("limit " + limit);
             videos = baseMapper.selectList(queryWrapper);
         } else {
             Timestamp timestamp = new Timestamp(Long.parseLong(latestTime));
-            queryWrapper.le("create_time", timestamp).last("limit " + limit);
+            queryWrapper.lt("create_time", timestamp).orderByDesc("create_time").last("limit " + limit);
             videos = videoService.list(queryWrapper);
             if (videos.size() == 0) {
-                videos = baseMapper.selectList(new QueryWrapper<Video>().last("limit" + limit));
+                videos = baseMapper.selectList(new QueryWrapper<Video>().orderByDesc("create_time").last("limit " + limit));
             }
         }
         if (videos.size() == 0) {
@@ -93,9 +93,9 @@ public class VideoServiceImpl extends ServiceImpl<VideoMapper, Video> implements
         feedMap.put("nextTime", videos.get(videos.size() - 1).getCreateTime());
         List<VideoModel> videoModelList = new ArrayList<>();
         for (Video video : videos) {
-            User user = userService.getById(video.getAuthorId());
-            UserModel userModel = entity2Model.user2userModel(user, video.getVideoId());
-            VideoModel videoModel = entity2Model.video2videoModel(video, userModel,token);
+            User author = userService.getById(video.getAuthorId());
+            UserModel userModel = entity2Model.user2userModel(author, video.getVideoId(), token);
+            VideoModel videoModel = entity2Model.video2videoModel(video, userModel, token);
             videoModelList.add(videoModel);
         }
         feedMap.put("videoModelList", videoModelList);
@@ -103,20 +103,20 @@ public class VideoServiceImpl extends ServiceImpl<VideoMapper, Video> implements
     }
 
     /**
-     * @param userId 作者id
+     * @param authorId 作者id
      * @return 返回作者id视频模型
      */
     @Override
-    public List<VideoModel> getPublishById(Long userId,String token) {
+    public List<VideoModel> getPublishById(Long authorId, String token) {
         List<VideoModel> videoModelList = new ArrayList<>();
-        List<Video> videoList = videoService.getVideo(userId);
+        List<Video> videoList = videoService.getVideo(authorId);
         int size = videoList.size();
         if (size > 0) {
             // 得到userModel
-            User user = userService.getById(userId);
+            User author = userService.getById(authorId);
             for (Video video : videoList) {
-                UserModel userModel = entity2Model.user2userModel(user, video.getVideoId());
-                VideoModel videoModel = entity2Model.video2videoModel(video, userModel,token);
+                UserModel userModel = entity2Model.user2userModel(author, video.getVideoId(), token);
+                VideoModel videoModel = entity2Model.video2videoModel(video, userModel, token);
                 videoModelList.add(videoModel);
             }
             return videoModelList;

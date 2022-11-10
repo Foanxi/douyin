@@ -1,6 +1,6 @@
 package com.douyin.model;
 
-import com.alibaba.fastjson.annotation.JSONField;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -13,10 +13,10 @@ import lombok.Data;
 public class UserModel {
     private Long id;
     private String name;
-    @JSONField(name = "follow_count")
+    @JsonProperty("follow_count")
     private Integer followCount;
-    @JSONField(name = "follower_count")
+    @JsonProperty("follower_count")
     private Integer followerCount;
-    @JSONField(name = "is_follow")
-    private Boolean isFollow;
+    @JsonProperty("is_follow")
+    private boolean isFollow;
 }
