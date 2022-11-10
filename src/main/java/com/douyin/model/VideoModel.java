@@ -1,6 +1,5 @@
 package com.douyin.model;
 
-import com.alibaba.fastjson.annotation.JSONField;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -28,7 +27,7 @@ public class VideoModel {
 
     @JsonProperty("is_favorite")
     private boolean isFavorite;
-    @JSONField(name = "title")
+    @JsonProperty("title")
     private String title;
 }
 

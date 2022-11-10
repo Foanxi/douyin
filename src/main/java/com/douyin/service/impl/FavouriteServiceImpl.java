@@ -105,7 +105,7 @@ public class FavouriteServiceImpl extends ServiceImpl<FavouriteMapper, Favourite
         QueryWrapper<Favourite> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("user_id", userId).eq("video_id", videoId);
         Favourite selectOne = baseMapper.selectOne(queryWrapper);
-        if (selectOne == null && baseMapper.insert(favourite) != 1) {
+        if (selectOne == null && baseMapper.insert(favourite) == 1) {
             UpdateWrapper<Video> updateWrapper = new UpdateWrapper<>();
             updateWrapper.eq("video_id", videoId).set("favourite_count", video1.getFavouriteCount() + 1);
             return videoService.update(video1, updateWrapper);
