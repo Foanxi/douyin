@@ -14,6 +14,7 @@ import com.douyin.service.RelationService;
 import com.douyin.service.UserService;
 import com.douyin.service.VideoService;
 import com.douyin.util.Entity2Model;
+import com.douyin.util.RedisUtil;
 import com.douyin.util.SnowFlake;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,6 +23,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+import static com.douyin.util.RedisIdentification.USER_QUERY_KEY;
+import static com.douyin.util.RedisIdentification.USER_QUERY_TTL;
 
 /**
  * @author hongxiaobin
@@ -42,6 +47,8 @@ public class FavouriteServiceImpl extends ServiceImpl<FavouriteMapper, Favourite
     private FavouriteService favouriteService;
     @Autowired
     private Entity2Model entity2Model;
+    @Autowired
+    private RedisUtil redisUtil;
 
     @Override
     public Favourite isExistFavourite(Long userId, Long videoId) {
@@ -87,7 +94,7 @@ public class FavouriteServiceImpl extends ServiceImpl<FavouriteMapper, Favourite
                 videoList.add(video);
             }
             for (Video video : videoList) {
-                User user = userService.getById(video.getAuthorId());
+                User user = redisUtil.queryWithoutPassThrough(USER_QUERY_KEY, video.getAuthorId(), User.class, userService::getById, USER_QUERY_TTL, TimeUnit.MINUTES);
                 UserModel userModel = entity2Model.user2userModel(user, video.getVideoId(), token);
                 VideoModel videoModel = entity2Model.video2videoModel(video, userModel, token);
                 videoModelList.add(videoModel);
@@ -115,14 +122,14 @@ public class FavouriteServiceImpl extends ServiceImpl<FavouriteMapper, Favourite
 
     @Override
     public boolean cancelFavourite(Long videoId, Long userId) {
-        Video video1 = videoService.getById(videoId);
+        Video video = videoService.getById(videoId);
         QueryWrapper<Favourite> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("video_id", videoId).eq("user_id", userId);
         if (favouriteService.remove(queryWrapper)) {
             // 然后再在视频表中将点赞数-1
             UpdateWrapper<Video> updateWrapper = new UpdateWrapper<>();
-            updateWrapper.eq("video_id", videoId).set("favourite_count", video1.getFavouriteCount() - 1);
-            return videoService.update(video1, updateWrapper);
+            updateWrapper.eq("video_id", videoId).set("favourite_count", video.getFavouriteCount() - 1);
+            return videoService.update(video, updateWrapper);
         }
         return false;
     }

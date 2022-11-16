@@ -11,10 +11,7 @@ import com.douyin.service.FavouriteService;
 import com.douyin.service.RelationService;
 import com.douyin.service.UserService;
 import com.douyin.service.VideoService;
-import com.douyin.util.Entity2Model;
-import com.douyin.util.JwtHelper;
-import com.douyin.util.SnowFlake;
-import com.douyin.util.VideoProcessing;
+import com.douyin.util.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -25,6 +22,10 @@ import java.io.File;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
+
+import static com.douyin.util.RedisIdentification.USER_QUERY_KEY;
+import static com.douyin.util.RedisIdentification.USER_QUERY_TTL;
 
 /**
  * @author foanxi
@@ -52,6 +53,8 @@ public class VideoServiceImpl extends ServiceImpl<VideoMapper, Video> implements
     private VideoMapper videoMapper;
     @Autowired
     private Entity2Model entity2Model;
+    @Autowired
+    private RedisUtil redisUtil;
 
     @Override
     public List<Video> getVideo(Long userId) {
@@ -93,7 +96,7 @@ public class VideoServiceImpl extends ServiceImpl<VideoMapper, Video> implements
         feedMap.put("nextTime", videos.get(videos.size() - 1).getCreateTime());
         List<VideoModel> videoModelList = new ArrayList<>();
         for (Video video : videos) {
-            User author = userService.getById(video.getAuthorId());
+            User author = redisUtil.queryWithoutPassThrough(USER_QUERY_KEY, video.getAuthorId(), User.class, userService::getById, USER_QUERY_TTL, TimeUnit.MINUTES);
             UserModel userModel = entity2Model.user2userModel(author, video.getVideoId(), token);
             VideoModel videoModel = entity2Model.video2videoModel(video, userModel, token);
             videoModelList.add(videoModel);

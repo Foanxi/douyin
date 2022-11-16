@@ -12,5 +12,4 @@ public class DouyinApplication {
     public static void main(String[] args) {
         SpringApplication.run(DouyinApplication.class, args);
     }
-
 }

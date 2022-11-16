@@ -13,6 +13,7 @@ import com.douyin.service.CommentService;
 import com.douyin.service.UserService;
 import com.douyin.util.Entity2Model;
 import com.douyin.util.JwtHelper;
+import com.douyin.util.RedisUtil;
 import com.douyin.util.SnowFlake;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,6 +23,10 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+import static com.douyin.util.RedisIdentification.USER_QUERY_KEY;
+import static com.douyin.util.RedisIdentification.USER_QUERY_TTL;
 
 /**
  * @author foanxi
@@ -38,6 +43,8 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
     private UserService userService;
     @Autowired
     private Entity2Model entity2Model;
+    @Autowired
+    private RedisUtil redisUtil;
 
     private final Integer SUCCESS = 1;
 
@@ -55,7 +62,7 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
             Video video = videoMapper.selectById(videoId);
             video.setCommentCount(video.getCommentCount() + 1);
             videoMapper.update(video, qw);
-            User user = userService.getById(userId);
+            User user = redisUtil.queryWithoutPassThrough(USER_QUERY_KEY, userId, User.class, userService::getById, USER_QUERY_TTL, TimeUnit.MINUTES);
             UserModel userModel = entity2Model.user2userModel(user, Long.valueOf(videoId), token);
             Comment newComment = commentMapper.selectById(id);
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM-dd");
@@ -83,7 +90,7 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
         List<Comment> comments = commentMapper.selectList(qw);
         List<CommentModel> commentModelList = new ArrayList<>();
         for (Comment c : comments) {
-            User user = userService.getById(c.getUserId());
+            User user = redisUtil.queryWithoutPassThrough(USER_QUERY_KEY, c.getUserId(), User.class, userService::getById, USER_QUERY_TTL, TimeUnit.MINUTES);
             UserModel userModel = entity2Model.user2userModel(user, Long.valueOf(videoId), token);
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM-dd");
             String time = simpleDateFormat.format(new Date(c.getCreateTime().getTime()));

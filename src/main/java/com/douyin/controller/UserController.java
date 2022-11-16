@@ -3,16 +3,15 @@ package com.douyin.controller;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.douyin.model.UserModel;
-import com.douyin.pojo.User;
 import com.douyin.service.UserService;
 import com.douyin.util.CreateJson;
 import com.douyin.util.JwtHelper;
-import com.douyin.util.Md5;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
+import java.util.Objects;
 
 
 /**
@@ -25,11 +24,6 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    /**
-     * @param userId 用户唯一标识id
-     * @param token  用户令牌
-     * @return 返回用户信息
-     */
     @GetMapping("/")
     public JSON getUserInformation(@RequestParam("user_id") String userId,
                                    @RequestParam("token") String token) {
@@ -42,9 +36,9 @@ public class UserController {
         // 当前用户id
         Long id = JwtHelper.getUserId(token);
         // 查询数据
-        UserModel byIdList = userService.getUserById(id, Long.valueOf(userId));
+        UserModel userModel = userService.getUserById(id, Long.valueOf(userId));
         JSONObject jsonObject = CreateJson.createJson(200, 0, "查询成功");
-        jsonObject.put("user", byIdList);
+        jsonObject.put("user", userModel);
         log.info("getUserInformation out param json:{}", JSONObject.toJSONString(jsonObject, true));
         return jsonObject;
     }
@@ -52,28 +46,28 @@ public class UserController {
     @PostMapping("/login")
     public JSON login(@RequestParam("username") String username, @RequestParam("password") String password) {
         log.info("login enter param username: {},password: {}", username, password);
-        String md5Password = Md5.encrypt(password);
-        User u = userService.getUserByUsername(username);
-        if (u == null) {
+        Long result = userService.login(username, password);
+        final Long unExist = -1L;
+        final Long inconsistent = 0L;
+        final Long fail = -2L;
+        if (Objects.equals(result, unExist)) {
             log.warn("login operation failed,username: {} is not exist", username);
             return CreateJson.createJson(200, 1, "用户不存在");
-        } else if (!u.getPassword().equals(md5Password)) {
+        } else if (Objects.equals(result, inconsistent)) {
             log.warn("login operation failed,username: {} and password: {} are inconsistent", username, password);
             return CreateJson.createJson(200, 1, "用户密码错误");
+        } else if (Objects.equals(result, fail)) {
+            log.warn("login operation failed,put in bloom fail");
+            return CreateJson.createJson(200, 1, "服务器错误");
         } else {
             JSONObject jsonObject = CreateJson.createJson(200, 0, "登陆成功");
-            jsonObject.put("user_id", u.getUserId());
-            jsonObject.put("token", JwtHelper.createToken(u.getUserId()));
+            jsonObject.put("user_id", result);
+            jsonObject.put("token", JwtHelper.createToken(result));
             log.info("login return json: {}", JSONObject.toJSONString(jsonObject, true));
             return jsonObject;
         }
     }
 
-    /**
-     * param username 登陆时的账号
-     * param password 登陆时的密码
-     * return
-     */
     @PostMapping("/register")
     public JSON register(@RequestParam("username") String username, @RequestParam("password") String password) {
         log.info("register enter param username:{},password:{}", username, password);

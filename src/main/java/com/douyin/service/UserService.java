@@ -35,23 +35,35 @@ public interface UserService extends IService<User> {
      * @return 返回注册状态
      */
     Map<String, Object> register(String username, String password);
-    /**
-     * 更改关注者与被关注者的关注数或被关注数，并新增关注关系
-     * param userId
-     * param authorFollowerCount
-     * param authorId
-     * param followCount
-     * return
-     */
-    boolean updateUserFollowCount(Long authorId,Integer authorFollowerCount,Long userId,Integer followCount);
 
     /**
-     * 更改关注者与被关注者的关注数或被关注数，并删除相关的关注关系
-     * param authorId
-     * param authorFollowerCount
-     * param userId
-     * param followCount
-     * return
+     * 更改关注者与被关注者的关注数或被关注数，并新增关注关系
+     *
+     * @param userId              用户id
+     * @param authorFollowerCount 用户的粉丝数量
+     * @param authorId            作者id
+     * @param followCount         作者的关注数量
+     * @return 返回是否更新成功
      */
-    boolean updateUserFollowerCount(Long authorId,Integer authorFollowerCount,Long userId,Integer followCount);
+    boolean updateUserFollowCount(Long authorId, Integer authorFollowerCount, Long userId, Integer followCount);
+
+    /**
+     * 更新关注者与被关注者的关注数或被关注数，并删除相关的关注关系
+     *
+     * @param authorId            作者id
+     * @param authorFollowerCount 作者粉丝id
+     * @param userId              用户id
+     * @param followCount         作者关注id
+     * @return 返回是否更新成功
+     */
+    boolean updateUserUnfollowCount(Long authorId, Integer authorFollowerCount, Long userId, Integer followCount);
+
+    /**
+     * 实现用户登录校验
+     *
+     * @param username 用户名
+     * @param password 密码
+     * @return 返回登陆状态码
+     */
+    Long login(String username, String password);
 }
