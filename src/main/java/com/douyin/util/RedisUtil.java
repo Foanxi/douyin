@@ -124,7 +124,7 @@ public class RedisUtil {
         // 如果数据库中查询存在则缓存重建一个缓存
         this.set(key, result, time, timeUnit);
 
-        return t;
+        return result;
     }
 
     /**

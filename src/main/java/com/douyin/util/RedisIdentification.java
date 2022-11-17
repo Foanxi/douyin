@@ -13,4 +13,6 @@ public class RedisIdentification {
     public static final String LOCK_CACHE_KEY = "lock:cache:";
     public static final Long LOCK_CACHE_TTL = 10L;
 
+    public static final String COMMENT_QUERY_KEY = "comment:query:";
+    public static final Long COMMENT_QUERY_TTL = 60L;
 }

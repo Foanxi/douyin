@@ -25,8 +25,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import static com.douyin.util.RedisIdentification.USER_QUERY_KEY;
-import static com.douyin.util.RedisIdentification.USER_QUERY_TTL;
+import static com.douyin.util.RedisIdentification.*;
 
 /**
  * @author foanxi
@@ -64,7 +63,7 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
             videoMapper.update(video, qw);
             User user = redisUtil.queryWithoutPassThrough(USER_QUERY_KEY, userId, User.class, userService::getById, USER_QUERY_TTL, TimeUnit.MINUTES);
             UserModel userModel = entity2Model.user2userModel(user, Long.valueOf(videoId), token);
-            Comment newComment = commentMapper.selectById(id);
+            Comment newComment = redisUtil.queryWithoutPassThrough(COMMENT_QUERY_KEY, id, Comment.class, this::getById, COMMENT_QUERY_TTL, TimeUnit.MINUTES);
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM-dd");
             String time = simpleDateFormat.format(new Date(newComment.getCreateTime().getTime()));
             return new CommentModel(id, userModel, commentText, time);
