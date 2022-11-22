@@ -7,6 +7,7 @@ import com.douyin.service.UserService;
 import com.douyin.service.VideoService;
 import com.douyin.util.CreateJson;
 import com.douyin.util.JwtHelper;
+import com.douyin.util.RedisUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -27,10 +28,8 @@ public class PublishController {
     @Autowired
     private UserService userService;
 
-
     /**
      * 发布列表
-     *
      * @Param:
      * @Return:
      */
@@ -60,7 +59,6 @@ public class PublishController {
             jsonObject = CreateJson.createJson(200, 1, "用户token已过期");
             return jsonObject;
         }
-
         boolean status = videoService.publishVideo(data, title, token);
 
         if (status) {

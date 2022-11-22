@@ -15,4 +15,7 @@ public class RedisIdentification {
 
     public static final String COMMENT_QUERY_KEY = "comment:query:";
     public static final Long COMMENT_QUERY_TTL = 60L;
+
+    public static final String VIDEO_QUERY_KEY = "video:query:";
+    public static final Long VIDEO_QUERY_TTL = 60L;
 }

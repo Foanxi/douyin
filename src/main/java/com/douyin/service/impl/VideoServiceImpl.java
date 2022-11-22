@@ -24,8 +24,7 @@ import java.sql.Timestamp;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
-import static com.douyin.util.RedisIdentification.USER_QUERY_KEY;
-import static com.douyin.util.RedisIdentification.USER_QUERY_TTL;
+import static com.douyin.util.RedisIdentification.*;
 
 /**
  * @author foanxi
@@ -56,6 +55,11 @@ public class VideoServiceImpl extends ServiceImpl<VideoMapper, Video> implements
     @Autowired
     private RedisUtil redisUtil;
 
+    /**
+     * 获取指定用户的视频
+     * @param userId 用户id
+     * @return 返回视频列表
+     */
     @Override
     public List<Video> getVideo(Long userId) {
         QueryWrapper<Video> queryWrapper = new QueryWrapper<>();
@@ -173,9 +177,12 @@ public class VideoServiceImpl extends ServiceImpl<VideoMapper, Video> implements
         // 创建video对象导入数据库
         videoPath = "/video/" + userId + "/" + uuid + ".mp4";
         pictureName = "/picture/" + userId + "/" + uuid + ".jpg";
+
         Long videoId = SnowFlake.nextId();
         Video video = new Video(videoId, userId, videoPath, pictureName, title);
         videoService.save(video);
+        //添加视频时将其加入到缓存中
+        redisUtil.queryWithoutPassThrough(VIDEO_QUERY_KEY,videoId,Video.class,videoService::getById,VIDEO_QUERY_TTL,TimeUnit.MINUTES);
         return true;
     }
 }

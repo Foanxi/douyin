@@ -11,6 +11,7 @@ import com.douyin.pojo.User;
 import com.douyin.pojo.Video;
 import com.douyin.service.CommentService;
 import com.douyin.service.UserService;
+import com.douyin.service.VideoService;
 import com.douyin.util.Entity2Model;
 import com.douyin.util.JwtHelper;
 import com.douyin.util.RedisUtil;
@@ -44,22 +45,21 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
     private Entity2Model entity2Model;
     @Autowired
     private RedisUtil redisUtil;
-
+    @Autowired
+    private VideoService videoService;
     private final Integer SUCCESS = 1;
 
     @Override
     public CommentModel addComment(String token, String videoId, String commentText) {
         Long userId = JwtHelper.getUserId(token);
         Long id = SnowFlake.nextId();
-
-
         Comment comment = new Comment(id, userId, Long.parseLong(videoId), commentText);
         int insert = commentMapper.insert(comment);
         if (insert == SUCCESS) {
+            Video video = redisUtil.queryWithoutPassThrough(VIDEO_QUERY_KEY, Long.parseLong(videoId), Video.class, videoService::getById, VIDEO_QUERY_TTL, TimeUnit.MINUTES);
+            video.setCommentCount(video.getCommentCount() + 1);
             QueryWrapper<Video> qw = new QueryWrapper<>();
             qw.eq("video_id", videoId);
-            Video video = videoMapper.selectById(videoId);
-            video.setCommentCount(video.getCommentCount() + 1);
             videoMapper.update(video, qw);
             User user = redisUtil.queryWithoutPassThrough(USER_QUERY_KEY, userId, User.class, userService::getById, USER_QUERY_TTL, TimeUnit.MINUTES);
             UserModel userModel = entity2Model.user2userModel(user, Long.valueOf(videoId), token);
@@ -74,10 +74,10 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
 
     @Override
     public boolean deleteComment(String videoId, String commentId) {
+        Video video = redisUtil.queryWithoutPassThrough(VIDEO_QUERY_KEY, Long.parseLong(videoId), Video.class, videoService::getById, VIDEO_QUERY_TTL, TimeUnit.MINUTES);
+        video.setCommentCount(video.getCommentCount() - 1);
         QueryWrapper<Video> qw = new QueryWrapper<>();
         qw.eq("video_id", videoId);
-        Video video = videoMapper.selectById(videoId);
-        video.setCommentCount(video.getCommentCount() - 1);
         videoMapper.update(video, qw);
         return commentMapper.deleteById(commentId) == SUCCESS;
     }
