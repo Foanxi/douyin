@@ -79,7 +79,7 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
         QueryWrapper<Video> qw = new QueryWrapper<>();
         qw.eq("video_id", videoId);
         videoMapper.update(video, qw);
-        return commentMapper.deleteById(commentId) == SUCCESS;
+        return redisUtil.deleteRedisContent(COMMENT_QUERY_KEY, commentId) && commentMapper.deleteById(commentId) == SUCCESS;
     }
 
     @Override

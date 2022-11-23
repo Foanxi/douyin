@@ -31,14 +31,14 @@ public class Entity2Model {
 
     public UserModel user2userModel(User user, Long videoId, String token) {
         log.info("User:{},video:{},token:{}", user, videoId, token);
+        boolean isFollow = false;
         if (token != null) {
             Long userId = JwtHelper.getUserId(token);
             Video video = redisUtil.queryWithoutPassThrough(RedisIdentification.VIDEO_QUERY_KEY, videoId, Video.class, videoService::getById, RedisIdentification.VIDEO_QUERY_TTL, TimeUnit.MINUTES);
             Long authorId = video.getAuthorId();
-            boolean isFavourite = relationService.getIsFollow(userId, authorId);
-            log.info("是否关注：{}", isFavourite);
+            isFollow = relationService.getIsFollow(userId, authorId);
         }
-        return new UserModel(user.getUserId(), user.getName(), user.getFollowCount(), user.getFollowerCount(), true);
+        return new UserModel(user.getUserId(), user.getName(), user.getFollowCount(), user.getFollowerCount(), isFollow);
     }
 
     public VideoModel video2videoModel(Video video, UserModel userModel, String token) {

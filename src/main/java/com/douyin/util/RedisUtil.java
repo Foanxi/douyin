@@ -176,4 +176,22 @@ public class RedisUtil {
             }
         }
     }
+
+
+    /**
+     * 删除缓存
+     *
+     * @param keyPrefix redis存储前缀
+     * @param id        对应实体的id
+     * @return 返回删除的结果
+     */
+    public boolean deleteRedisContent(String keyPrefix, String id) {
+        String redisId = keyPrefix + id;
+        Boolean exists = stringRedisTemplate.hasKey(redisId);
+        if (Boolean.TRUE.equals(exists)) {
+            stringRedisTemplate.delete(redisId);
+            return true;
+        }
+        return false;
+    }
 }
