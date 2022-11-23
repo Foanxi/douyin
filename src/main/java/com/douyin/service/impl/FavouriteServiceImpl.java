@@ -16,6 +16,7 @@ import com.douyin.service.VideoService;
 import com.douyin.util.Entity2Model;
 import com.douyin.util.RedisUtil;
 import com.douyin.util.SnowFlake;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -31,6 +32,7 @@ import static com.douyin.util.RedisIdentification.*;
  * @author hongxiaobin
  */
 @Service("FavouriteServiceImpl")
+@Slf4j
 @Transactional(rollbackFor = Exception.class)
 public class FavouriteServiceImpl extends ServiceImpl<FavouriteMapper, Favourite> implements FavouriteService {
 
@@ -54,7 +56,9 @@ public class FavouriteServiceImpl extends ServiceImpl<FavouriteMapper, Favourite
         QueryWrapper<Favourite> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("user_id", userId);
         queryWrapper.eq("video_id", videoId);
-        return favouriteService.getOne(queryWrapper);
+        Favourite favourite =favouriteService.getOne(queryWrapper);
+        log.info("点赞是否存在：{}",favourite);
+        return favourite;
     }
 
     /**
@@ -114,7 +118,10 @@ public class FavouriteServiceImpl extends ServiceImpl<FavouriteMapper, Favourite
         if (selectOne == null && baseMapper.insert(favourite) == 1) {
             UpdateWrapper<Video> updateWrapper = new UpdateWrapper<>();
             updateWrapper.eq("video_id", videoId).set("favourite_count", video.getFavouriteCount() + 1);
-            return videoService.update(video, updateWrapper);
+            boolean update = videoService.update(video, updateWrapper);
+            redisUtil.deleteRedisContent(VIDEO_QUERY_KEY, String.valueOf(videoId));
+            redisUtil.queryWithoutPassThrough(VIDEO_QUERY_KEY,videoId,Video.class,videoService::getById,VIDEO_QUERY_TTL,TimeUnit.MINUTES);
+            return update;
         }
         return false;
     }
@@ -128,7 +135,11 @@ public class FavouriteServiceImpl extends ServiceImpl<FavouriteMapper, Favourite
             // 然后再在视频表中将点赞数-1
             UpdateWrapper<Video> updateWrapper = new UpdateWrapper<>();
             updateWrapper.eq("video_id", videoId).set("favourite_count", video.getFavouriteCount() - 1);
-            return videoService.update(video, updateWrapper);
+            boolean update = videoService.update(video, updateWrapper);
+            log.info("取消点赞：{}",update);
+            redisUtil.deleteRedisContent(VIDEO_QUERY_KEY, String.valueOf(videoId));
+            redisUtil.queryWithoutPassThrough(VIDEO_QUERY_KEY,videoId,Video.class,videoService::getById,VIDEO_QUERY_TTL,TimeUnit.MINUTES);
+            return update;
         }
         return false;
     }

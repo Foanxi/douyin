@@ -61,6 +61,9 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
             QueryWrapper<Video> qw = new QueryWrapper<>();
             qw.eq("video_id", videoId);
             videoMapper.update(video, qw);
+            //更新comment缓存的数据,先删除指定缓存，后再从数据库中获取并添加缓存
+            redisUtil.deleteRedisContent(VIDEO_QUERY_KEY,videoId);
+            redisUtil.queryWithoutPassThrough(VIDEO_QUERY_KEY,Long.parseLong(videoId),Video.class,videoService::getById,VIDEO_QUERY_TTL,TimeUnit.MINUTES);
             User user = redisUtil.queryWithoutPassThrough(USER_QUERY_KEY, userId, User.class, userService::getById, USER_QUERY_TTL, TimeUnit.MINUTES);
             UserModel userModel = entity2Model.user2userModel(user, Long.valueOf(videoId), token);
             Comment newComment = redisUtil.queryWithoutPassThrough(COMMENT_QUERY_KEY, id, Comment.class, this::getById, COMMENT_QUERY_TTL, TimeUnit.MINUTES);
@@ -79,6 +82,8 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
         QueryWrapper<Video> qw = new QueryWrapper<>();
         qw.eq("video_id", videoId);
         videoMapper.update(video, qw);
+        redisUtil.deleteRedisContent(VIDEO_QUERY_KEY,videoId);
+        redisUtil.queryWithoutPassThrough(VIDEO_QUERY_KEY,Long.parseLong(videoId),Video.class,videoService::getById,VIDEO_QUERY_TTL,TimeUnit.MINUTES);
         return redisUtil.deleteRedisContent(COMMENT_QUERY_KEY, commentId) && commentMapper.deleteById(commentId) == SUCCESS;
     }
 
