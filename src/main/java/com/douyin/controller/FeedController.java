@@ -27,8 +27,6 @@ import java.util.Objects;
 @Slf4j
 @RequestMapping("/douyin/feed")
 public class FeedController {
-
-
     @Autowired
     private VideoService videoService;
 
@@ -51,6 +49,7 @@ public class FeedController {
             log.warn("videoFeed is currently no video to play");
             return CreateJson.createJson(200, 1, "当前无视频");
         } else {
+
             List<VideoModel> videoModelList = (List<VideoModel>) map.get("videoModelList");
             Timestamp nextTime = (Timestamp) map.get("nextTime");
             JSONObject jsonObject;

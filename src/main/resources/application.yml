@@ -3,6 +3,9 @@ spring:
     active: dev
 ---
 spring:
+  redis:
+    host: 127.0.0.1
+    port: 6379
   application:
     name: douyin
   datasource:
@@ -21,14 +24,14 @@ server:
   port: 8080
 douyin:
   path: D:\code\douyin\src\main\resources\
-  ip_path: http://10.34.151.198:8080/
+  ip_path: http://10.34.0.78:8080/
 mybatis-plus:
   global-config:
     db-config:
       logic-delete-value: 0
       logic-not-delete-value: 1
-  configuration:
-    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+#  configuration:
+#    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
 snowflake:
   data-center-id: 0 #雪花算法的机器标识号
   machine-id: 001 #雪花算法的数据中心标识号

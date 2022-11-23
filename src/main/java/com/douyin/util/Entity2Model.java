@@ -11,6 +11,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.concurrent.TimeUnit;
+
 /**
  * @author foanxi
  */
@@ -24,12 +26,16 @@ public class Entity2Model {
     private VideoService videoService;
     @Autowired
     private FavouriteService favouriteService;
+    @Autowired
+    private RedisUtil redisUtil;
 
     public UserModel user2userModel(User user, Long videoId, String token) {
+        log.info("User:{},video:{},token:{}", user, videoId, token);
         boolean isFollow = false;
         if (token != null) {
             Long userId = JwtHelper.getUserId(token);
-            Long authorId = videoService.getById(videoId).getAuthorId();
+            Video video = redisUtil.queryWithoutPassThrough(RedisIdentification.VIDEO_QUERY_KEY, videoId, Video.class, videoService::getById, RedisIdentification.VIDEO_QUERY_TTL, TimeUnit.MINUTES);
+            Long authorId = video.getAuthorId();
             isFollow = relationService.getIsFollow(userId, authorId);
         }
         return new UserModel(user.getUserId(), user.getName(), user.getFollowCount(), user.getFollowerCount(), isFollow);
