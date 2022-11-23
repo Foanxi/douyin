@@ -11,7 +11,7 @@ import java.util.Date;
  * @Time 2022/10/11-11:22
  */
 public class JwtHelper {
-    private static final long TOKEN_EXPIRATION = 20 * 60 * 60 * 1000;
+    private static final long TOKEN_EXPIRATION = 20 * 60 * 60 * 1_000;
     private static final String TOKEN_SIGN_KEY = "123456";
 
     /**
@@ -60,7 +60,7 @@ public class JwtHelper {
                     .getExpiration()
                     .before(new Date());
         } catch (Exception e) {
-//            过期出现异常，返回true
+            //过期出现异常，返回true
             return true;
         }
     }

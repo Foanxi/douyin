@@ -11,10 +11,7 @@ import com.douyin.service.FavouriteService;
 import com.douyin.service.RelationService;
 import com.douyin.service.UserService;
 import com.douyin.service.VideoService;
-import com.douyin.util.Entity2Model;
-import com.douyin.util.JwtHelper;
-import com.douyin.util.SnowFlake;
-import com.douyin.util.VideoProcessing;
+import com.douyin.util.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -25,6 +22,9 @@ import java.io.File;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
+
+import static com.douyin.util.RedisIdentification.*;
 
 /**
  * @author foanxi
@@ -52,7 +52,14 @@ public class VideoServiceImpl extends ServiceImpl<VideoMapper, Video> implements
     private VideoMapper videoMapper;
     @Autowired
     private Entity2Model entity2Model;
+    @Autowired
+    private RedisUtil redisUtil;
 
+    /**
+     * 获取指定用户的视频
+     * @param userId 用户id
+     * @return 返回视频列表
+     */
     @Override
     public List<Video> getVideo(Long userId) {
         QueryWrapper<Video> queryWrapper = new QueryWrapper<>();
@@ -93,7 +100,7 @@ public class VideoServiceImpl extends ServiceImpl<VideoMapper, Video> implements
         feedMap.put("nextTime", videos.get(videos.size() - 1).getCreateTime());
         List<VideoModel> videoModelList = new ArrayList<>();
         for (Video video : videos) {
-            User author = userService.getById(video.getAuthorId());
+            User author = redisUtil.queryWithoutPassThrough(USER_QUERY_KEY, video.getAuthorId(), User.class, userService::getById, USER_QUERY_TTL, TimeUnit.MINUTES);
             UserModel userModel = entity2Model.user2userModel(author, video.getVideoId(), token);
             VideoModel videoModel = entity2Model.video2videoModel(video, userModel, token);
             videoModelList.add(videoModel);
@@ -170,9 +177,12 @@ public class VideoServiceImpl extends ServiceImpl<VideoMapper, Video> implements
         // 创建video对象导入数据库
         videoPath = "/video/" + userId + "/" + uuid + ".mp4";
         pictureName = "/picture/" + userId + "/" + uuid + ".jpg";
+
         Long videoId = SnowFlake.nextId();
         Video video = new Video(videoId, userId, videoPath, pictureName, title);
         videoService.save(video);
+        //添加视频时将其加入到缓存中
+        redisUtil.queryWithoutPassThrough(VIDEO_QUERY_KEY,videoId,Video.class,videoService::getById,VIDEO_QUERY_TTL,TimeUnit.MINUTES);
         return true;
     }
 }
