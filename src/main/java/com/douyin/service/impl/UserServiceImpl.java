@@ -5,7 +5,6 @@ import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.douyin.mapper.UserMapper;
 import com.douyin.model.UserModel;
-import com.douyin.pojo.Relation;
 import com.douyin.pojo.User;
 import com.douyin.service.RelationService;
 import com.douyin.service.UserService;
@@ -46,13 +45,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     @Override
     public UserModel getUserById(Long id, Long authorId) {
         User user = redisUtil.queryWithoutPassThrough(USER_QUERY_KEY, authorId, User.class, this::getById, RedisIdentification.USER_QUERY_TTL, TimeUnit.MINUTES);
-        Relation relation = relationService.getIsFollow(id, authorId);
-        boolean isFollow;
-        if (relation!=null){
-            isFollow = true;
-        }else{
-            isFollow = false;
-        }
+        boolean isFollow = relationService.getIsFollow(id, authorId);
         return new UserModel(user.getUserId(), user.getName(), user.getFollowCount(), user.getFollowerCount(), isFollow);
     }
 

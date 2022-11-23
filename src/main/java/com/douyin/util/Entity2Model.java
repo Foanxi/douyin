@@ -2,14 +2,12 @@ package com.douyin.util;
 
 import com.douyin.model.UserModel;
 import com.douyin.model.VideoModel;
-import com.douyin.pojo.Relation;
 import com.douyin.pojo.User;
 import com.douyin.pojo.Video;
 import com.douyin.service.FavouriteService;
 import com.douyin.service.RelationService;
 import com.douyin.service.VideoService;
 import lombok.extern.slf4j.Slf4j;
-import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -32,15 +30,13 @@ public class Entity2Model {
     private RedisUtil redisUtil;
 
     public UserModel user2userModel(User user, Long videoId, String token) {
-        log.info("User:{},video:{},token:{}",user,videoId,token);
-        boolean isFollow = false;
+        log.info("User:{},video:{},token:{}", user, videoId, token);
         if (token != null) {
             Long userId = JwtHelper.getUserId(token);
             Video video = redisUtil.queryWithoutPassThrough(RedisIdentification.VIDEO_QUERY_KEY, videoId, Video.class, videoService::getById, RedisIdentification.VIDEO_QUERY_TTL, TimeUnit.MINUTES);
             Long authorId = video.getAuthorId();
-            Relation relation = relationService.getIsFollow(userId, authorId);
-            if (relation != null){isFollow = true;}
-            log.info("是否关注：{}",isFollow);
+            boolean isFavourite = relationService.getIsFollow(userId, authorId);
+            log.info("是否关注：{}", isFavourite);
         }
         return new UserModel(user.getUserId(), user.getName(), user.getFollowCount(), user.getFollowerCount(), true);
     }
