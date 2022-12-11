@@ -62,7 +62,8 @@ public class PublishController {
         try {
             String exchange = "douyin.exchange";
             String key = "video";
-            rabbitTemplate.convertAndSend(exchange, key, publishMessageModel);
+//            rabbitTemplate.convertAndSend(exchange, key, publishMessageModel);
+            videoService.publishVideo(data, title, token);
             status = true;
         } catch (Exception e) {
             log.error("uploadVideo is occur Error,send message is {}", publishMessageModel);

@@ -1,11 +1,9 @@
 package com.douyin.util;
 
 import com.aliyun.oss.model.ObjectMetadata;
-import com.aliyun.oss.model.PutObjectResult;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -73,15 +71,13 @@ public class OssClient {
      * @param fileName 文件名称 完整文件名包括后缀名 如picture/1.png
      * @return 返回访问路径
      */
-    public static String uploadSource(MultipartFile data, String fileName) {
-        InputStream inputStream = null;
+    public static String uploadSource(InputStream data, String fileName) {
         String resultPath = "";
         com.aliyun.oss.OSSClient ossClient = ossClientInitialization();
         try {
-            inputStream = data.getInputStream();
             //创建上传Object的Metadata
             ObjectMetadata metadata = new ObjectMetadata();
-            metadata.setContentLength(inputStream.available());
+            metadata.setContentLength(data.available());
             metadata.setCacheControl("no-cache");
             metadata.setHeader("Pragma", "no-cache");
             metadata.setContentEncoding("utf-8");
@@ -89,7 +85,7 @@ public class OssClient {
             metadata.setContentDisposition("inline;filename=" + fileName);
 
             //上传文件
-            PutObjectResult putResult = ossClient.putObject(bucketName, fileName, inputStream, metadata);
+            ossClient.putObject(bucketName, fileName, data, metadata);
             //返回访问路径
             resultPath = getStartStaff() + "/" + fileName;
             log.info("OssClient.uploadSource", "File upload succeeded");
@@ -97,12 +93,6 @@ public class OssClient {
             log.error("上传阿里云OSS服务器异常." + e.getMessage(), e);
         } finally {
             ossClient.shutdown();
-            try {
-                assert inputStream != null;
-                inputStream.close();
-            } catch (IOException e) {
-                log.error("Failed to close the file stream");
-            }
         }
         return resultPath;
     }

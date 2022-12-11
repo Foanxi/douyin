@@ -29,7 +29,17 @@ public class OssTest {
         File file = new File(path.toUri());
         FileInputStream fileInputStream = new FileInputStream(file);
         MultipartFile multipartFile = new MockMultipartFile(file.getName(), fileInputStream);
-        String s = OssClient.uploadSource(multipartFile, "1.mp4");
-        System.out.println("访问路径为  " + s);
+    }
+
+    @Test
+    public void getImg() throws Exception {
+        Path path = Paths.get("D:\\桌面\\59ea9ef27fe5d461542efedc1726471f.mp4");
+        File file = new File(path.toUri());
+        FileInputStream fileInputStream = new FileInputStream(file);
+        MultipartFile multipartFile = new MockMultipartFile(file.getName(), fileInputStream);
+//        InputStream inputStream = VideoProcessing.grabberVideoFramer(multipartFile.getInputStream());
+        System.out.println("==============================" + multipartFile.getOriginalFilename());
+        System.out.println("==============================" + multipartFile.getResource());
+        System.out.println("==============================" + multipartFile.getContentType());
     }
 }
