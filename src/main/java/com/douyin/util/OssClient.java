@@ -9,9 +9,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
 import java.util.UUID;
 
 /**
@@ -20,16 +20,32 @@ import java.util.UUID;
  */
 @Component
 public class OssClient {
-    private static Logger log = LoggerFactory.getLogger(OssClient.class);
-    @Value("${oss.endpoint}")
+    private static final Logger log = LoggerFactory.getLogger(OssClient.class);
+
     private static String endpoint;
-    @Value("${oss.access-key-id}")
     private static String accessKeyId;
-    @Value("${oss.access-key-secret}")
     private static String accessKeySecret;
-    @Value("${oss.bucketname}")
     private static String bucketName;
 
+    @Value("${oss.endpoint}")
+    public void setEndpoint(String endpoint) {
+        OssClient.endpoint = endpoint;
+    }
+
+    @Value("${oss.access-key-id}")
+    public void setAccessKeyId(String accessKeyId) {
+        OssClient.accessKeyId = accessKeyId;
+    }
+
+    @Value("${oss.access-key-secret}")
+    public void setAccessKeySecret(String accessKeySecret) {
+        OssClient.accessKeySecret = accessKeySecret;
+    }
+
+    @Value("${oss.bucketname}")
+    public void setBucketName(String bucketName) {
+        OssClient.bucketName = bucketName;
+    }
 
     public static String getStartStaff() {
         return "http://" + bucketName + "." + endpoint;
@@ -66,11 +82,11 @@ public class OssClient {
         InputStream inputStream = null;
         inputStream = multipartToInputStream(data);
         String resultStr = "";
-//        上传到指定文件夹
+        //上传到指定文件夹
         fileName = "picture/" + fileName;
         try {
-            /**
-             * 创建OSS客户端
+            /*
+              创建OSS客户端
              */
             com.aliyun.oss.OSSClient ossClient = new com.aliyun.oss.OSSClient(endpoint, accessKeyId, accessKeySecret);
             //创建上传Object的Metadata
@@ -101,48 +117,53 @@ public class OssClient {
     /**
      * Description: 判断OSS服务文件上传时文件的contentType
      *
-     * @param FilenameExtension 文件后缀
+     * @param filenameExtension 文件后缀
      * @return String
      */
-    public static String getcontentType(String FilenameExtension) {
-        if (".bmp".equalsIgnoreCase(FilenameExtension)) {
+    public static String getcontentType(String filenameExtension) {
+        if (".bmp".equalsIgnoreCase(filenameExtension)) {
             return "image/bmp";
         }
-        if (".gif".equalsIgnoreCase(FilenameExtension)) {
+        if (".gif".equalsIgnoreCase(filenameExtension)) {
             return "image/gif";
         }
-        if (".jpeg".equalsIgnoreCase(FilenameExtension) ||
-                ".jpg".equalsIgnoreCase(FilenameExtension) ||
-                ".png".equalsIgnoreCase(FilenameExtension)) {
+        if (".jpeg".equalsIgnoreCase(filenameExtension) ||
+                ".jpg".equalsIgnoreCase(filenameExtension) ||
+                ".png".equalsIgnoreCase(filenameExtension)) {
             return "image/jpeg";
         }
-        if (".html".equalsIgnoreCase(FilenameExtension)) {
+        if (".html".equalsIgnoreCase(filenameExtension)) {
             return "text/html";
         }
-        if (".txt".equalsIgnoreCase(FilenameExtension)) {
+        if (".txt".equalsIgnoreCase(filenameExtension)) {
             return "text/plain";
         }
-        if (".vsd".equalsIgnoreCase(FilenameExtension)) {
+        if (".vsd".equalsIgnoreCase(filenameExtension)) {
             return "application/vnd.visio";
         }
-        if (".pptx".equalsIgnoreCase(FilenameExtension) ||
-                ".ppt".equalsIgnoreCase(FilenameExtension)) {
+        if (".pptx".equalsIgnoreCase(filenameExtension) ||
+                ".ppt".equalsIgnoreCase(filenameExtension)) {
             return "application/vnd.ms-powerpoint";
         }
-        if (".docx".equalsIgnoreCase(FilenameExtension) ||
-                ".doc".equalsIgnoreCase(FilenameExtension)) {
+        if (".docx".equalsIgnoreCase(filenameExtension) ||
+                ".doc".equalsIgnoreCase(filenameExtension)) {
             return "application/msword";
         }
-        if (".xml".equalsIgnoreCase(FilenameExtension)) {
+        if (".xml".equalsIgnoreCase(filenameExtension)) {
             return "text/xml";
         }
-        if (".mp4".equalsIgnoreCase(FilenameExtension)) {
+        if (".mp4".equalsIgnoreCase(filenameExtension)) {
             return "video/mp4";
         }
         return "image/jpeg";
     }
 
-    // MultipartFile转换为InputStream
+    /**
+     * MultipartFile转换为InputStream
+     *
+     * @param multipartFile 输入文件
+     * @return 返回输入流
+     */
     private static InputStream multipartToInputStream(MultipartFile multipartFile) {
         InputStream inputStream = null;
         File file = null;
@@ -152,7 +173,7 @@ public class OssClient {
             // 把multipartFile写入临时文件
             multipartFile.transferTo(file);
             // 使用文件创建 inputStream 流
-            inputStream = new FileInputStream(file);
+            inputStream = Files.newInputStream(file.toPath());
 
         } catch (Exception e) {
             e.printStackTrace();

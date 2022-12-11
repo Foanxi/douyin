@@ -2,13 +2,14 @@ package com.douyin.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.douyin.model.PublishMessageModel;
 import com.douyin.model.VideoModel;
 import com.douyin.service.UserService;
 import com.douyin.service.VideoService;
 import com.douyin.util.CreateJson;
 import com.douyin.util.JwtHelper;
-import com.douyin.util.RedisUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -27,12 +28,9 @@ public class PublishController {
     private VideoService videoService;
     @Autowired
     private UserService userService;
+    @Autowired
+    private RabbitTemplate rabbitTemplate;
 
-    /**
-     * 发布列表
-     * @Param:
-     * @Return:
-     */
     @GetMapping("/list")
     public JSON getPublishList(@RequestParam("token") String token,
                                @RequestParam("user_id") String userId) {
@@ -59,7 +57,16 @@ public class PublishController {
             jsonObject = CreateJson.createJson(200, 1, "用户token已过期");
             return jsonObject;
         }
-        boolean status = videoService.publishVideo(data, title, token);
+        boolean status = false;
+        PublishMessageModel publishMessageModel = new PublishMessageModel(data, title, token);
+        try {
+            String exchange = "douyin.exchange";
+            String key = "video";
+            rabbitTemplate.convertAndSend(exchange, key, publishMessageModel);
+            status = true;
+        } catch (Exception e) {
+            log.error("uploadVideo is occur Error,send message is {}", publishMessageModel);
+        }
 
         if (status) {
             jsonObject = CreateJson.createJson(200, 0, "视频上传成功");

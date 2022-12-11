@@ -3,6 +3,12 @@ spring:
     active: dev
 ---
 spring:
+  rabbitmq:
+    host: 127.0.0.1
+    port: 5672
+    username: guest
+    password: guest
+    virtual-host: /
   redis:
     host: 192.168.56.129
     port: 6379
@@ -44,7 +50,7 @@ logging:
     max-size: 10MB
     max-history: 7
     name: SpringbootLog
-    path: E:\curriculum design\douyin\src\main\resources\log
+    path: D:\code\douyin\src\main\resources\log
   level:
     root: info
 oss:
