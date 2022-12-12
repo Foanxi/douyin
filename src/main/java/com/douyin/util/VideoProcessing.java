@@ -1,5 +1,6 @@
 package com.douyin.util;
 
+import lombok.extern.slf4j.Slf4j;
 import org.bytedeco.javacv.FFmpegFrameGrabber;
 import org.bytedeco.javacv.Frame;
 import org.bytedeco.javacv.Java2DFrameConverter;
@@ -14,22 +15,25 @@ import java.io.InputStream;
 /**
  * @Author zhuanghaoxin hongxiaobin
  */
+@Slf4j
 public class VideoProcessing {
 
-    // 获取要取得的帧数
-    private static final int fifthFrame = 5;
+    /**
+     * 获取要取得的帧数
+     */
+    private static final int FIFTH_FRAME = 5;
 
     /**
      * 将视频的字节流截图
      *
-     * @param
-     * @return
+     * @param videoFile 需要为ByteArrayInputStream的文件流输入
+     * @return InputStream 返回截取的图片流
      */
-    public static InputStream grabberVideoFramer(InputStream videofile) {
+    public static InputStream grabberVideoFramer(InputStream videoFile) {
         FFmpegFrameGrabber grabber;
         InputStream img = null;
         try {
-            grabber = new FFmpegFrameGrabber(videofile);
+            grabber = new FFmpegFrameGrabber(videoFile);
             grabber.start();
             // 视频总帧数
             int videoLength = grabber.getLengthInFrames();
@@ -39,7 +43,7 @@ public class VideoProcessing {
             while (i < videoLength) {
                 // 过滤前5帧,因为前5帧可能是全黑的
                 frame = grabber.grabFrame();
-                if ((i > fifthFrame) && (frame.image != null)) {
+                if ((i > FIFTH_FRAME) && (frame.image != null)) {
                     break;
                 }
                 i++;
@@ -53,7 +57,7 @@ public class VideoProcessing {
             grabber.stop();
             grabber.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error("VideoProcessing.grabberVideoFramer", "Stream close failed");
         }
         return img;
     }
@@ -61,17 +65,16 @@ public class VideoProcessing {
     /**
      * 将BufferedImage转换为InputStream
      *
-     * @param image
-     * @return
+     * @param image 输入BufferedImage类型的输入流
+     * @return 返回InputStream流
      */
     public static InputStream bufferedImageToInputStream(BufferedImage image) {
         ByteArrayOutputStream os = new ByteArrayOutputStream();
         try {
             ImageIO.write(image, "png", os);
-            InputStream input = new ByteArrayInputStream(os.toByteArray());
-            return input;
+            return new ByteArrayInputStream(os.toByteArray());
         } catch (IOException e) {
-
+            log.error("VideoProcessing.bufferedImageToInputStream", "Type conversion failed");
         }
         return null;
     }

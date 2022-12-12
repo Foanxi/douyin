@@ -28,18 +28,13 @@ import java.util.concurrent.TimeUnit;
 import static com.douyin.util.RedisIdentification.*;
 
 /**
- * @author foanxi
+ * @author foanxi hongxiaobin
  */
 @Service
 @Transactional(rollbackFor = Exception.class)
 public class VideoServiceImpl extends ServiceImpl<VideoMapper, Video> implements VideoService {
-    @Value("${douyin.ip_path}")
-    private String ipPath;
-
     @Value("${video.limit}")
     private Integer limit;
-    @Value("${douyin.path}")
-    private String resourcePath;
 
     @Autowired
     private VideoService videoService;
@@ -67,10 +62,6 @@ public class VideoServiceImpl extends ServiceImpl<VideoMapper, Video> implements
         QueryWrapper<Video> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("author_id", userId);
         List<Video> list = list(queryWrapper);
-        for (Video video : list) {
-            video.setPlayUrl(ipPath + video.getPlayUrl());
-            video.setCoverUrl(ipPath + video.getCoverUrl());
-        }
         return list;
     }
 
@@ -93,11 +84,6 @@ public class VideoServiceImpl extends ServiceImpl<VideoMapper, Video> implements
         }
         if (videos.size() == 0) {
             return null;
-        }
-
-        for (Video video : videos) {
-            video.setPlayUrl(ipPath + video.getPlayUrl());
-            video.setCoverUrl(ipPath + video.getCoverUrl());
         }
         feedMap.put("nextTime", videos.get(videos.size() - 1).getCreateTime());
         List<VideoModel> videoModelList = new ArrayList<>();
@@ -133,6 +119,14 @@ public class VideoServiceImpl extends ServiceImpl<VideoMapper, Video> implements
         return null;
     }
 
+    /**
+     * 处理上传视频和图片
+     *
+     * @Param: data 前端传过来的视频数据
+     * @Param: title 视频说明
+     * @Param: token 用户鉴权
+     * @Return: boolean 是否上传成功 true-成功 false-失败
+     */
     @Override
     public boolean publishVideo(MultipartFile data, String title, String token) {
         // 解析token得到用户ID

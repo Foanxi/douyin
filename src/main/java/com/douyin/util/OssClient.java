@@ -100,8 +100,8 @@ public class OssClient {
     /**
      * 判断OSS服务文件上传时文件的contentType
      *
-     * @Param: String
-     * @Return: String
+     * @Param: filename 文件名
+     * @Return: String 文件类型对应的contentType
      */
     public static String getContentType(String fileName) {
         String fileExtension = fileName.substring(fileName.lastIndexOf("."));
