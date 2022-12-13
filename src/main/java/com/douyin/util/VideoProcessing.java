@@ -1,43 +1,82 @@
 package com.douyin.util;
 
+import lombok.extern.slf4j.Slf4j;
 import org.bytedeco.javacv.FFmpegFrameGrabber;
 import org.bytedeco.javacv.Frame;
 import org.bytedeco.javacv.Java2DFrameConverter;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.io.File;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
 /**
- * @author zhuanghaoxin
+ * @Author zhuanghaoxin hongxiaobin
  */
+@Slf4j
 public class VideoProcessing {
-    public static void grabberVideoFramer(String videoFileName, String pictureName) throws IOException {
-        File targetFile = new File(pictureName);
-        try (FFmpegFrameGrabber ff = new FFmpegFrameGrabber(videoFileName)) {
-            ff.start();
-            int length = ff.getLengthInFrames();
+
+    /**
+     * 获取要取得的帧数
+     */
+    private static final int FIFTH_FRAME = 5;
+
+    /**
+     * 将视频的字节流截图
+     *
+     * @param videoFile 需要为ByteArrayInputStream的文件流输入
+     * @return InputStream 返回截取的图片流
+     */
+    public static InputStream grabberVideoFramer(InputStream videoFile) {
+        FFmpegFrameGrabber grabber;
+        InputStream img = null;
+        try {
+            grabber = new FFmpegFrameGrabber(videoFile);
+            grabber.start();
+            // 视频总帧数
+            int videoLength = grabber.getLengthInFrames();
+
+            Frame frame = null;
             int i = 0;
-            Frame f = new Frame();
-            while (i < length) {
-                // 去掉前5帧，避免出现全黑的图片，依自己情况而定
-                f = ff.grabImage();
-                if ((i > 5) && (f.image != null)) {
+            while (i < videoLength) {
+                // 过滤前5帧,因为前5帧可能是全黑的
+                frame = grabber.grabFrame();
+                if ((i > FIFTH_FRAME) && (frame.image != null)) {
                     break;
                 }
                 i++;
             }
-            ImageIO.write(frameToBufferedImage(f), "jpg", targetFile);
-            ff.stop();
+
+            Java2DFrameConverter converter = new Java2DFrameConverter();
+            // 绘制图片
+            BufferedImage bufferedImage = converter.getBufferedImage(frame);
+
+            img = bufferedImageToInputStream(bufferedImage);
+            grabber.stop();
+            grabber.close();
         } catch (IOException e) {
-            throw new IOException();
+            log.error("VideoProcessing.grabberVideoFramer", "Stream close failed");
         }
+        return img;
     }
 
-    public static BufferedImage frameToBufferedImage(Frame frame) {
-        //创建BufferedImage对象
-        Java2DFrameConverter converter = new Java2DFrameConverter();
-        return converter.getBufferedImage(frame);
+    /**
+     * 将BufferedImage转换为InputStream
+     *
+     * @param image 输入BufferedImage类型的输入流
+     * @return 返回InputStream流
+     */
+    public static InputStream bufferedImageToInputStream(BufferedImage image) {
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        try {
+            ImageIO.write(image, "png", os);
+            return new ByteArrayInputStream(os.toByteArray());
+        } catch (IOException e) {
+            log.error("VideoProcessing.bufferedImageToInputStream", "Type conversion failed");
+        }
+        return null;
     }
+
 }

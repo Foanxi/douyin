@@ -18,7 +18,6 @@ import com.douyin.util.RedisUtil;
 import com.douyin.util.SnowFlake;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,9 +34,6 @@ import static com.douyin.util.RedisIdentification.*;
 @Slf4j
 @Transactional(rollbackFor = Exception.class)
 public class FavouriteServiceImpl extends ServiceImpl<FavouriteMapper, Favourite> implements FavouriteService {
-
-    @Value("${douyin.ip_path}")
-    private String ipPath;
     @Autowired
     private UserService userService;
     @Autowired
@@ -92,8 +88,6 @@ public class FavouriteServiceImpl extends ServiceImpl<FavouriteMapper, Favourite
         if (size > 0) {
             for (Favourite favourite : videoIdList) {
                 Video video = redisUtil.queryWithoutPassThrough(VIDEO_QUERY_KEY, favourite.getVideoId(), Video.class, videoService::getById, VIDEO_QUERY_TTL, TimeUnit.MINUTES);
-                video.setPlayUrl(ipPath + video.getPlayUrl());
-                video.setCoverUrl(ipPath + video.getCoverUrl());
                 videoList.add(video);
             }
             for (Video video : videoList) {

@@ -2,11 +2,34 @@ package com.douyin.util;
 
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 /**
  * @author foanxi
  */
+@Component
 public class SnowFlake {
+
+    /**
+     * 数据中心Id
+     */
+    private static long dataCenterId;
+
+    @Value("${snowflake.data-center-id}")
+    private void setDataCenterId(long dataCenterId) {
+        SnowFlake.dataCenterId = dataCenterId;
+    }
+
+    /**
+     * 机器标识Id
+     */
+    private static long machineId;
+
+    @Value("${snowflake.machine-id}")
+    private void setMachineId(long machineId) {
+        SnowFlake.machineId = machineId;
+    }
+
     /**
      * 起始的时间戳
      */
@@ -40,16 +63,6 @@ public class SnowFlake {
     private final static long TIMESTAMP_LEFT = DATA_CENTER_LEFT + DATA_CENTER_BIT;
 
     /**
-     * 数据中心Id
-     */
-    @Value("${snowflake.data-center-userId}")
-    private static long dataCenterId;
-    /**
-     * 机器标识Id
-     */
-    @Value("${snowflake.machine-userId}")
-    private static long machineId;
-    /**
      * 序列号
      */
     private static long sequence = 0L;
@@ -57,6 +70,10 @@ public class SnowFlake {
      * 上一次时间戳
      */
     private static long lastStamp = -1L;
+
+    public static long getDataCenterId() {
+        return machineId;
+    }
 
     public SnowFlake() {
         if (dataCenterId > MAX_DATA_CENTER_NUM || dataCenterId < 0) {
