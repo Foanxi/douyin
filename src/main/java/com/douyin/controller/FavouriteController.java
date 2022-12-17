@@ -2,12 +2,15 @@ package com.douyin.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.douyin.model.FavouriteModel;
 import com.douyin.model.VideoModel;
 import com.douyin.service.FavouriteService;
 import com.douyin.service.VideoService;
 import com.douyin.util.CreateJson;
 import com.douyin.util.JwtHelper;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.amqp.AmqpException;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,6 +29,8 @@ public class FavouriteController {
     private FavouriteService favouriteService;
     @Autowired
     private VideoService videoService;
+    @Autowired
+    private RabbitTemplate rabbitTemplate;
 
     /**
      * 获取用户的点赞视频列表
@@ -69,28 +74,34 @@ public class FavouriteController {
         }
         Long userId = JwtHelper.getUserId(token);
         Long videoIdLong = Long.parseLong(videoId);
+        String exchange = "douyin.favouriteExchange";
+        FavouriteModel favouriteModel = new FavouriteModel(videoIdLong, userId);
         if (Objects.equals(actionType, addType)) {
             // 说明用户点赞，首先先在点赞表中创建新的点赞
-            boolean doFavourite = favouriteService.doFavourite(videoIdLong, userId);
-            if (doFavourite) {
+            String doKey = "favourite.do";
+            try {
+                rabbitTemplate.convertAndSend(exchange, doKey, favouriteModel);
                 json = CreateJson.createJson(200, 0, "点赞成功");
                 log.info("favouriteAction return Json: {}", JSONObject.toJSONString(json, true));
                 return json;
+            } catch (AmqpException e) {
+                json = CreateJson.createJson(200, 1, "点赞失败");
+                log.warn("favouriteAction operation failed");
+                return json;
             }
-            json = CreateJson.createJson(200, 1, "点赞失败");
-            log.warn("favouriteAction operation failed");
-            return json;
         } else if (Objects.equals(actionType, deleteType)) {
-            // 说明用户取消点赞，首先先删除点赞表中的点赞列，
-            boolean cancelFavourite = favouriteService.cancelFavourite(videoIdLong, userId);
-            if (cancelFavourite) {
+            // 说明用户取消点赞，首先先删除点赞表中的点赞列
+            String cancelKey = "favourite.cancel";
+            try {
+                rabbitTemplate.convertAndSend(exchange, cancelKey, favouriteModel);
                 log.info("favouriteAction return Json:{}", JSONObject.toJSONString(json, true));
                 json = CreateJson.createJson(200, 0, "取消点赞成功");
                 return json;
+            } catch (AmqpException e) {
+                log.warn("favouriteAction cancelOperation failed");
+                json = CreateJson.createJson(200, 1, "取消点赞失败");
+                return json;
             }
-            log.warn("favouriteAction cancelOperation failed");
-            json = CreateJson.createJson(200, 1, "取消点赞失败");
-            return json;
         } else {
             log.warn("favouriteAction operation failed");
             return CreateJson.createJson(200, 1, "操作失败");
