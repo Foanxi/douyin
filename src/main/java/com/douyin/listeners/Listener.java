@@ -1,8 +1,8 @@
 package com.douyin.listeners;
 
 import com.alibaba.fastjson.JSONObject;
-import com.douyin.model.PublishMessageModel;
-import com.douyin.service.VideoService;
+import com.douyin.model.CommentModel;
+import com.douyin.service.CommentService;
 import org.springframework.amqp.core.ExchangeTypes;
 import org.springframework.amqp.rabbit.annotation.Exchange;
 import org.springframework.amqp.rabbit.annotation.Queue;
@@ -18,16 +18,16 @@ import org.springframework.stereotype.Component;
 public class Listener {
 
     @Autowired
-    private VideoService videoService;
+    private CommentService commentService;
 
     @RabbitListener(bindings = @QueueBinding(
-            value = @Queue("douyin.video"),
+            value = @Queue("douyin.delete"),
             exchange = @Exchange(value = "douyin.exchange", type = ExchangeTypes.TOPIC),
-            key = "video.#"
+            key = "comment.delete"
     ))
-    public void listenVideoQueue(JSONObject jsonObject) {
-        PublishMessageModel publishMessageModel = JSONObject.parseObject(jsonObject.toJSONString(), PublishMessageModel.class);
-        videoService.publishVideo(publishMessageModel.getData(), publishMessageModel.getTitle(), publishMessageModel.getToken());
+    public void listenDeleteQueue(JSONObject jsonObject) {
+        CommentModel commentModel = JSONObject.parseObject(jsonObject.toJSONString(), CommentModel.class);
+        commentService.deleteComment(commentModel.getVideoId(), commentModel.getCommentId());
     }
 
 }
