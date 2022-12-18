@@ -74,34 +74,35 @@ public class FavouriteController {
         }
         Long userId = JwtHelper.getUserId(token);
         Long videoIdLong = Long.parseLong(videoId);
-        String exchange = "douyin.favouriteExchange";
         FavouriteModel favouriteModel = new FavouriteModel(videoIdLong, userId);
         if (Objects.equals(actionType, addType)) {
             // 说明用户点赞，首先先在点赞表中创建新的点赞
-            String doKey = "favourite.do";
             try {
-                rabbitTemplate.convertAndSend(exchange, doKey, favouriteModel);
-                json = CreateJson.createJson(200, 0, "点赞成功");
-                log.info("favouriteAction return Json: {}", JSONObject.toJSONString(json, true));
-                return json;
+                String doKey = "favourite.do";
+                String doExchange = "douyin.favouriteDoExchange";
+                rabbitTemplate.convertAndSend(doExchange, doKey, favouriteModel);
             } catch (AmqpException e) {
                 json = CreateJson.createJson(200, 1, "点赞失败");
                 log.warn("favouriteAction operation failed");
                 return json;
             }
+            json = CreateJson.createJson(200, 0, "点赞成功");
+            log.info("favouriteAction return Json: {}", JSONObject.toJSONString(json, true));
+            return json;
         } else if (Objects.equals(actionType, deleteType)) {
             // 说明用户取消点赞，首先先删除点赞表中的点赞列
-            String cancelKey = "favourite.cancel";
             try {
-                rabbitTemplate.convertAndSend(exchange, cancelKey, favouriteModel);
-                log.info("favouriteAction return Json:{}", JSONObject.toJSONString(json, true));
-                json = CreateJson.createJson(200, 0, "取消点赞成功");
-                return json;
+                String cancelKey = "favourite.cancel";
+                String cancelExchange = "douyin.favouriteCancelExchange";
+                rabbitTemplate.convertAndSend(cancelExchange, cancelKey, favouriteModel);
             } catch (AmqpException e) {
                 log.warn("favouriteAction cancelOperation failed");
                 json = CreateJson.createJson(200, 1, "取消点赞失败");
                 return json;
             }
+            log.info("favouriteAction return Json:{}", JSONObject.toJSONString(json, true));
+            json = CreateJson.createJson(200, 0, "取消点赞成功");
+            return json;
         } else {
             log.warn("favouriteAction operation failed");
             return CreateJson.createJson(200, 1, "操作失败");

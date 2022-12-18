@@ -35,8 +35,8 @@ public class Listener {
     }
 
     @RabbitListener(bindings = @QueueBinding(
-            value = @Queue("douyin.favourite"),
-            exchange = @Exchange(value = "douyin.favouriteExchange", type = ExchangeTypes.TOPIC),
+            value = @Queue("douyin.favouriteDo"),
+            exchange = @Exchange(value = "douyin.favouriteDoExchange", type = ExchangeTypes.TOPIC),
             key = "favourite.do"
     ))
     public void listenDoFavourite(JSONObject jsonObject) {
@@ -45,8 +45,8 @@ public class Listener {
     }
 
     @RabbitListener(bindings = @QueueBinding(
-            value = @Queue("douyin.favourite"),
-            exchange = @Exchange(value = "douyin.favouriteExchange", type = ExchangeTypes.TOPIC),
+            value = @Queue("douyin.favouriteCancel"),
+            exchange = @Exchange(value = "douyin.favouriteCancelExchange", type = ExchangeTypes.TOPIC),
             key = "favourite.cancel"
     ))
     public void listenCancelFavourite(JSONObject jsonObject) {
