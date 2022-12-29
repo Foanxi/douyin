@@ -29,9 +29,6 @@ spring:
   profiles: dev
 server:
   port: 8080
-douyin:
-#  path: E:\curriculum design\douyin\src\main\resources\
-#  ip_path: http://192.168.0.106:8080/
 mybatis-plus:
   global-config:
     db-config:
@@ -77,9 +74,6 @@ spring:
   profiles: pro
 server:
   port: 8080
-douyin:
-#  path: D:\code\douyin\src\main\resources\
-#  ip_path: http://10.34.140.181:8080/
 mybatis-plus:
   global-config:
     db-config:
