@@ -1,7 +1,7 @@
 package com.douyin.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.douyin.model.CommentModel;
+import com.douyin.model.CommentListModel;
 import com.douyin.pojo.Comment;
 
 import java.util.List;
@@ -19,7 +19,7 @@ public interface CommentService extends IService<Comment> {
      * @param commentText 用户评论内容
      * @return 返回是否插入成功
      */
-    CommentModel addComment(String token, String videoId, String commentText);
+    CommentListModel addComment(String token, String videoId, String commentText);
 
     /**
      * 删除评论，但是执行的是软删除
@@ -37,5 +37,5 @@ public interface CommentService extends IService<Comment> {
      * @param token   当前用户的token值
      * @return 返回该视频的评论列表
      */
-    List<CommentModel> getCommentList(String videoId, String token);
+    List<CommentListModel> getCommentList(String videoId, String token);
 }

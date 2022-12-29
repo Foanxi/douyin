@@ -47,7 +47,7 @@ D:.
 │  │  │          │      VideoMapper.java
 │  │  │          │
 │  │  │          ├─model
-│  │  │          │      CommentModel.java
+│  │  │          │      CommentListModel.java
 │  │  │          │      UserModel.java
 │  │  │          │      VideoModel.java
 │  │  │          │

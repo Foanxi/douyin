@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.douyin.mapper.CommentMapper;
 import com.douyin.mapper.VideoMapper;
-import com.douyin.model.CommentModel;
+import com.douyin.model.CommentListModel;
 import com.douyin.model.UserModel;
 import com.douyin.pojo.Comment;
 import com.douyin.pojo.User;
@@ -50,7 +50,7 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
     private final Integer SUCCESS = 1;
 
     @Override
-    public CommentModel addComment(String token, String videoId, String commentText) {
+    public CommentListModel addComment(String token, String videoId, String commentText) {
         Long userId = JwtHelper.getUserId(token);
         Long id = SnowFlake.nextId();
         Comment comment = new Comment(id, userId, Long.parseLong(videoId), commentText);
@@ -62,14 +62,14 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
             qw.eq("video_id", videoId);
             videoMapper.update(video, qw);
             //更新comment缓存的数据,先删除指定缓存，后再从数据库中获取并添加缓存
-            redisUtil.deleteRedisContent(VIDEO_QUERY_KEY,videoId);
-            redisUtil.queryWithoutPassThrough(VIDEO_QUERY_KEY,Long.parseLong(videoId),Video.class,videoService::getById,VIDEO_QUERY_TTL,TimeUnit.MINUTES);
+            redisUtil.deleteRedisContent(VIDEO_QUERY_KEY, videoId);
+            redisUtil.queryWithoutPassThrough(VIDEO_QUERY_KEY, Long.parseLong(videoId), Video.class, videoService::getById, VIDEO_QUERY_TTL, TimeUnit.MINUTES);
             User user = redisUtil.queryWithoutPassThrough(USER_QUERY_KEY, userId, User.class, userService::getById, USER_QUERY_TTL, TimeUnit.MINUTES);
             UserModel userModel = entity2Model.user2userModel(user, Long.valueOf(videoId), token);
             Comment newComment = redisUtil.queryWithoutPassThrough(COMMENT_QUERY_KEY, id, Comment.class, this::getById, COMMENT_QUERY_TTL, TimeUnit.MINUTES);
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM-dd");
             String time = simpleDateFormat.format(new Date(newComment.getCreateTime().getTime()));
-            return new CommentModel(id, userModel, commentText, time);
+            return new CommentListModel(id, userModel, commentText, time);
         } else {
             return null;
         }
@@ -82,25 +82,25 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
         QueryWrapper<Video> qw = new QueryWrapper<>();
         qw.eq("video_id", videoId);
         videoMapper.update(video, qw);
-        redisUtil.deleteRedisContent(VIDEO_QUERY_KEY,videoId);
-        redisUtil.queryWithoutPassThrough(VIDEO_QUERY_KEY,Long.parseLong(videoId),Video.class,videoService::getById,VIDEO_QUERY_TTL,TimeUnit.MINUTES);
+        redisUtil.deleteRedisContent(VIDEO_QUERY_KEY, videoId);
+        redisUtil.queryWithoutPassThrough(VIDEO_QUERY_KEY, Long.parseLong(videoId), Video.class, videoService::getById, VIDEO_QUERY_TTL, TimeUnit.MINUTES);
         return redisUtil.deleteRedisContent(COMMENT_QUERY_KEY, commentId) && commentMapper.deleteById(commentId) == SUCCESS;
     }
 
     @Override
-    public List<CommentModel> getCommentList(String videoId, String token) {
+    public List<CommentListModel> getCommentList(String videoId, String token) {
         QueryWrapper<Comment> qw = new QueryWrapper<>();
         qw.eq("video_id", videoId);
         List<Comment> comments = commentMapper.selectList(qw);
-        List<CommentModel> commentModelList = new ArrayList<>();
+        List<CommentListModel> commentListModelList = new ArrayList<>();
         for (Comment c : comments) {
             User user = redisUtil.queryWithoutPassThrough(USER_QUERY_KEY, c.getUserId(), User.class, userService::getById, USER_QUERY_TTL, TimeUnit.MINUTES);
             UserModel userModel = entity2Model.user2userModel(user, Long.valueOf(videoId), token);
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM-dd");
             String time = simpleDateFormat.format(new Date(c.getCreateTime().getTime()));
-            CommentModel commentModel = new CommentModel(c.getCommentId(), userModel, c.getCommentText(), time);
-            commentModelList.add(commentModel);
+            CommentListModel commentListModel = new CommentListModel(c.getCommentId(), userModel, c.getCommentText(), time);
+            commentListModelList.add(commentListModel);
         }
-        return commentModelList;
+        return commentListModelList;
     }
 }
