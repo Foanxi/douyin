@@ -46,6 +46,10 @@ public class RedisUtil {
         return BooleanUtil.isTrue(flag);
     }
 
+    private long getRandomTime() {
+        return (long) (Math.random() * 60 + 1.0);
+    }
+
     /**
      * 将key放入bloom过滤器中
      *
@@ -78,7 +82,7 @@ public class RedisUtil {
             map = new HashMap<>();
             map.put("cache", "null");
             stringRedisTemplate.opsForHash().putAll(key, map);
-            stringRedisTemplate.expire(key, RedisIdentification.NULL_CACHE_TTL, TimeUnit.SECONDS);
+            stringRedisTemplate.expire(key, RedisIdentification.NULL_CACHE_TTL + getRandomTime(), TimeUnit.SECONDS);
         } else {
             map = BeanUtil.beanToMap(data, new HashMap<>(), CopyOptions.create().
                     setIgnoreNullValue(true).
@@ -104,9 +108,9 @@ public class RedisUtil {
     public <T> T queryWithoutPassThrough(String keyPrefix, Long id, Class<T> type, Function<Long, T> dbFallback, Long time, TimeUnit timeUnit) {
         String key = keyPrefix + id;
         // 首先检查布隆过滤器内部是否有
-//        if (!bloomFilter.mightContain(key)) {
-//            return null;
-//        }
+        if (!bloomFilter.mightContain(key)) {
+            return null;
+        }
 
         // 检查缓存内部是否存在
         Map<Object, Object> entries = stringRedisTemplate.opsForHash().entries(key);
@@ -176,7 +180,6 @@ public class RedisUtil {
             }
         }
     }
-
 
     /**
      * 删除缓存
